@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joshua Cooper - Exploring the Data Universe</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Space+Mono&family=Roboto:wght@300;400;700&display=swap');
+        
+        :root {
+            --primary-color: #8A2BE2;
+            --secondary-color: #4B0082;
+            --text-color: #E0E0E0;
+            --bg-color: #0A0A0A;
+        }
+        
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Space Mono', monospace;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            overflow-x: hidden;
+        }
+        #landing {
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(to bottom, #0A0A0A, #1A1A1A);
+        }
+        #rlCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .content {
+            text-align: center;
+            z-index: 1;
+            position: relative;
+            background: rgba(10, 10, 10, 0.7);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
+        }
+        h1, h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        #landing h1 {
+            font-size: 3.5em;
+            margin: 0;
+            text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color), 0 0 30px var(--primary-color);
+            animation: glow 2s infinite alternate;
+        }
+        @keyframes glow {
+            from { text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color), 0 0 30px var(--primary-color); }
+            to { text-shadow: 0 0 20px var(--primary-color), 0 0 30px var(--primary-color), 0 0 40px var(--primary-color); }
+        }
+        #landing p {
+            font-size: 1.2em;
+            margin: 20px 0;
+            color: var(--text-color);
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 10px;
+            color: var(--text-color);
+            background-color: var(--secondary-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 30px;
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: var(--primary-color);
+            box-shadow: 0 0 20px var(--primary-color);
+        }
+        #resume {
+            background-color: var(--bg-color);
+            padding: 50px 0;
+            position: relative;
+            z-index: 2;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(26, 26, 26, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
+        }
+        #learning-info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(10, 10, 10, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Space Mono', monospace;
+            font-size: 14px;
+            color: var(--text-color);
+        }
+    </style>
+</head>
+<body>
+    <div id="landing">
+        <canvas id="rlCanvas"></canvas>
+        <div id="learning-info"></div>
+        <div class="content">
+            <h1>Joshua Cooper</h1>
+            <p>Industrial and Systems Engineer | Machine Learning Researcher</p>
+            <button class="btn" onclick="scrollToResume()">View My Cosmic Resume</button>
+        </div>
+    </div>
+
+    <div id="resume">
+        <div class="container">
+            <h1>Joshua Cooper</h1>
+            <p style="text-align: center;">Industrial and Systems Engineer | Machine Learning Researcher</p>
+            
+            <div class="contact-links">
+                <a href="mailto:Joshfcooper@vt.edu">Email</a>
+                <a href="https://www.linkedin.com/in/joshfcooper415/" target="_blank">LinkedIn</a>
+                <a href="https://github.com/JoshFCooper415" target="_blank">GitHub</a>
+            </div>
+
+            <section class="section">
+                <h2>Experience</h2>
+                <div class="experience-item">
+                    <h3>Machine Learning Researcher</h3>
+                    <p>Systems Optimization and Machine Learning Lab (SysOptiMaL) | August 2023 – Present</p>
+                    <ul>
+                        <li>Designed a deep learning transformer to solve NP-hard problems within 0.0% of optimality.</li>
+                        <li>Built systems to train 10+ million parameter models on Advanced Research Computing super computers.</li>
+                        <li>Authored a research paper documenting novel findings soon to be published in the IISE national conference.</li>
+                    </ul>
+                </div>
+                <div class="experience-item">
+                    <h3>Machine Learning Engineering Intern</h3>
+                    <p>United Airlines | May 2023 – August 2023</p>
+                    <ul>
+                        <li>Designed machine learning algorithms to improve airport congestion and available turnaround time for over 5000 flights daily.</li>
+                        <li>Reduced airport congestion by 11% during peak hours using artificial intelligence techniques.</li>
+                        <li>Increased the amount of time available for plane turnaround by 10% while maintaining current levels of utilization.</li>
+                    </ul>
+                </div>
+                <div class="experience-item">
+                    <h3>Software Engineering Intern</h3>
+                    <p>Exelaration | December 2021 – August 2022</p>
+                    <ul>
+                        <li>Developed features for client company's data analytics and operation portal in C# and TypeScript.</li>
+                        <li>Lead the creation of validation systems for clients PowerBi dashboard.</li>
+                        <li>Implemented features with Agile workflow with a team of 4 using GIT and Azure DevOps.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>Education</h2>
+                <div class="experience-item">
+                    <h3>Virginia Tech</h3>
+                    <p>BS, Industrial and Systems Engineering | Minor, Computer Science</p>
+                    <p>Expected Graduation: May 2025</p>
+                </div>
+                <div class="experience-item">
+                    <h3>University of California Berkeley</h3>
+                    <p>Dual Enrollment, Computer Science | June 2019 - August 2020</p>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>Skills</h2>
+                <div class="skills">
+                    <span class="skill">Python</span>
+                    <span class="skill">R</span>
+                    <span class="skill">SQL</span>
+                    <span class="skill">C</span>
+                    <span class="skill">C#</span>
+                    <span class="skill">TypeScript</span>
+                    <span class="skill">JavaScript</span>
+                    <span class="skill">Java</span>
+                    <span class="skill">MATLAB</span>
+                    <span class="skill">Unix/Linux (WSL)</span>
+                    <span class="skill">Docker</span>
+                    <span class="skill">React</span>
+                    <span class="skill">Azure DevOps</span>
+                    <span class="skill">AWS (Sagemaker)</span>
+                    <span class="skill">Spark</span>
+                    <span class="skill">GIT</span>
+                    <span class="skill">Tensorflow</span>
+                    <span class="skill">Keras</span>
+                    <span class="skill">Numpy</span>
+                    <span class="skill">Pytorch</span>
+                    <span class="skill">PuLP</span>
+                    <span class="skill">Pandas</span>
+                    <span class="skill">NLP</span>
+                    <span class="skill">Computer Vision</span>
+                    <span class="skill">Transformers</span>
+                    <span class="skill">Machine Learning</span>
+                    <span class="skill">Deep Learning</span>
+                    <span class="skill">HPC</span>
+                    <span class="skill">CUDA</span>
+                    <span class="skill">Gurobi</span>
+                    <span class="skill">CPLEX</span>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>Projects & Publications</h2>
+                <div class="experience-item">
+                    <h3>Deep Learning for NP-Hard Problems</h3 >
+                        <a href="https://arxiv.org/abs/2402.13380" target="_blank">Paper</a>   
+                    <p>Developed a novel approach using transformers to solve complex optimization problems.</p>
+                </div>
+                <div class="experience-item">
+                    <h3>AI-Driven Airport Optimization</h3>
+                    <p>Implemented machine learning models to enhance airport efficiency and reduce congestion.</p>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>Leadership & Involvement</h2>
+                <ul>
+                    <li>Convex Analysis Reading Group (February 2024 – Present)</li>
+                    <li>Artificial Intelligence and Machine Learning Club
+                        <ul>
+                            <li>Vice President and Lecturer (August 2023 - Present)</li>
+                        </ul>
+                    </li>
+                    <li>Virginia Tech Institute of Industrial and System Engineers
+                        <ul>
+                            <li>Director of Outreach (August 2022 - August 2023)</li>
+                            <li>Director of Professional Development events (August 2023 – Present)</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="section">
+                <h2>Awards and Certificates</h2>
+                <ul>
+                    <li>Disability:In NextGen Leader</li>
+                    <li>Certified ScrumMaster (CSM)</li>
+                </ul>
+            </section>
+
+            <div style="text-align: center;">
+                <a href="index.html" class="btn">Back to Space</a>
+            </div>
+        </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById('rlCanvas');
+            const learningInfo = document.getElementById('learning-info');
+            if (!canvas) {
+                console.error('Canvas element not found');
+                return;
+            }
+
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                console.error('Unable to get 2D context for canvas');
+                return;
+            }
+
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            class Spaceship {
+                constructor() {
+                    this.reset();
+                }
+
+                reset() {
+                    this.x = canvas.width  / 2;
+                    this.y = (canvas.height - 300) / 2;
+                    this.vx = 0;
+                    this.vy = 0;
+                    this.rotation = 0;
+                    this.size = 20;
+                    this.score = 0;
+                }
+
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.vx *= 0.99;
+                    this.vy *= 0.99;
+
+                    if (this.x > canvas.width) this.x = 0;
+                    if (this.x < 0) this.x = canvas.width;
+                    if (this.y > canvas.height) this.y = 0;
+                    if (this.y < 0) this.y = canvas.height;
+
+                    this.score += 0.1;
+                }
+
+                draw() {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(this.rotation);
+                    ctx.beginPath();
+                    ctx.moveTo(this.size, 0);
+                    ctx.lineTo(-this.size, -this.size / 2);
+                    ctx.lineTo(-this.size, this.size / 2);
+                    ctx.closePath();
+                    ctx.fillStyle = '#8A2BE2';
+                    ctx.fill();
+                    ctx.restore();
+                }
+
+                thrust() {
+                    this.vx += Math.cos(this.rotation) * 0.1;
+                    this.vy += Math.sin(this.rotation) * 0.1;
+                }
+
+                rotate(dir) {
+                    this.rotation += dir * 0.1;
+                }
+            }
+
+            class Asteroid {
+                constructor() {
+                    this.reset();
+                }
+
+                reset() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.vx = (Math.random() - 0.5) * 2;
+                    this.vy = (Math.random() - 0.5) * 2;
+                    this.size = Math.random() * 20 + 10;
+                }
+
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    if (this.x > canvas.width) this.x = 0;
+                    if (this.x < 0) this.x = canvas.width;
+                    if (this.y > canvas.height) this.y = 0;
+                    if (this.y < 0) this.y = canvas.height;
+                }
+
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = '#555';
+                    ctx.fill();
+                }
+            }
+
+            const ship = new Spaceship();
+            const asteroids = Array(30).fill().map(() => new Asteroid());
+
+            // Q-learning parameters
+            const learningRate = 0.1;
+            const discountFactor = 0.9;
+            const explorationRate = 0.2;
+            const numStates = 8; // 8 directions
+            const numActions = 3; // rotate left, rotate right, thrust
+            let qTable = Array(numStates).fill().map(() => Array(numActions).fill(0));
+            let totalReward = 0;
+            let episodeCount = 0;
+
+            function getState() {
+                let nearestAsteroid = null;
+                let minDist = Infinity;
+
+                for (let asteroid of asteroids) {
+                    let dx = asteroid.x - ship.x;
+                    let dy = asteroid.y - ship.y;
+                    let dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        nearestAsteroid = asteroid;
+                    }
+                }
+
+                if (nearestAsteroid) {
+                    let dx = nearestAsteroid.x - ship.x;
+                    let dy = nearestAsteroid.y - ship.y;
+                    let angle = Math.atan2(dy, dx) - ship.rotation;
+                    while (angle < 0) angle += 2 * Math.PI;
+                    return Math.floor(angle / (Math.PI / 4)) % numStates;
+                }
+                return 0;
+            }
+
+            function chooseAction(state) {
+                if (Math.random() < explorationRate) {
+                    return Math.floor(Math.random() * numActions);
+                } else {
+                    return qTable[state].indexOf(Math.max(...qTable[state]));
+                }
+            }
+
+            function executeAction(action) {
+                switch(action) {
+                    case 0: ship.rotate(-1); break;
+                    case 1: ship.rotate(1); break;
+                    case 2: ship.thrust(); break;
+                }
+            }
+
+            function calculateReward() {
+                let reward = 0.1; // Small positive reward for surviving
+                let collision = false;
+                for (let asteroid of asteroids) {
+                    let dx = asteroid.x - ship.x;
+                    let dy = asteroid.y - ship.y;
+                    let dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < ship.size + asteroid.size) {
+                        reward = -10; // Large negative reward for collision
+                        collision = true;
+                        break;
+                    } else if (dist < 100) {
+                        reward -= 0.1; // Small negative reward for close calls
+                    }
+                }
+                return { reward, collision };
+            }
+
+            function updateQTable(state, action, nextState, reward) {
+                let maxFutureQ = Math.max(...qTable[nextState]);
+                let currentQ = qTable[state][action];
+                qTable[state][action] = currentQ + learningRate * (reward + discountFactor * maxFutureQ - currentQ);
+            }
+
+            function learningAI() {
+                let state = getState();
+                let action = chooseAction(state);
+                executeAction(action);
+                let { reward, collision } = calculateReward();
+                let nextState = getState();
+                updateQTable(state, action, nextState, reward);
+
+                totalReward += reward;
+
+                if (collision) {
+                    ship.reset();
+                    asteroids.forEach(asteroid => asteroid.reset());
+                    episodeCount++;
+                    updateLearningInfo();
+                }
+            }
+
+            function updateLearningInfo() {
+                learningInfo.innerHTML = `
+                    Episodes: ${episodeCount}<br>
+                    Total Reward: ${totalReward.toFixed(2)}<br>
+                    Avg Reward: ${(totalReward / (episodeCount || 1)).toFixed(2)}
+                `;
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                learningAI();
+                
+                ship.update();
+                ship.draw();
+
+                for (let asteroid of asteroids) {
+                    asteroid.update();
+                    asteroid.draw();
+                }
+
+                // Display score
+                ctx.fillStyle = '#8A2BE2';
+                ctx.font = '20px Orbitron';
+                ctx.fillText(`Score: ${Math.floor(ship.score)}`, 10, 30);
+
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+
+            // Resize canvas when window is resized
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        });
+
+        function scrollToResume() {
+            document.getElementById('resume').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
