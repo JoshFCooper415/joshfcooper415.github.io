@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gambit Game with AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .game-container {
+            text-align: center;
+        }
+        .board {
+            display: inline-grid;
+            grid-template-columns: repeat(5, 60px);
+            gap: 2px;
+            background-color: #333;
+            padding: 2px;
+            border: 2px solid #333;
+        }
+        .cell {
+            width: 60px;
+            height: 60px;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            cursor: pointer;
+        }
+        .cell:hover {
+            background-color: #e0e0e0;
+        }
+        .cell.valid-move {
+            background-color: #90EE90;
+        }
+        .cell.selected {
+            background-color: #ADD8E6;
+        }
+        #status {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Gambit Game with AI</h1>
+        <div class="board" id="board"></div>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        // Constants
+        const ROWS = 7;
+        const COLS = 5;
+        const EMPTY = 0;
+        const PLAYER = 1;
+        const AI = 2;
+
+        // Game state
+        let board = [];
+        let currentPlayer = PLAYER;
+        let selectedPiece = null;
+
+        // Initialize the board
+        function initializeBoard() {
+            board = Array(ROWS).fill().map(() => Array(COLS).fill(EMPTY));
+            for (let col = 0; col < COLS; col++) {
+                board[1][col] = PLAYER;
+                board[0][col] = PLAYER;
+                board[ROWS - 2][col] = AI;
+                board[ROWS - 1][col] = AI;
+            }
+        }
+
+        // Check if a move is valid
+        function isValidMove(board, fromRow, fromCol, toRow, toCol, player) {
+            if (toCol < 0 || toCol >= COLS || toRow < 0 || toRow >= ROWS) return false;
+            const direction = player === PLAYER ? 1 : -1;
+            
+            // Forward move
+            if (toRow === fromRow + direction && toCol === fromCol && board[toRow][toCol] === EMPTY) {
+                return true;
+            }
+            
+            // Diagonal capture
+            if (toRow === fromRow + direction && Math.abs(toCol - fromCol) === 1 && board[toRow][toCol] === (player === PLAYER ? AI : PLAYER)) {
+                return true;
+            }
+            
+            return false;
+        }
+
+        // Make a move and return new board
+        function makeMove(board, fromRow, fromCol, toRow, toCol, player) {
+            let newBoard = board.map(row => [...row]);
+            if (isValidMove(newBoard, fromRow, fromCol, toRow, toCol, player)) {
+                newBoard[toRow][toCol] = player;
+                newBoard[fromRow][fromCol] = EMPTY;
+            }
+            return newBoard;
+        }
+
+        // Update the visual board
+        function updateBoard() {
+            const boardElement = document.getElementById('board');
+            boardElement.innerHTML = '';
+            for (let row = 0; row < ROWS; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
+                    if (board[row][col] === PLAYER) {
+                        cell.textContent = '♟️';
+                    } else if (board[row][col] === AI) {
+                        cell.textContent = '♙';
+                    }
+                    cell.addEventListener('click', handleCellClick);
+                    boardElement.appendChild(cell);
+                }
+            }
+        }
+
+        // Handle cell click event
+        function handleCellClick(event) {
+            if (currentPlayer === PLAYER) {
+                const row = parseInt(event.target.dataset.row);
+                const col = parseInt(event.target.dataset.col);
+                
+                if (selectedPiece) {
+                    board = makeMove(board, selectedPiece.row, selectedPiece.col, row, col, PLAYER);
+                    updateBoard();
+                    if (checkGameOver()) {
+                        return;
+                    }
+                    currentPlayer = AI;
+                    document.getElementById('status').textContent = "AI's turn";
+                    setTimeout(aiTurn, 500);
+                    selectedPiece = null;
+                } else if (board[row][col] === PLAYER) {
+                    selectedPiece = { row, col };
+                }
+            }
+        }
+
+        // AI's turn using minimax
+        function aiTurn() {
+            const move = findBestMove(board);
+            if (move) {
+                board = makeMove(board, move.fromRow, move.fromCol, move.toRow, move.toCol, AI);
+                updateBoard();
+                if (checkGameOver()) {
+                    return;
+                }
+                currentPlayer = PLAYER;
+                document.getElementById('status').textContent = "Player's turn";
+            } else {
+                checkGameOver();
+            }
+        }
+
+        // Minimax algorithm with alpha-beta pruning
+        function minimax(board, depth, isMaximizingPlayer, alpha, beta) {
+            if (depth === 0 || isGameOver(board)) {
+                return evaluateBoard(board);
+            }
+
+            if (isMaximizingPlayer) {
+                let maxEval = -Infinity;
+                for (let move of getAllPossibleMoves(board, AI)) {
+                    let newBoard = makeMove(board, move.fromRow, move.fromCol, move.toRow, move.toCol, AI);
+                    let eval = minimax(newBoard, depth - 1, false, alpha, beta);
+                    maxEval = Math.max(maxEval, eval);
+                    alpha = Math.max(alpha, eval);
+                    if (beta <= alpha) break;
+                }
+                return maxEval;
+            } else {
+                let minEval = Infinity;
+                for (let move of getAllPossibleMoves(board, PLAYER)) {
+                    let newBoard = makeMove(board, move.fromRow, move.fromCol, move.toRow, move.toCol, PLAYER);
+                    let eval = minimax(newBoard, depth - 1, true, alpha, beta);
+                    minEval = Math.min(minEval, eval);
+                    beta = Math.min(beta, eval);
+                    if (beta <= alpha) break;
+                }
+                return minEval;
+            }
+        }
+
+        // Find the best move for AI
+        function findBestMove(board) {
+            let bestMove = null;
+            let bestEval = -Infinity;
+            let alpha = -Infinity;
+            let beta = Infinity;
+            
+            for (let move of getAllPossibleMoves(board, AI)) {
+                let newBoard = makeMove(board, move.fromRow, move.fromCol, move.toRow, move.toCol, AI);
+                let eval = minimax(newBoard, 10, false, alpha, beta);
+                if (eval > bestEval) {
+                    bestEval = eval;
+                    bestMove = move;
+                }
+                alpha = Math.max(alpha, eval);
+            }
+            
+            return bestMove;
+        }
+
+        // Get all possible moves for a player
+        function getAllPossibleMoves(board, player) {
+            let moves = [];
+            for (let row = 0; row < ROWS; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    if (board[row][col] === player) {
+                        let possibleMoves = [
+                            { fromRow: row, fromCol: col, toRow: row + (player === PLAYER ? 1 : -1), toCol: col },
+                            { fromRow: row, fromCol: col, toRow: row + (player === PLAYER ? 1 : -1), toCol: col - 1 },
+                            { fromRow: row, fromCol: col, toRow: row + (player === PLAYER ? 1 : -1), toCol: col + 1 }
+                        ];
+                        for (let move of possibleMoves) {
+                            if (isValidMove(board, move.fromRow, move.fromCol, move.toRow, move.toCol, player)) {
+                                moves.push(move);
+                            }
+                        }
+                    }
+                }
+            }
+            return moves;
+        }
+
+        // Check if the game is over
+        function isGameOver(board) {
+            return board[0].includes(AI) || board[ROWS - 1].includes(PLAYER) || !hasValidMoves(board, PLAYER) || !hasValidMoves(board, AI);
+        }
+
+        // Check if a player has valid moves
+        function hasValidMoves(board, player) {
+            return getAllPossibleMoves(board, player).length > 0;
+        }
+
+        // Evaluate the board state
+        function evaluateBoard(board) {
+            if (board[0].includes(AI)) return 1000;
+            if (board[ROWS - 1].includes(PLAYER)) return -1000;
+            
+            let score = 0;
+            const playerDistance = calculateCumulativeDistance(board, PLAYER);
+            const aiDistance = calculateCumulativeDistance(board, AI);
+            score += (aiDistance - playerDistance) * 10;
+
+            for (let row = 0; row < ROWS; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    if (board[row][col] === AI) {
+                        score += (ROWS - row) * (ROWS - row);
+                        if (col > 0 && row > 0 && board[row - 1][col - 1] === PLAYER) score += 5;
+                        if (col < COLS - 1 && row > 0 && board[row - 1][col + 1] === PLAYER) score += 5;
+                    } else if (board[row][col] === PLAYER) {
+                        score -= (row + 1) * (row + 1);
+                        if (col > 0 && row < ROWS - 1 && board[row + 1][col - 1] === AI) score -= 5;
+                        if (col < COLS - 1 && row < ROWS - 1 && board[row + 1][col + 1] === AI) score -= 5;
+                    }
+                }
+            }
+            return score;
+        }
+
+        // Calculate cumulative distance from back rank
+        function calculateCumulativeDistance(board, player) {
+            let distance = 0;
+            const backRank = player === PLAYER ? 0 : ROWS - 1;
+            for (let row = 0; row < ROWS; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    if (board[row][col] === player) {
+                        distance += Math.abs(row - backRank);
+                    }
+                }
+            }
+            return distance;
+        }
+
+        // Check game status
+        function checkGameOver() {
+            const statusElement = document.getElementById('status');
+            
+            if (board[0].includes(AI)) {
+                statusElement.textContent = "AI wins!";
+                return true;
+            }
+            if (board[ROWS - 1].includes(PLAYER)) {
+                statusElement.textContent = "Player wins!";
+                return true;
+            }
+
+            if (!hasValidMoves(board, PLAYER) && !hasValidMoves(board, AI)) {
+                const playerDistance = calculateCumulativeDistance(board, PLAYER);
+                const aiDistance = calculateCumulativeDistance(board, AI);
+                
+                if (playerDistance > aiDistance) {
+                    statusElement.textContent = "Player wins by cumulative distance!";
+                } else if (aiDistance > playerDistance) {
+                    statusElement.textContent = "AI wins by cumulative distance!";
+                } else {
+                    statusElement.textContent = "It's a draw!";
+                }
+                return true;
+            }
+
+            if (!hasValidMoves(board, currentPlayer)) {
+                currentPlayer = currentPlayer === PLAYER ? AI : PLAYER;
+                statusElement.textContent = `${currentPlayer === PLAYER ? "Player" : "AI"}'s turn (opponent had no moves)`;
+            }
+
+            return false;
+        }
+
+        // Initialize the game
+        function initGame() {
+            initializeBoard();
+            updateBoard();
+            document.getElementById('status').textContent = "Player's turn";
+        }
+
+        // Start the game
+        initGame();
+    </script>
+</body>
+</html>
