@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Following Bezier Curve</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body { display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f0f0; }
+    </style>
+</head>
+<body>
+    <script>
+        let t = 0;
+        let curvePoints = [];
+        let cp1, cp2;
+        let draggingPoint = null;
+        let canvasWidth = 800;
+        let canvasHeight = 600;
+
+        function setup() {
+            createCanvas(canvasWidth, canvasHeight);
+            cp1 = createVector(canvasWidth * 0.25, canvasHeight * 0.25);
+            cp2 = createVector(canvasWidth * 0.75, canvasHeight * 0.75);
+            calculateCurvePoints();
+        }
+
+        function draw() {
+            background(240);
+            
+            // Draw Bezier curve
+            noFill();
+            stroke(0);
+            bezier(0, canvasHeight, cp1.x, cp1.y, cp2.x, cp2.y, canvasWidth, 0);
+            
+            // Draw control points
+            fill(255, 0, 0);
+            ellipse(cp1.x, cp1.y, 20, 20);
+            ellipse(cp2.x, cp2.y, 20, 20);
+            
+            // Draw car
+            if (curvePoints.length > 0) {
+                let carPos = curvePoints[Math.floor(t * curvePoints.length)];
+                fill(0, 255, 0);
+                ellipse(carPos.x, carPos.y, 20, 20);
+                
+                t += 0.005;
+                if (t > 1) t = 0;
+            }
+        }
+
+        function calculateCurvePoints() {
+            curvePoints = [];
+            for (let i = 0; i <= 1; i += 0.01) {
+                let x = bezierPoint(0, cp1.x, cp2.x, canvasWidth, i);
+                let y = bezierPoint(canvasHeight, cp1.y, cp2.y, 0, i);
+                curvePoints.push(createVector(x, y));
+            }
+        }
+
+        function mousePressed() {
+            if (dist(mouseX, mouseY, cp1.x, cp1.y) < 10) {
+                draggingPoint = cp1;
+            } else if (dist(mouseX, mouseY, cp2.x, cp2.y) < 10) {
+                draggingPoint = cp2;
+            }
+        }
+
+        function mouseDragged() {
+            if (draggingPoint) {
+                draggingPoint.x = constrain(mouseX, 0, canvasWidth);
+                draggingPoint.y = constrain(mouseY, 0, canvasHeight);
+                calculateCurvePoints();
+            }
+        }
+
+        function mouseReleased() {
+            draggingPoint = null;
+        }
+    </script>
+</body>
+</html>
