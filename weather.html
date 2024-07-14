@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Weather Simulation Grid</title>
+    <style>
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .cell {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+        input {
+            width: 50px;
+        }
+        .weather-result {
+            margin-top: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Interactive Weather Simulation Grid</h1>
+    <div id="grid" class="grid"></div>
+    <button onclick="generateWeather()">Generate Weather</button>
+
+    <script>
+        const gridSize = 5;
+        const grid = document.getElementById('grid');
+        const weatherStates = ['Sunny', 'Cloudy', 'Rainy', 'Stormy'];
+
+        // Markov chain transition probabilities
+        const transitionMatrix = {
+            'Sunny': { 'Sunny': 0.7, 'Cloudy': 0.3, 'Rainy': 0, 'Stormy': 0 },
+            'Cloudy': { 'Sunny': 0.4, 'Cloudy': 0.4, 'Rainy': 0.2, 'Stormy': 0 },
+            'Rainy': { 'Sunny': 0.2, 'Cloudy': 0.3, 'Rainy': 0.4, 'Stormy': 0.1 },
+            'Stormy': { 'Sunny': 0, 'Cloudy': 0.3, 'Rainy': 0.4, 'Stormy': 0.3 }
+        };
+
+        for (let i = 0; i < gridSize * gridSize; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.innerHTML = `
+                Temperature: <input type="number" class="temp" value="20"><br>
+                Wind Direction: <select class="wind">
+                    <option value="N">N</option>
+                    <option value="NE">NE</option>
+                    <option value="E">E</option>
+                    <option value="SE">SE</option>
+                    <option value="S">S</option>
+                    <option value="SW">SW</option>
+                    <option value="W">W</option>
+                    <option value="NW">NW</option>
+                </select>
+                <div class="weather-result"></div>
+            `;
+            grid.appendChild(cell);
+        }
+
+        function generateWeather() {
+            const cells = Array.from(document.querySelectorAll('.cell'));
+            let weatherStates = cells.map(() => getRandomWeather());
+
+            // First pass: generate initial weather states
+            cells.forEach((cell, index) => {
+                const temp = parseInt(cell.querySelector('.temp').value);
+                const wind = cell.querySelector('.wind').value;
+                weatherStates[index] = adjustWeather(weatherStates[index], temp, wind);
+            });
+
+            // Second pass: affect neighboring cells based on wind direction
+            cells.forEach((cell, index) => {
+                const wind = cell.querySelector('.wind').value;
+                const affectedIndex = getAffectedCellIndex(index, wind);
+                if (affectedIndex !== -1) {
+                    weatherStates[affectedIndex] = affectNeighborWeather(weatherStates[index], weatherStates[affectedIndex]);
+                }
+            });
+
+            // Update UI
+            cells.forEach((cell, index) => {
+                cell.querySelector('.weather-result').textContent = `Weather: ${weatherStates[index]}`;
+            });
+        }
+
+        function getRandomWeather() {
+            return weatherStates[Math.floor(Math.random() * weatherStates.length)];
+        }
+
+        function adjustWeather(weather, temp, wind) {
+            if (temp > 30) {
+                return 'Sunny';  // Force sunny in very hot conditions
+            } else if (temp < 0) {
+                return 'Stormy';  // Force stormy in very cold conditions
+            }
+            
+            if (['N', 'NW', 'NE'].includes(wind) && weather === 'Rainy') {
+                return 'Cloudy';  // Northern winds tend to clear rain
+            } else if (['S', 'SW', 'SE'].includes(wind) && weather === 'Cloudy') {
+                return 'Rainy';  // Southern winds can bring rain
+            }
+            
+            return weather;
+        }
+
+        function getAffectedCellIndex(currentIndex, wind) {
+            const row = Math.floor(currentIndex / gridSize);
+            const col = currentIndex % gridSize;
+
+            switch(wind) {
+                case 'N': return (row > 0) ? currentIndex - gridSize : -1;
+                case 'NE': return (row > 0 && col < gridSize - 1) ? currentIndex - gridSize + 1 : -1;
+                case 'E': return (col < gridSize - 1) ? currentIndex + 1 : -1;
+                case 'SE': return (row < gridSize - 1 && col < gridSize - 1) ? currentIndex + gridSize + 1 : -1;
+                case 'S': return (row < gridSize - 1) ? currentIndex + gridSize : -1;
+                case 'SW': return (row < gridSize - 1 && col > 0) ? currentIndex + gridSize - 1 : -1;
+                case 'W': return (col > 0) ? currentIndex - 1 : -1;
+                case 'NW': return (row > 0 && col > 0) ? currentIndex - gridSize - 1 : -1;
+                default: return -1;
+            }
+        }
+
+        function affectNeighborWeather(sourceWeather, targetWeather) {
+            const random = Math.random();
+            if (random < 0.5) {
+                return sourceWeather;  // 50% chance to adopt the source cell's weather
+            }
+            return targetWeather;  // 50% chance to keep its own weather
+        }
+    </script>
+</body>
+</html>
