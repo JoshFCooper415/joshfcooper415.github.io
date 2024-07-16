@@ -70,7 +70,8 @@
         let board = [];
         let currentPlayer = PLAYER;
         let selectedPiece = null;
-
+        // Transposition table
+        const transpositionTable = new Map();
         // Initialize the board
         function initializeBoard() {
             board = Array(ROWS).fill().map(() => Array(COLS).fill(EMPTY));
@@ -153,7 +154,6 @@
             }
         }
 
-        // AI's turn using minimax
         function aiTurn() {
             const move = findBestMove(board);
             if (move) {
@@ -171,33 +171,57 @@
 
         // Minimax algorithm with alpha-beta pruning
         function minimax(board, depth, isMaximizingPlayer, alpha, beta) {
+            const boardKey = boardToString(board);
+            if (transpositionTable.has(boardKey)) {
+                return transpositionTable.get(boardKey);
+            }
+    
             if (depth === 0 || isGameOver(board)) {
-                return evaluateBoard(board);
+                const evaluation = evaluateBoard(board);
+                transpositionTable.set(boardKey, evaluation);
+                return evaluation;
             }
-
-            if (isMaximizingPlayer) {
-                let maxEval = -Infinity;
-                for (let move of getAllPossibleMoves(board, AI)) {
-                    let newBoard = makeMove(board, move.fromRow, move.fromCol, move.toRow, move.toCol, AI);
-                    let eval = minimax(newBoard, depth - 1, false, alpha, beta);
-                    maxEval = Math.max(maxEval, eval);
+    
+            let bestEval = isMaximizingPlayer ? -Infinity : Infinity;
+            const moves = getAllPossibleMoves(board, isMaximizingPlayer ? AI : PLAYER);
+            
+            // Move ordering
+            moves.sort((a, b) => {
+                const scoreA = evaluateMove(board, a, isMaximizingPlayer ? AI : PLAYER);
+                const scoreB = evaluateMove(board, b, isMaximizingPlayer ? AI : PLAYER);
+                return isMaximizingPlayer ? scoreB - scoreA : scoreA - scoreB;
+            });
+    
+            for (let move of moves) {
+                let newBoard = makeMove(board, move.fromRow, move.fromCol, move.toRow, move.toCol, isMaximizingPlayer ? AI : PLAYER);
+                let eval = minimax(newBoard, depth - 1, !isMaximizingPlayer, alpha, beta);
+                
+                if (isMaximizingPlayer) {
+                    bestEval = Math.max(bestEval, eval);
                     alpha = Math.max(alpha, eval);
-                    if (beta <= alpha) break;
-                }
-                return maxEval;
-            } else {
-                let minEval = Infinity;
-                for (let move of getAllPossibleMoves(board, PLAYER)) {
-                    let newBoard = makeMove(board, move.fromRow, move.fromCol, move.toRow, move.toCol, PLAYER);
-                    let eval = minimax(newBoard, depth - 1, true, alpha, beta);
-                    minEval = Math.min(minEval, eval);
+                } else {
+                    bestEval = Math.min(bestEval, eval);
                     beta = Math.min(beta, eval);
-                    if (beta <= alpha) break;
                 }
-                return minEval;
+                
+                if (beta <= alpha) break;
             }
+    
+            transpositionTable.set(boardKey, bestEval);
+            return bestEval;
         }
-
+    
+        // Convert board to string for transposition table key
+        function boardToString(board) {
+            return board.map(row => row.join('')).join('');
+        }
+    
+        // Evaluate a single move
+        function evaluateMove(board, move, player) {
+            const newBoard = makeMove(board, move.fromRow, move.fromCol, move.toRow, move.toCol, player);
+            return evaluateBoard(newBoard);
+        }
+    
         // Find the best move for AI
         function findBestMove(board) {
             let bestMove = null;
@@ -205,9 +229,18 @@
             let alpha = -Infinity;
             let beta = Infinity;
             
-            for (let move of getAllPossibleMoves(board, AI)) {
+            const moves = getAllPossibleMoves(board, AI);
+            
+            // Move ordering
+            moves.sort((a, b) => {
+                const scoreA = evaluateMove(board, a, AI);
+                const scoreB = evaluateMove(board, b, AI);
+                return scoreB - scoreA;
+            });
+    
+            for (let move of moves) {
                 let newBoard = makeMove(board, move.fromRow, move.fromCol, move.toRow, move.toCol, AI);
-                let eval = minimax(newBoard, 10, false, alpha, beta);
+                let eval = minimax(newBoard, 15, false, alpha, beta);
                 if (eval > bestEval) {
                     bestEval = eval;
                     bestMove = move;
@@ -259,7 +292,7 @@
             const playerDistance = calculateCumulativeDistance(board, PLAYER);
             const aiDistance = calculateCumulativeDistance(board, AI);
             score += (aiDistance - playerDistance) * 10;
-
+    
             for (let row = 0; row < ROWS; row++) {
                 for (let col = 0; col < COLS; col++) {
                     if (board[row][col] === AI) {
@@ -275,7 +308,7 @@
             }
             return score;
         }
-
+        
         // Calculate cumulative distance from back rank
         function calculateCumulativeDistance(board, player) {
             let distance = 0;
