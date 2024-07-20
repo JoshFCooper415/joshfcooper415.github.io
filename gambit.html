@@ -240,7 +240,7 @@
     
             for (let move of moves) {
                 let newBoard = makeMove(board, move.fromRow, move.fromCol, move.toRow, move.toCol, AI);
-                let eval = minimax(newBoard, 15, false, alpha, beta);
+                let eval = minimax(newBoard, 10, false, alpha, beta);
                 if (eval > bestEval) {
                     bestEval = eval;
                     bestMove = move;
@@ -285,42 +285,29 @@
 
         // Evaluate the board state
         function evaluateBoard(board) {
-            if (board[0].includes(AI)) return 1000;
-            if (board[ROWS - 1].includes(PLAYER)) return -1000;
-            
             let score = 0;
-            const playerDistance = calculateCumulativeDistance(board, PLAYER);
-            const aiDistance = calculateCumulativeDistance(board, AI);
-            score += (aiDistance - playerDistance) * 10;
-    
             for (let row = 0; row < ROWS; row++) {
                 for (let col = 0; col < COLS; col++) {
                     if (board[row][col] === AI) {
-                        score += (ROWS - row) * (ROWS - row);
-                        if (col > 0 && row > 0 && board[row - 1][col - 1] === PLAYER) score += 5;
-                        if (col < COLS - 1 && row > 0 && board[row - 1][col + 1] === PLAYER) score += 5;
+                        score += Math.pow(ROWS - row, 2);
+                        if (col > 0 && row > 0 && board[row - 1][col - 1] === PLAYER) {
+                            score += 5;
+                        }
+                        if (col < COLS - 1 && row > 0 && board[row - 1][col + 1] === PLAYER) {
+                            score += 5;
+                        }
                     } else if (board[row][col] === PLAYER) {
-                        score -= (row + 1) * (row + 1);
-                        if (col > 0 && row < ROWS - 1 && board[row + 1][col - 1] === AI) score -= 5;
-                        if (col < COLS - 1 && row < ROWS - 1 && board[row + 1][col + 1] === AI) score -= 5;
+                        score -= Math.pow(row + 1, 2);
+                        if (col > 0 && row < ROWS - 1 && board[row + 1][col - 1] === AI) {
+                            score -= 5;
+                        }
+                        if (col < COLS - 1 && row < ROWS - 1 && board[row + 1][col + 1] === AI) {
+                            score -= 5;
+                        }
                     }
                 }
             }
             return score;
-        }
-        
-        // Calculate cumulative distance from back rank
-        function calculateCumulativeDistance(board, player) {
-            let distance = 0;
-            const backRank = player === PLAYER ? 0 : ROWS - 1;
-            for (let row = 0; row < ROWS; row++) {
-                for (let col = 0; col < COLS; col++) {
-                    if (board[row][col] === player) {
-                        distance += Math.abs(row - backRank);
-                    }
-                }
-            }
-            return distance;
         }
 
         // Check game status
