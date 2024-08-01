@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D&D Character Simulation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .card {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="number"], input[type="text"], select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        input[type="checkbox"] {
+            margin-right: 5px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #4cae4c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>D&D Character Simulation</h1>
+        <div id="simParams" class="card">
+            <h2>Simulation Parameters</h2>
+            <!-- Simulation parameters form will be inserted here -->
+        </div>
+        <div id="characters">
+            <!-- Character forms will be inserted here -->
+        </div>
+        <button onclick="runSimulation()">Run Simulation</button>
+        <div id="results" class="card" style="display: none;">
+            <h2>Simulation Results</h2>
+            <pre id="resultsContent"></pre>
+        </div>
+    </div>
+
+    <script>
+        const characterClasses = [
+            {
+                name: 'Fighter',
+                variants: [{ name: 'Fighter (Battlemaster)', useSharpshooter: true }]
+            },
+            {
+                name: 'Monk',
+                variants: [{ name: 'Monk (Kensei)', useSharpshooter: true, weapon: 'shortbow' }]
+            },
+            {
+                name: 'Rogue',
+                variants: [
+                    { name: 'Rogue (Crossbow Expert)', useSharpshooter: true, useCrossbowExpert: true, hasAdvantage: false },
+                    { name: 'Rogue', useSharpshooter: true, useCrossbowExpert: false, hasAdvantage: false }
+                ]
+            },
+            {
+                name: 'Ranger',
+                variants: [
+                    { name: 'Ranger (Crossbow Expert)', useSharpshooter: true, useCrossbowExpert: true },
+                    { name: 'Ranger', useSharpshooter: true, useCrossbowExpert: false }
+                ]
+            },
+            {
+                name: 'Warlock',
+                variants: [{ name: 'Warlock' }]
+            }
+        ];
+
+        const simParams = {
+            simulationDays: 10000,
+            combatsPerDay: 4,
+            turnsPerCombat: 4,
+            shortRestsPerDay: 2,
+        };
+
+        function createCharacterForm(characterClass, index) {
+            const form = document.createElement('div');
+            form.className = 'card';
+            form.innerHTML = `
+                <h2>${characterClass.name}</h2>
+                <div class="form-group">
+                    <label for="level-${index}">Level:</label>
+                    <input type="number" id="level-${index}" value="5" onchange="updateAllVariants(${index}, 'level', this.value)">
+                </div>
+                <div class="form-group">
+                    <label for="primaryMod-${index}">Primary Modifier:</label>
+                    <input type="number" id="primaryMod-${index}" value="4" onchange="updateAllVariants(${index}, 'primaryMod', this.value)">
+                </div>
+                <div class="form-group">
+                    <label for="acToHit-${index}">AC to Hit:</label>
+                    <input type="number" id="acToHit-${index}" value="15" onchange="updateAllVariants(${index}, 'acToHit', this.value)">
+                </div>
+                ${characterClass.variants.map((variant, variantIndex) => `
+                    <div class="variant">
+                        <h3>${variant.name}</h3>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" ${variant.useSharpshooter ? 'checked' : ''} onchange="updateVariant(${index}, ${variantIndex}, 'useSharpshooter', this.checked)">
+                                Use Sharpshooter
+                            </label>
+                        </div>
+                        ${variant.useCrossbowExpert !== undefined ? `
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" ${variant.useCrossbowExpert ? 'checked' : ''} onchange="updateVariant(${index}, ${variantIndex}, 'useCrossbowExpert', this.checked)">
+                                    Use Crossbow Expert
+                                </label>
+                            </div>
+                        ` : ''}
+                        ${variant.hasAdvantage !== undefined ? `
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" ${variant.hasAdvantage ? 'checked' : ''} onchange="updateVariant(${index}, ${variantIndex}, 'hasAdvantage', this.checked)">
+                                    Has Advantage
+                                </label>
+                            </div>
+                        ` : ''}
+                        ${variant.weapon !== undefined ? `
+                            <div class="form-group">
+                                <label for="weapon-${index}-${variantIndex}">Weapon:</label>
+                                <select id="weapon-${index}-${variantIndex}" onchange="updateVariant(${index}, ${variantIndex}, 'weapon', this.value)">
+                                    <option value="shortbow" ${variant.weapon === 'shortbow' ? 'selected' : ''}>Shortbow</option>
+                                    <option value="longbow" ${variant.weapon === 'longbow' ? 'selected' : ''}>Longbow</option>
+                                </select>
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('')}
+            `;
+            return form;
+        }
+
+        function createSimParamsForm() {
+            const form = document.createElement('div');
+            form.innerHTML = `
+                <div class="form-group">
+                    <label for="simulationDays">Simulation Days:</label>
+                    <input type="number" id="simulationDays" value="${simParams.simulationDays}" onchange="updateSimParams('simulationDays', this.value)">
+                </div>
+                <div class="form-group">
+                    <label for="combatsPerDay">Combats per Day:</label>
+                    <input type="number" id="combatsPerDay" value="${simParams.combatsPerDay}" onchange="updateSimParams('combatsPerDay', this.value)">
+                </div>
+                <div class="form-group">
+                    <label for="turnsPerCombat">Turns per Combat:</label>
+                    <input type="number" id="turnsPerCombat" value="${simParams.turnsPerCombat}" onchange="updateSimParams('turnsPerCombat', this.value)">
+                </div>
+                <div class="form-group">
+                    <label for="shortRestsPerDay">Short Rests per Day:</label>
+                    <input type="number" id="shortRestsPerDay" value="${simParams.shortRestsPerDay}" onchange="updateSimParams('shortRestsPerDay', this.value)">
+                </div>
+            `;
+            return form;
+        }
+
+        function updateAllVariants(classIndex, field, value) {
+            characterClasses[classIndex].variants.forEach(variant => {
+                variant[field] = Number(value);
+            });
+        }
+
+        function updateVariant(classIndex, variantIndex, field, value) {
+            if (field === 'useSharpshooter' || field === 'useCrossbowExpert' || field === 'hasAdvantage') {
+                characterClasses[classIndex].variants[variantIndex][field] = value;
+            } else {
+                characterClasses[classIndex].variants[variantIndex][field] = Number(value);
+            }
+        }
+
+        function updateSimParams(field, value) {
+            simParams[field] = Number(value);
+        }
+
+        function runSimulation() {
+            console.log('Running simulation with:', { characterClasses, simParams });
+            // Here you would call your simulation function
+            // For now, we'll just display the current state
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('resultsContent').textContent = JSON.stringify({ characterClasses, simParams }, null, 2);
+        }
+
+        // Initialize the form
+        document.getElementById('simParams').appendChild(createSimParamsForm());
+        const charactersContainer = document.getElementById('characters');
+        characterClasses.forEach((characterClass, index) => {
+            charactersContainer.appendChild(createCharacterForm(characterClass, index));
+        });
+    </script>
+</body>
+</html>
