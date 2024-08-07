@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fixed Mouse-following Spiral Particle Animation</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <script type="text/babel">
+        const SpiralParticleAnimation = () => {
+          const canvasRef = React.useRef(null);
+          const particlesRef = React.useRef([]);
+          const mousePositionRef = React.useRef({ x: 0, y: 0 });
+          const NUM_PARTICLES = 15;
+
+          React.useEffect(() => {
+            const canvas = canvasRef.current;
+            const ctx = canvas.getContext('2d');
+            let animationFrameId;
+
+            const resizeCanvas = () => {
+              canvas.width = window.innerWidth;
+              canvas.height = window.innerHeight;
+            };
+
+            const createParticle = () => {
+              return {
+                angle: Math.random() * Math.PI * 2,
+                radius: Math.random() * 100,
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+                speed: 0.5 + Math.random() * 0.5,
+                trail: [],
+                maxTrailLength: 25 + Math.floor(Math.random() * 25),
+              };
+            };
+
+            const updateParticles = () => {
+              const mouseX = mousePositionRef.current.x;
+              const mouseY = mousePositionRef.current.y;
+
+              particlesRef.current.forEach((particle) => {
+                particle.angle += particle.speed * 0.05;
+                particle.radius += particle.speed * 0.1;
+
+                const targetX = mouseX + Math.cos(particle.angle) * particle.radius;
+                const targetY = mouseY + Math.sin(particle.angle) * particle.radius;
+
+                particle.x += (targetX - particle.x) * 0.1;
+                particle.y += (targetY - particle.y) * 0.1;
+
+                particle.trail.unshift({ x: particle.x, y: particle.y });
+
+                if (particle.trail.length > particle.maxTrailLength) {
+                  particle.trail.pop();
+                }
+
+                if (particle.radius > 200) {
+                  particle.radius = 0;
+                  particle.trail = [];
+                }
+              });
+            };
+
+            const drawParticles = () => {
+              ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+              ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+              particlesRef.current.forEach((particle) => {
+                if (particle.trail.length > 1) {
+                  ctx.beginPath();
+                  ctx.moveTo(particle.trail[0].x, particle.trail[0].y);
+                  for (let i = 1; i < particle.trail.length; i++) {
+                    const t = i / particle.trail.length;
+                    ctx.lineTo(particle.trail[i].x, particle.trail[i].y);
+                    ctx.strokeStyle = particle.color;
+                    ctx.lineWidth = 3 * (1 - t);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(particle.trail[i].x, particle.trail[i].y);
+                  }
+                }
+              });
+            };
+
+            const animate = () => {
+              updateParticles();
+              drawParticles();
+              animationFrameId = requestAnimationFrame(animate);
+            };
+
+            const handleMouseMove = (event) => {
+              mousePositionRef.current = { x: event.clientX, y: event.clientY };
+            };
+
+            resizeCanvas();
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Initialize particles
+            for (let i = 0; i < NUM_PARTICLES; i++) {
+              particlesRef.current.push(createParticle());
+            }
+
+            // Set initial mouse position to center of screen
+            mousePositionRef.current = { x: canvas.width / 2, y: canvas.height / 2 };
+
+            animate();
+
+            window.addEventListener('resize', resizeCanvas);
+            window.addEventListener('mousemove', handleMouseMove);
+
+            return () => {
+              window.removeEventListener('resize', resizeCanvas);
+              window.removeEventListener('mousemove', handleMouseMove);
+              cancelAnimationFrame(animationFrameId);
+            };
+          }, []);
+
+          return (
+            <canvas
+              ref={canvasRef}
+              style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%' }}
+            />
+          );
+        };
+
+        ReactDOM.render(
+            <SpiralParticleAnimation />,
+            document.getElementById('root')
+        );
+    </script>
+</body>
+</html>

@@ -3,92 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Machine-Generated Text Detector</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.4/axios.min.js"></script>
+    <title>ONNX.js CDN Test Interface</title>
+    <script src="https://cdn.jsdelivr.net/npm/onnxjs/dist/onnx.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            line-height: 1.6;
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-        }
-        textarea {
-            width: 100%;
-            height: 200px;
-            margin-bottom: 10px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        button {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        #result {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f8f8f8;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .loading {
-            text-align: center;
-            font-style: italic;
-            color: #666;
-        }
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        #debug { white-space: pre-wrap; border: 1px solid #ccc; padding: 10px; margin-top: 20px; }
     </style>
 </head>
 <body>
-    <h1>Machine-Generated Text Detector</h1>
-    <p>Enter your text below to check if it's machine-generated using the Binoculars method:</p>
-    <textarea id="textInput" placeholder="Enter your text here..."></textarea>
-    <button onclick="analyzeText()">Analyze Text</button>
-    <div id="result"></div>
+    <h1>ONNX.js CDN Test Interface</h1>
+    <button onclick="loadAndTestModel()">Load and Test Model</button>
+    <div id="debug"></div>
 
     <script>
-        async function analyzeText() {
-            const text = document.getElementById('textInput').value;
-            const resultDiv = document.getElementById('result');
-            
-            if (text.trim() === '') {
-                resultDiv.innerHTML = '<p style="color: red;">Please enter some text to analyze.</p>';
-                return;
-            }
-            
-            resultDiv.innerHTML = '<p class="loading">Analyzing...</p>';
-            
+        const debugElement = document.getElementById('debug');
+
+        function log(message) {
+            debugElement.textContent += message + '\n';
+            console.log(message);
+        }
+
+        async function loadAndTestModel() {
+            debugElement.textContent = '';  // Clear previous debug output
+            log('Starting model load and test...');
+
             try {
-                const response = await axios.post('/api/analyze', { text });
-                const { isGenerated, confidence, rawScore, prediction } = response.data;
-                
-                const resultColor = isGenerated ? '#FFA500' : '#4CAF50';
-                const confidencePercentage = (confidence * 100).toFixed(2);
-                
-                resultDiv.innerHTML = `
-                    <p style="font-weight: bold; color: ${resultColor};">Result: ${prediction}</p>
-                    <p>Confidence: ${confidencePercentage}%</p>
-                    <p>Raw Score: ${rawScore.toFixed(4)}</p>
-                    <p>Interpretation: This text is ${confidencePercentage}% likely to be ${isGenerated ? 'machine' : 'human'}-generated.</p>
-                `;
+                const session = new onnx.InferenceSession();
+                log('InferenceSession created');
+
+                // Load a simple pre-trained ONNX model (Sigmoid)
+                const modelUrl = 'https://github.com/microsoft/onnxjs/raw/master/test/data/node/test_sigmoid/model.onnx';
+                await session.loadModel(modelUrl);
+                log('Simple model loaded successfully from CDN');
+
+                // Test inference
+                const inputTensor = new onnx.Tensor(new Float32Array([1, 2, 3, 4]), 'float32', [2, 2]);
+                const outputMap = await session.run([inputTensor]);
+                const outputTensor = outputMap.values().next().value;
+                log('Inference result: ' + outputTensor.data);
+
+                log('Now trying to load your model...');
+                const yourSession = new onnx.InferenceSession();
+                await yourSession.loadModel('model.onnx');
+                log('Your model loaded successfully');
+
+                // Try to run inference on your model
+                const yourInputTensor = new onnx.Tensor(new Float32Array([1, 2, 3, 4]), 'float32', [1, 4]);
+                const yourOutputMap = await yourSession.run([yourInputTensor]);
+                const yourOutputTensor = yourOutputMap.values().next().value;
+                log('Your model inference result: ' + yourOutputTensor.data);
+
             } catch (error) {
-                resultDiv.innerHTML = '<p style="color: red;">Error analyzing text. Please try again.</p>';
-                console.error('Error:', error);
+                log('Error: ' + error.message);
+                console.error(error);
             }
         }
     </script>
