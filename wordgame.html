@@ -193,13 +193,51 @@
             document.getElementById('attempts').textContent = `attempts left: ${attemptsLeft}`;
         }
 
-        function updateGraph(newWord, definition) {
-            const words = definition.split(/\s+/).filter(word => word.length > 3);
-            const newNodes = words.filter(word => !graphData.nodes.some(node => node.id === word))
-                                  .map(word => ({ id: word }));
+        function getPriorityScore(partOfSpeech) {
+            switch (partOfSpeech) {
+                case 'noun': return 3;
+                case 'verb': return 2;
+                case 'adjective': return 1;
+                default: return 0;
+            }
+        }
+
+        function getTopWords(wordData, limit = 5) {
+            const wordsWithPriority = [];
+            wordData.meanings.forEach(meaning => {
+                const partOfSpeech = meaning.partOfSpeech;
+                meaning.definitions.forEach(def => {
+                    const words = cleanText(def.definition).split(/\s+/);
+                    words.forEach(word => {
+                        if (word.length > 3 && !visitedWords.has(word)) {
+                            wordsWithPriority.push({
+                                word: word,
+                                priority: getPriorityScore(partOfSpeech)
+                            });
+                        }
+                    });
+                });
+            });
+
+            // Remove duplicates and sort by priority
+            const uniqueWords = Array.from(new Set(wordsWithPriority.map(w => w.word)))
+                .map(word => {
+                    return {
+                        word: word,
+                        priority: Math.max(...wordsWithPriority.filter(w => w.word === word).map(w => w.priority))
+                    };
+                })
+                .sort((a, b) => b.priority - a.priority || Math.random() - 0.5);
+
+            return uniqueWords.slice(0, limit).map(w => w.word);
+        }
+
+        function updateGraph(newWord, topWords) {
+            const newNodes = topWords.filter(word => !graphData.nodes.some(node => node.id === word))
+                                     .map(word => ({ id: word }));
             graphData.nodes.push(...newNodes);
             
-            const newLinks = words.map(word => ({ source: newWord, target: word }));
+            const newLinks = topWords.map(word => ({ source: newWord, target: word }));
             graphData.links.push(...newLinks);
 
             renderGraph();
@@ -321,9 +359,9 @@
 
             const wordData = await fetchWordData(cleanedWord);
             if (wordData) {
-                const definition = cleanText(wordData.meanings[0].definitions[0].definition);
-                document.getElementById('definition').textContent = definition;
-                updateGraph(cleanedWord, definition);
+                const topWords = getTopWords(wordData);
+                document.getElementById('definition').textContent = wordData.meanings[0].definitions[0].definition.toLowerCase();
+                updateGraph(cleanedWord, topWords);
             } else {
                 alert('failed to fetch word data. please try again.');
             }
@@ -346,9 +384,9 @@
 
             const wordData = await fetchWordData(startWord);
             if (wordData) {
-                const definition = cleanText(wordData.meanings[0].definitions[0].definition);
-                document.getElementById('definition').textContent = definition;
-                updateGraph(startWord.toLowerCase(), definition);
+                const topWords = getTopWords(wordData);
+                document.getElementById('definition').textContent = wordData.meanings[0].definitions[0].definition.toLowerCase();
+                updateGraph(startWord.toLowerCase(), topWords);
             } else {
                 alert('failed to start the game. please refresh the page.');
             }
