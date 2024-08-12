@@ -29,7 +29,8 @@
         }
 
         .container {
-            max-width: 1000px;
+            display: flex;
+            max-width: 1200px;
             width: 95%;
             margin: 2rem auto;
             background-color: white;
@@ -41,7 +42,7 @@
         header {
             background-color: var(--primary-color);
             color: white;
-            padding: 1.5rem;
+            padding: 2rem;
             text-align: center;
         }
 
@@ -49,24 +50,25 @@
             margin: 0;
             font-size: 2.5rem;
             font-weight: 600;
-            text-transform: lowercase;
         }
 
         #game-container {
-            padding: 1.5rem;
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            max-height: 80vh;
         }
 
         .game-info {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 1rem;
-            font-size: 1rem;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
         }
 
         .game-info span {
             font-weight: 600;
             color: var(--primary-color);
-            text-transform: lowercase;
         }
 
         #definition {
@@ -74,55 +76,139 @@
             background-color: var(--background-color);
             padding: 1rem;
             border-radius: 10px;
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
             text-align: center;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             line-height: 1.6;
-            text-transform: lowercase;
         }
 
-        #graph-container {
-            width: 100%;
-            height: 400px;
-            margin-bottom: 1rem;
-            overflow: hidden;
+        #clickable-words {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
-        .node {
+        .word-btn {
+            padding: 0.8rem 1.2rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 25px;
+            background-color: var(--secondary-color);
+            color: white;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        .node circle {
-            fill: var(--secondary-color);
-            stroke: var(--primary-color);
-            stroke-width: 2px;
+        .word-btn:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
-        .node text {
-            font-size: 12px;
-            fill: var(--text-color);
-            text-transform: lowercase;
-        }
-
-        .link {
-            fill: none;
-            stroke: var(--accent-color);
-            stroke-width: 1.5px;
+        .non-clickable {
+            padding: 0.8rem 0.5rem;
+            font-size: 1rem;
+            color: var(--text-color);
+            opacity: 0.6;
         }
 
         #attempts {
             text-align: center;
             font-size: 1.2rem;
-            margin-top: 1rem;
+            margin-top: 2rem;
             font-weight: 600;
             color: var(--primary-color);
         }
 
-        @media (max-width: 768px) {
+        #sidebar {
+            width: 300px;
+            background-color: var(--accent-color);
+            display: flex;
+            flex-direction: column;
+            max-height: 80vh;
+        }
+
+        #sidebar-header {
+            padding: 1rem;
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        #sidebar-header h2 {
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        #history-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        #history-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        #history {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .history-node {
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            padding: 0.3rem 0.5rem;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .history-node:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .history-node.active {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        .history-node .branch-line {
+            width: 15px;
+            height: 1px;
+            background-color: var(--text-color);
+            margin-right: 5px;
+        }
+
+        .history-node .word {
+            flex-grow: 1;
+        }
+
+        @media (max-width: 900px) {
             .container {
-                width: 98%;
+                flex-direction: column;
             }
 
+            #sidebar {
+                width: 100%;
+                order: -1;
+                max-height: 300px;
+            }
+
+            #game-container {
+                max-height: none;
+            }
+        }
+
+        @media (max-width: 600px) {
             h1 {
                 font-size: 2rem;
             }
@@ -130,47 +216,63 @@
             .game-info {
                 flex-direction: column;
                 align-items: center;
-                gap: 0.5rem;
-            }
-
-            #graph-container {
-                height: 300px;
+                gap: 1rem;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>word association graph game</h1>
-        </header>
         <div id="game-container">
+            <header>
+                <h1>Word Association Game</h1>
+            </header>
             <div class="game-info">
-                <p>starting word: <span id="start-word"></span></p>
-                <p>target word: <span id="target-word"></span></p>
-                <p>current word: <span id="current-word"></span></p>
+                <p>Starting word: <span id="start-word"></span></p>
+                <p>Target word: <span id="target-word"></span></p>
+                <p>Current word: <span id="current-word"></span></p>
             </div>
             <p id="definition"></p>
-            <div id="graph-container"></div>
+            <div id="clickable-words"></div>
             <p id="attempts"></p>
+        </div>
+        <div id="sidebar">
+            <div id="sidebar-header">
+                <h2>Word History</h2>
+            </div>
+            <div id="history-container">
+                <div id="history"></div>
+            </div>
         </div>
     </div>
 
-    <script src="https://d3js.org/d3.v7.min.js"></script>
     <script>
         const apiUrl = 'https://api.dictionaryapi.dev/api/v2/entries/en/';
         let startWord, targetWord, currentWord, maxAttempts, attemptsLeft;
         const visitedWords = new Set();
-        let graphData = { nodes: [], links: [] };
-        let simulation;
-        let svg, g;
+        let wordTree;
+        let currentNode;
+
+        class TreeNode {
+            constructor(word, parent = null) {
+                this.word = word;
+                this.parent = parent;
+                this.children = [];
+            }
+
+            addChild(word) {
+                const childNode = new TreeNode(word, this);
+                this.children.push(childNode);
+                return childNode;
+            }
+
+            findChild(word) {
+                return this.children.find(child => child.word === word);
+            }
+        }
 
         function cleanWord(word) {
             return word.replace(/[^a-zA-Z]/g, '').toLowerCase();
-        }
-
-        function cleanText(text) {
-            return text.replace(/[^a-zA-Z\s]/g, '').toLowerCase();
         }
 
         async function fetchWordData(word) {
@@ -186,209 +288,167 @@
             }
         }
 
+        function isClickableWord(word) {
+            return word.length > 3 && !visitedWords.has(cleanWord(word));
+        }
+
+        function cleanText(text) {
+            return text.replace(/[^a-zA-Z\s]/g, '');
+        }
+
         function updateUI() {
-            document.getElementById('start-word').textContent = startWord.toLowerCase();
-            document.getElementById('target-word').textContent = targetWord.toLowerCase();
-            document.getElementById('current-word').textContent = currentWord.toLowerCase();
-            document.getElementById('attempts').textContent = `attempts left: ${attemptsLeft}`;
+            document.getElementById('start-word').textContent = startWord;
+            document.getElementById('target-word').textContent = targetWord;
+            document.getElementById('current-word').textContent = currentWord;
+            document.getElementById('attempts').textContent = `Attempts left: ${attemptsLeft}`;
+            updateHistory();
         }
 
-        function getPriorityScore(partOfSpeech) {
-            switch (partOfSpeech) {
-                case 'noun': return 3;
-                case 'verb': return 2;
-                case 'adjective': return 1;
-                default: return 0;
-            }
-        }
+        function updateHistory() {
+            const historyContainer = document.getElementById('history');
+            historyContainer.innerHTML = '';
 
-        function getTopWords(wordData, limit = 5) {
-            const wordsWithPriority = [];
-            wordData.meanings.forEach(meaning => {
-                const partOfSpeech = meaning.partOfSpeech;
-                meaning.definitions.forEach(def => {
-                    const words = cleanText(def.definition).split(/\s+/);
-                    words.forEach(word => {
-                        if (word.length > 3 && !visitedWords.has(word)) {
-                            wordsWithPriority.push({
-                                word: word,
-                                priority: getPriorityScore(partOfSpeech)
-                            });
-                        }
-                    });
-                });
-            });
-
-            // Remove duplicates and sort by priority
-            const uniqueWords = Array.from(new Set(wordsWithPriority.map(w => w.word)))
-                .map(word => {
-                    return {
-                        word: word,
-                        priority: Math.max(...wordsWithPriority.filter(w => w.word === word).map(w => w.priority))
-                    };
-                })
-                .sort((a, b) => b.priority - a.priority || Math.random() - 0.5);
-
-            return uniqueWords.slice(0, limit).map(w => w.word);
-        }
-
-        function updateGraph(newWord, topWords) {
-            const newNodes = topWords.filter(word => !graphData.nodes.some(node => node.id === word))
-                                     .map(word => ({ id: word }));
-            graphData.nodes.push(...newNodes);
-            
-            const newLinks = topWords.map(word => ({ source: newWord, target: word }));
-            graphData.links.push(...newLinks);
-
-            renderGraph();
-        }
-
-        function renderGraph() {
-            const width = document.getElementById('graph-container').clientWidth;
-            const height = 400;
-
-            if (!svg) {
-                svg = d3.select("#graph-container")
-                    .append("svg")
-                    .attr("width", width)
-                    .attr("height", height);
-
-                g = svg.append("g");
-
-                svg.call(d3.zoom()
-                    .extent([[0, 0], [width, height]])
-                    .scaleExtent([0.1, 8])
-                    .on("zoom", zoomed));
-
-                function zoomed({transform}) {
-                    g.attr("transform", transform);
+            function renderNode(node, depth = 0) {
+                const nodeElement = document.createElement('div');
+                nodeElement.classList.add('history-node');
+                if (node === currentNode) {
+                    nodeElement.classList.add('active');
                 }
+
+                const branchLine = document.createElement('div');
+                branchLine.classList.add('branch-line');
+                branchLine.style.width = `${depth * 15}px`;
+
+                const wordElement = document.createElement('span');
+                wordElement.classList.add('word');
+                wordElement.textContent = node.word;
+
+                nodeElement.appendChild(branchLine);
+                nodeElement.appendChild(wordElement);
+                nodeElement.onclick = () => goToWord(node);
+
+                historyContainer.appendChild(nodeElement);
+
+                node.children.forEach(child => renderNode(child, depth + 1));
             }
 
-            if (!simulation) {
-                simulation = d3.forceSimulation(graphData.nodes)
-                    .force("link", d3.forceLink(graphData.links).id(d => d.id).distance(100))
-                    .force("charge", d3.forceManyBody().strength(-200))
-                    .force("center", d3.forceCenter(width / 2, height / 2));
-            } else {
-                simulation.nodes(graphData.nodes);
-                simulation.force("link").links(graphData.links);
-                simulation.alpha(1).restart();
+            renderNode(wordTree);
+            scrollToActiveNode();
+        }
+
+        function scrollToActiveNode() {
+            const activeNode = document.querySelector('.history-node.active');
+            if (activeNode) {
+                const container = document.getElementById('history-container');
+                container.scrollTo({
+                    top: activeNode.offsetTop - container.offsetHeight / 2,
+                    behavior: 'smooth'
+                });
             }
+        }
 
-            const link = g.selectAll(".link")
-                .data(graphData.links)
-                .join("line")
-                .attr("class", "link");
-
-            const node = g.selectAll(".node")
-                .data(graphData.nodes)
-                .join("g")
-                .attr("class", "node")
-                .call(d3.drag()
-                    .on("start", dragstarted)
-                    .on("drag", dragged)
-                    .on("end", dragended));
-
-            node.selectAll("circle")
-                .data(d => [d])
-                .join("circle")
-                .attr("r", 20);
-
-            node.selectAll("text")
-                .data(d => [d])
-                .join("text")
-                .text(d => d.id)
-                .attr('text-anchor', 'middle')
-                .attr('dominant-baseline', 'central');
-
-            node.on("click", (event, d) => handleWordClick(d.id));
-
-            simulation.on("tick", () => {
-                link
-                    .attr("x1", d => d.source.x)
-                    .attr("y1", d => d.source.y)
-                    .attr("x2", d => d.target.x)
-                    .attr("y2", d => d.target.y);
-
-                node
-                    .attr("transform", d => `translate(${d.x},${d.y})`);
-            });
-
-            function dragstarted(event) {
-                if (!event.active) simulation.alphaTarget(0.3).restart();
-                event.subject.fx = event.subject.x;
-                event.subject.fy = event.subject.y;
+        async function goToWord(node) {
+            if (node === currentNode) return;
+            
+            currentNode = node;
+            currentWord = node.word;
+            visitedWords.clear();
+            
+            let tempNode = node;
+            while (tempNode) {
+                visitedWords.add(cleanWord(tempNode.word));
+                tempNode = tempNode.parent;
             }
-
-            function dragged(event) {
-                event.subject.fx = event.x;
-                event.subject.fy = event.y;
-            }
-
-            function dragended(event) {
-                if (!event.active) simulation.alphaTarget(0);
-                event.subject.fx = null;
-                event.subject.fy = null;
+            
+            updateUI();
+            const wordData = await fetchWordData(currentWord);
+            if (wordData) {
+                const definition = cleanText(wordData.meanings[0].definitions[0].definition);
+                document.getElementById('definition').textContent = definition;
+                displayWords(definition.split(/\s+/));
             }
         }
 
         async function handleWordClick(word) {
             const cleanedWord = cleanWord(word);
-            if (cleanedWord === targetWord.toLowerCase()) {
-                alert(`congratulations! you've reached the target word '${targetWord}' in ${maxAttempts - attemptsLeft + 1} attempts.`);
+            if (cleanedWord === targetWord) {
+                addToHistory(word);
+                updateUI();
+                alert(`Congratulations! You've reached the target word '${targetWord}'!`);
                 startGame();
-                return;
-            }
-
-            if (visitedWords.has(cleanedWord)) {
-                alert('you have already used this word. try another one.');
                 return;
             }
 
             attemptsLeft--;
             currentWord = word;
             visitedWords.add(cleanedWord);
+            addToHistory(word);
             updateUI();
 
             if (attemptsLeft === 0) {
-                alert(`game over. you didn't reach '${targetWord}' within ${maxAttempts} attempts.`);
+                alert(`Game over. You didn't reach '${targetWord}' within ${maxAttempts} attempts.`);
                 startGame();
                 return;
             }
 
-            const wordData = await fetchWordData(cleanedWord);
+            const wordData = await fetchWordData(word);
             if (wordData) {
-                const topWords = getTopWords(wordData);
-                document.getElementById('definition').textContent = wordData.meanings[0].definitions[0].definition.toLowerCase();
-                updateGraph(cleanedWord, topWords);
+                const definition = cleanText(wordData.meanings[0].definitions[0].definition);
+                document.getElementById('definition').textContent = definition;
+                displayWords(definition.split(/\s+/));
             } else {
-                alert('failed to fetch word data. please try again.');
+                alert('Failed to fetch word data. Please try again.');
             }
         }
 
+        function addToHistory(word) {
+            let childNode = currentNode.findChild(word);
+            if (!childNode) {
+                childNode = currentNode.addChild(word);
+            }
+            currentNode = childNode;
+        }
+
+        function displayWords(words) {
+            const container = document.getElementById('clickable-words');
+            container.innerHTML = '';
+            words.forEach(word => {
+                if (isClickableWord(word)) {
+                    const button = document.createElement('button');
+                    button.textContent = word;
+                    button.classList.add('word-btn');
+                    button.onclick = () => handleWordClick(word);
+                    container.appendChild(button);
+                } else {
+                    const span = document.createElement('span');
+                    span.textContent = word;
+                    span.classList.add('non-clickable');
+                    container.appendChild(span);
+                }
+            });
+        }
+
         async function startGame() {
-            startWord = 'Hello';
-            targetWord = 'World';
+            // For demonstration, using fixed words. In a real game, you'd randomly select these.
+            startWord = 'hello';
+            targetWord = 'world';
             currentWord = startWord;
-            maxAttempts = 10;
+            maxAttempts = 1000;
             attemptsLeft = maxAttempts;
             visitedWords.clear();
             visitedWords.add(cleanWord(startWord));
-            graphData = { nodes: [{ id: startWord.toLowerCase() }], links: [] };
-            simulation = null;
-            svg = null;
-            g = null;
+            wordTree = new TreeNode(startWord);
+            currentNode = wordTree;
 
             updateUI();
 
             const wordData = await fetchWordData(startWord);
             if (wordData) {
-                const topWords = getTopWords(wordData);
-                document.getElementById('definition').textContent = wordData.meanings[0].definitions[0].definition.toLowerCase();
-                updateGraph(startWord.toLowerCase(), topWords);
+                const definition = cleanText(wordData.meanings[0].definitions[0].definition);
+                document.getElementById('definition').textContent = definition;
+                displayWords(definition.split(/\s+/));
             } else {
-                alert('failed to start the game. please refresh the page.');
+                alert('Failed to start the game. Please refresh the page.');
             }
         }
 
