@@ -29,8 +29,8 @@
         }
 
         .container {
-            max-width: 800px;
-            width: 90%;
+            max-width: 1000px;
+            width: 95%;
             margin: 2rem auto;
             background-color: white;
             border-radius: 15px;
@@ -41,7 +41,7 @@
         header {
             background-color: var(--primary-color);
             color: white;
-            padding: 2rem;
+            padding: 1.5rem;
             text-align: center;
         }
 
@@ -49,22 +49,24 @@
             margin: 0;
             font-size: 2.5rem;
             font-weight: 600;
+            text-transform: lowercase;
         }
 
         #game-container {
-            padding: 2rem;
+            padding: 1.5rem;
         }
 
         .game-info {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 2rem;
-            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            font-size: 1rem;
         }
 
         .game-info span {
             font-weight: 600;
             color: var(--primary-color);
+            text-transform: lowercase;
         }
 
         #definition {
@@ -72,54 +74,53 @@
             background-color: var(--background-color);
             padding: 1rem;
             border-radius: 10px;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
             text-align: center;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             line-height: 1.6;
+            text-transform: lowercase;
         }
 
-        #clickable-words {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 0.5rem;
+        #graph-container {
+            width: 100%;
+            height: 400px;
+            margin-bottom: 1rem;
+            overflow: hidden;
         }
 
-        .word-btn {
-            padding: 0.8rem 1.2rem;
-            font-size: 1rem;
-            border: none;
-            border-radius: 25px;
-            background-color: var(--secondary-color);
-            color: white;
+        .node {
             cursor: pointer;
-            transition: all 0.3s ease;
         }
 
-        .word-btn:hover {
-            background-color: var(--primary-color);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        .node circle {
+            fill: var(--secondary-color);
+            stroke: var(--primary-color);
+            stroke-width: 2px;
         }
 
-        .non-clickable {
-            padding: 0.8rem 0.5rem;
-            font-size: 1rem;
-            color: var(--text-color);
-            opacity: 0.6;
+        .node text {
+            font-size: 12px;
+            fill: var(--text-color);
+            text-transform: lowercase;
+        }
+
+        .link {
+            fill: none;
+            stroke: var(--accent-color);
+            stroke-width: 1.5px;
         }
 
         #attempts {
             text-align: center;
             font-size: 1.2rem;
-            margin-top: 2rem;
+            margin-top: 1rem;
             font-weight: 600;
             color: var(--primary-color);
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
             .container {
-                width: 95%;
+                width: 98%;
             }
 
             h1 {
@@ -129,7 +130,11 @@
             .game-info {
                 flex-direction: column;
                 align-items: center;
-                gap: 1rem;
+                gap: 0.5rem;
+            }
+
+            #graph-container {
+                height: 300px;
             }
         }
     </style>
@@ -137,27 +142,35 @@
 <body>
     <div class="container">
         <header>
-            <h1>Word Association Game</h1>
+            <h1>word association graph game</h1>
         </header>
         <div id="game-container">
             <div class="game-info">
-                <p>Starting word: <span id="start-word"></span></p>
-                <p>Target word: <span id="target-word"></span></p>
-                <p>Current word: <span id="current-word"></span></p>
+                <p>starting word: <span id="start-word"></span></p>
+                <p>target word: <span id="target-word"></span></p>
+                <p>current word: <span id="current-word"></span></p>
             </div>
             <p id="definition"></p>
-            <div id="clickable-words"></div>
+            <div id="graph-container"></div>
             <p id="attempts"></p>
         </div>
     </div>
 
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <script>
         const apiUrl = 'https://api.dictionaryapi.dev/api/v2/entries/en/';
         let startWord, targetWord, currentWord, maxAttempts, attemptsLeft;
         const visitedWords = new Set();
+        let graphData = { nodes: [], links: [] };
+        let simulation;
+        let svg, g;
 
         function cleanWord(word) {
             return word.replace(/[^a-zA-Z]/g, '').toLowerCase();
+        }
+
+        function cleanText(text) {
+            return text.replace(/[^a-zA-Z\s]/g, '').toLowerCase();
         }
 
         async function fetchWordData(word) {
@@ -173,26 +186,125 @@
             }
         }
 
-        function isClickableWord(word) {
-            return word.length > 3 && !visitedWords.has(cleanWord(word));
-        }
-
-        function cleanText(text) {
-            return text.replace(/[^a-zA-Z\s]/g, '');
-        }
-
         function updateUI() {
-            document.getElementById('start-word').textContent = startWord;
-            document.getElementById('target-word').textContent = targetWord;
-            document.getElementById('current-word').textContent = currentWord;
-            document.getElementById('attempts').textContent = attemptsLeft;
+            document.getElementById('start-word').textContent = startWord.toLowerCase();
+            document.getElementById('target-word').textContent = targetWord.toLowerCase();
+            document.getElementById('current-word').textContent = currentWord.toLowerCase();
+            document.getElementById('attempts').textContent = `attempts left: ${attemptsLeft}`;
+        }
+
+        function updateGraph(newWord, definition) {
+            const words = definition.split(/\s+/).filter(word => word.length > 3);
+            const newNodes = words.filter(word => !graphData.nodes.some(node => node.id === word))
+                                  .map(word => ({ id: word }));
+            graphData.nodes.push(...newNodes);
+            
+            const newLinks = words.map(word => ({ source: newWord, target: word }));
+            graphData.links.push(...newLinks);
+
+            renderGraph();
+        }
+
+        function renderGraph() {
+            const width = document.getElementById('graph-container').clientWidth;
+            const height = 400;
+
+            if (!svg) {
+                svg = d3.select("#graph-container")
+                    .append("svg")
+                    .attr("width", width)
+                    .attr("height", height);
+
+                g = svg.append("g");
+
+                svg.call(d3.zoom()
+                    .extent([[0, 0], [width, height]])
+                    .scaleExtent([0.1, 8])
+                    .on("zoom", zoomed));
+
+                function zoomed({transform}) {
+                    g.attr("transform", transform);
+                }
+            }
+
+            if (!simulation) {
+                simulation = d3.forceSimulation(graphData.nodes)
+                    .force("link", d3.forceLink(graphData.links).id(d => d.id).distance(100))
+                    .force("charge", d3.forceManyBody().strength(-200))
+                    .force("center", d3.forceCenter(width / 2, height / 2));
+            } else {
+                simulation.nodes(graphData.nodes);
+                simulation.force("link").links(graphData.links);
+                simulation.alpha(1).restart();
+            }
+
+            const link = g.selectAll(".link")
+                .data(graphData.links)
+                .join("line")
+                .attr("class", "link");
+
+            const node = g.selectAll(".node")
+                .data(graphData.nodes)
+                .join("g")
+                .attr("class", "node")
+                .call(d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended));
+
+            node.selectAll("circle")
+                .data(d => [d])
+                .join("circle")
+                .attr("r", 20);
+
+            node.selectAll("text")
+                .data(d => [d])
+                .join("text")
+                .text(d => d.id)
+                .attr('text-anchor', 'middle')
+                .attr('dominant-baseline', 'central');
+
+            node.on("click", (event, d) => handleWordClick(d.id));
+
+            simulation.on("tick", () => {
+                link
+                    .attr("x1", d => d.source.x)
+                    .attr("y1", d => d.source.y)
+                    .attr("x2", d => d.target.x)
+                    .attr("y2", d => d.target.y);
+
+                node
+                    .attr("transform", d => `translate(${d.x},${d.y})`);
+            });
+
+            function dragstarted(event) {
+                if (!event.active) simulation.alphaTarget(0.3).restart();
+                event.subject.fx = event.subject.x;
+                event.subject.fy = event.subject.y;
+            }
+
+            function dragged(event) {
+                event.subject.fx = event.x;
+                event.subject.fy = event.y;
+            }
+
+            function dragended(event) {
+                if (!event.active) simulation.alphaTarget(0);
+                event.subject.fx = null;
+                event.subject.fy = null;
+            }
         }
 
         async function handleWordClick(word) {
             const cleanedWord = cleanWord(word);
-            if (cleanedWord === targetWord) {
-                alert(`Congratulations! You've reached the target word '${targetWord}' in ${maxAttempts - attemptsLeft + 1} attempts.`);
+            if (cleanedWord === targetWord.toLowerCase()) {
+                alert(`congratulations! you've reached the target word '${targetWord}' in ${maxAttempts - attemptsLeft + 1} attempts.`);
                 startGame();
+                return;
+            }
+
+            if (visitedWords.has(cleanedWord)) {
+                alert('you have already used this word. try another one.');
                 return;
             }
 
@@ -202,49 +314,33 @@
             updateUI();
 
             if (attemptsLeft === 0) {
-                alert(`Game over. You didn't reach '${targetWord}' within ${maxAttempts} attempts.`);
+                alert(`game over. you didn't reach '${targetWord}' within ${maxAttempts} attempts.`);
                 startGame();
                 return;
             }
 
-            const wordData = await fetchWordData(word);
+            const wordData = await fetchWordData(cleanedWord);
             if (wordData) {
                 const definition = cleanText(wordData.meanings[0].definitions[0].definition);
                 document.getElementById('definition').textContent = definition;
-                displayWords(definition.split(/\s+/));
+                updateGraph(cleanedWord, definition);
             } else {
-                alert('Failed to fetch word data. Please try again.');
+                alert('failed to fetch word data. please try again.');
             }
         }
 
-        function displayWords(words) {
-            const container = document.getElementById('clickable-words');
-            container.innerHTML = '';
-            words.forEach(word => {
-                if (isClickableWord(word)) {
-                    const button = document.createElement('button');
-                    button.textContent = word;
-                    button.classList.add('word-btn');
-                    button.onclick = () => handleWordClick(word);
-                    container.appendChild(button);
-                } else {
-                    const span = document.createElement('span');
-                    span.textContent = word;
-                    span.classList.add('non-clickable');
-                    container.appendChild(span);
-                }
-            });
-        }
-
         async function startGame() {
-            // For demonstration, using fixed words. In a real game, you'd randomly select these.
-            startWord = 'hello';
-            targetWord = 'world';
+            startWord = 'Hello';
+            targetWord = 'World';
             currentWord = startWord;
-            maxAttempts = 1000;
+            maxAttempts = 10;
             attemptsLeft = maxAttempts;
             visitedWords.clear();
             visitedWords.add(cleanWord(startWord));
+            graphData = { nodes: [{ id: startWord.toLowerCase() }], links: [] };
+            simulation = null;
+            svg = null;
+            g = null;
 
             updateUI();
 
@@ -252,9 +348,9 @@
             if (wordData) {
                 const definition = cleanText(wordData.meanings[0].definitions[0].definition);
                 document.getElementById('definition').textContent = definition;
-                displayWords(definition.split(/\s+/));
+                updateGraph(startWord.toLowerCase(), definition);
             } else {
-                alert('Failed to start the game. Please refresh the page.');
+                alert('failed to start the game. please refresh the page.');
             }
         }
 
