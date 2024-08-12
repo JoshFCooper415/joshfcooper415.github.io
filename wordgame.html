@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Association Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        #game-container {
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        #clickable-words {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .word-btn {
+            margin: 5px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .word-btn:hover {
+            background-color: #45a049;
+        }
+        .non-clickable {
+            margin: 5px;
+            padding: 5px;
+            color: #666;
+        }
+        #definition {
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Word Association Game</h1>
+    <div id="game-container">
+        <p>Starting word: <span id="start-word"></span></p>
+        <p>Target word: <span id="target-word"></span></p>
+        <p>Current word: <span id="current-word"></span></p>
+        <p id="definition"></p>
+        <div id="clickable-words"></div>
+        <p>Attempts left: <span id="attempts"></span></p>
+    </div>
+
+    <script>
+        const apiUrl = 'https://api.dictionaryapi.dev/api/v2/entries/en/';
+        let startWord, targetWord, currentWord, maxAttempts, attemptsLeft;
+        const visitedWords = new Set();
+
+        function cleanWord(word) {
+            return word.replace(/[^a-zA-Z]/g, '').toLowerCase();
+        }
+
+        async function fetchWordData(word) {
+            const cleanedWord = cleanWord(word);
+            try {
+                const response = await fetch(apiUrl + cleanedWord);
+                if (!response.ok) throw new Error('Word not found');
+                const data = await response.json();
+                return data[0];
+            } catch (error) {
+                console.error('Error fetching word data:', error);
+                return null;
+            }
+        }
+
+        function isClickableWord(word) {
+            return word.length > 3 && !visitedWords.has(cleanWord(word));
+        }
+
+        function cleanText(text) {
+            return text.replace(/[^a-zA-Z\s]/g, '');
+        }
+
+        function updateUI() {
+            document.getElementById('start-word').textContent = startWord;
+            document.getElementById('target-word').textContent = targetWord;
+            document.getElementById('current-word').textContent = currentWord;
+            document.getElementById('attempts').textContent = attemptsLeft;
+        }
+
+        async function handleWordClick(word) {
+            const cleanedWord = cleanWord(word);
+            if (cleanedWord === targetWord) {
+                alert(`Congratulations! You've reached the target word '${targetWord}' in ${maxAttempts - attemptsLeft + 1} attempts.`);
+                startGame();
+                return;
+            }
+
+            attemptsLeft--;
+            currentWord = word;
+            visitedWords.add(cleanedWord);
+            updateUI();
+
+            if (attemptsLeft === 0) {
+                alert(`Game over. You didn't reach '${targetWord}' within ${maxAttempts} attempts.`);
+                startGame();
+                return;
+            }
+
+            const wordData = await fetchWordData(word);
+            if (wordData) {
+                const definition = cleanText(wordData.meanings[0].definitions[0].definition);
+                document.getElementById('definition').textContent = definition;
+                displayWords(definition.split(/\s+/));
+            } else {
+                alert('Failed to fetch word data. Please try again.');
+            }
+        }
+
+        function displayWords(words) {
+            const container = document.getElementById('clickable-words');
+            container.innerHTML = '';
+            words.forEach(word => {
+                if (isClickableWord(word)) {
+                    const button = document.createElement('button');
+                    button.textContent = word;
+                    button.classList.add('word-btn');
+                    button.onclick = () => handleWordClick(word);
+                    container.appendChild(button);
+                } else {
+                    const span = document.createElement('span');
+                    span.textContent = word;
+                    span.classList.add('non-clickable');
+                    container.appendChild(span);
+                }
+            });
+        }
+
+        async function startGame() {
+            // For demonstration, using fixed words. In a real game, you'd randomly select these.
+            startWord = 'hello';
+            targetWord = 'world';
+            currentWord = startWord;
+            maxAttempts = 1000;
+            attemptsLeft = maxAttempts;
+            visitedWords.clear();
+            visitedWords.add(cleanWord(startWord));
+
+            updateUI();
+
+            const wordData = await fetchWordData(startWord);
+            if (wordData) {
+                const definition = cleanText(wordData.meanings[0].definitions[0].definition);
+                document.getElementById('definition').textContent = definition;
+                displayWords(definition.split(/\s+/));
+            } else {
+                alert('Failed to start the game. Please refresh the page.');
+            }
+        }
+
+        window.onload = startGame;
+    </script>
+</body>
+</html>
