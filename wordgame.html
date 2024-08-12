@@ -5,58 +5,150 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Word Association Game</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        :root {
+            --primary-color: #4a4e69;
+            --secondary-color: #9a8c98;
+            --accent-color: #c9ada7;
+            --background-color: #f2e9e4;
+            --text-color: #22223b;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
             max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+            width: 90%;
+            margin: 2rem auto;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem;
             text-align: center;
         }
-        #game-container {
-            background-color: #f0f0f0;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
+
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 600;
         }
+
+        #game-container {
+            padding: 2rem;
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .game-info span {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        #definition {
+            font-style: italic;
+            background-color: var(--background-color);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
         #clickable-words {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            align-items: center;
-            margin-top: 20px;
+            gap: 0.5rem;
         }
+
         .word-btn {
-            margin: 5px;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
+            padding: 0.8rem 1.2rem;
+            font-size: 1rem;
             border: none;
-            border-radius: 5px;
+            border-radius: 25px;
+            background-color: var(--secondary-color);
+            color: white;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
+
         .word-btn:hover {
-            background-color: #45a049;
+            background-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
+
         .non-clickable {
-            margin: 5px;
-            padding: 5px;
-            color: #666;
+            padding: 0.8rem 0.5rem;
+            font-size: 1rem;
+            color: var(--text-color);
+            opacity: 0.6;
         }
-        #definition {
-            font-style: italic;
-            margin-bottom: 20px;
+
+        #attempts {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-top: 2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 95%;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .game-info {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Word Association Game</h1>
-    <div id="game-container">
-        <p>Starting word: <span id="start-word"></span></p>
-        <p>Target word: <span id="target-word"></span></p>
-        <p>Current word: <span id="current-word"></span></p>
-        <p id="definition"></p>
-        <div id="clickable-words"></div>
-        <p>Attempts left: <span id="attempts"></span></p>
+    <div class="container">
+        <header>
+            <h1>Word Association Game</h1>
+        </header>
+        <div id="game-container">
+            <div class="game-info">
+                <p>Starting word: <span id="start-word"></span></p>
+                <p>Target word: <span id="target-word"></span></p>
+                <p>Current word: <span id="current-word"></span></p>
+            </div>
+            <p id="definition"></p>
+            <div id="clickable-words"></div>
+            <p id="attempts"></p>
+        </div>
     </div>
 
     <script>
