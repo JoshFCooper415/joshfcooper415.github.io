@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word Association Game</title>
+    <title>Daily Word Association Game</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
@@ -225,7 +225,7 @@
     <div class="container">
         <div id="game-container">
             <header>
-                <h1>Word Association Game</h1>
+                <h1>Daily Word Association Game</h1>
             </header>
             <div class="game-info">
                 <p>Starting word: <span id="start-word"></span></p>
@@ -252,6 +252,509 @@
         const visitedWords = new Set();
         let wordTree;
         let currentNode;
+        const wordPairs = [
+        { start: 'remote', target: 'required' },
+        { start: 'today', target: 'cavalry' },
+        { start: 'slim', target: 'presentation' },
+        { start: 'wiped', target: 'delight' },
+        { start: 'skin', target: 'worst' },
+        { start: 'direction', target: 'physiological' },
+        { start: 'carried', target: 'languages' },
+        { start: 'visit', target: 'headed' },
+        { start: 'switches', target: 'decision' },
+        { start: 'mail', target: 'activities' },
+        { start: 'courts', target: 'today' },
+        { start: 'aim', target: 'lincoln' },
+        { start: 'course', target: 'strain' },
+        { start: 'meanings', target: 'distant' },
+        { start: 'relatives', target: 'characters' },
+        { start: 'bundle', target: 'presence' },
+        { start: 'historian', target: 'evidence' },
+        { start: 'various', target: 'unlikely' },
+        { start: 'wearing', target: 'granted' },
+        { start: 'retirement', target: 'gear' },
+        { start: 'acquired', target: 'ended' },
+        { start: 'wishes', target: 'production' },
+        { start: 'aesthetic', target: 'possible' },
+        { start: 'responses', target: 'color' },
+        { start: 'movie', target: 'sound' },
+        { start: 'ears', target: 'baby' },
+        { start: 'sketches', target: 'few' },
+        { start: 'softly', target: 'finally' },
+        { start: 'unfortunately', target: 'occurred' },
+        { start: 'discussion', target: 'season' },
+        { start: 'arc', target: 'interference' },
+        { start: 'return', target: 'sudden' },
+        { start: 'cars', target: 'die' },
+        { start: 'scattered', target: 'atom' },
+        { start: 'grain', target: 'receive' },
+        { start: 'content', target: 'bronchial' },
+        { start: 's', target: 'routine' },
+        { start: 'wonder', target: 'experts' },
+        { start: 'quiet', target: 'broad' },
+        { start: 'star', target: 'learn' },
+        { start: 'desires', target: 'wife' },
+        { start: 'worthy', target: 'both' },
+        { start: 'vice', target: 'removal' },
+        { start: 'african', target: 'leaned' },
+        { start: 'chamber', target: 'brain' },
+        { start: 'leadership', target: 'bullets' },
+        { start: 'doctors', target: 'it' },
+        { start: 'least', target: 'inclined' },
+        { start: 'spare', target: 'financial' },
+        { start: 'last', target: 'guests' },
+        { start: 'museum', target: 'woods' },
+        { start: 'gathering', target: 'freddy' },
+        { start: 'wagon', target: 'annual' },
+        { start: 'public', target: 'product' },
+        { start: 'cape', target: 'weather' },
+        { start: 'catholic', target: 'ending' },
+        { start: 'aspect', target: 'bench' },
+        { start: 'lesser', target: 'audience' },
+        { start: 'keith', target: 'inventory' },
+        { start: 'maude', target: 'demands' },
+        { start: 'autumn', target: 'frequency' },
+        { start: 'economic', target: 'classic' },
+        { start: 'part', target: 'clark' },
+        { start: 'mission', target: 'studio' },
+        { start: 'date', target: 'elaine' },
+        { start: 'carleton', target: 'represented' },
+        { start: 'yet', target: 'convenient' },
+        { start: 'beam', target: 'exception' },
+        { start: 'learned', target: 'violent' },
+        { start: 'continuity', target: 'apply' },
+        { start: 'alfred', target: 'turn' },
+        { start: 'feelings', target: 'judgment' },
+        { start: 'swift', target: 'writers' },
+        { start: 'sacrifice', target: 'partner' },
+        { start: 'experienced', target: 'hanover' },
+        { start: 'associated', target: 'pete' },
+        { start: 'narrative', target: 'oil' },
+        { start: 'frank', target: 'select' },
+        { start: 'disturbed', target: 'select' },
+        { start: 'dry', target: 'enthusiasm' },
+        { start: 'uniform', target: 'rifle' },
+        { start: 'counties', target: 'if' },
+        { start: 'techniques', target: 'relations' },
+        { start: 'speaking', target: 'tradition' },
+        { start: 'certainty', target: 'canada' },
+        { start: 'comment', target: 'baseball' },
+        { start: 'sold', target: 'volumes' },
+        { start: 'giving', target: 'contacts' },
+        { start: 'some', target: 'flux' },
+        { start: 'former', target: 'aid' },
+        { start: 'love', target: 'solution' },
+        { start: 'fortunate', target: 'choose' },
+        { start: 'miriam', target: 'growth' },
+        { start: 'contract', target: 'monument' },
+        { start: 'speeches', target: 'determined' },
+        { start: 'borden', target: 'extend' },
+        { start: 'situation', target: 'telegraph' },
+        { start: 'paintings', target: 'are' },
+        { start: 'presence', target: 'hand' },
+        { start: 'screen', target: 'occasion' },
+        { start: 'wrong', target: 'arranged' },
+        { start: 'operations', target: 'rhode' },
+        { start: 'catch', target: 'enable' },
+        { start: 'distant', target: 'helped' },
+        { start: 'herd', target: 'fruit' },
+        { start: 'book', target: 'law' },
+        { start: 'designed', target: 'window' },
+        { start: 'lid', target: 'alienation' },
+        { start: 'furniture', target: 'course' },
+        { start: 'preserved', target: 'texas' },
+        { start: 'actually', target: 'fact' },
+        { start: 'fresh', target: 'musician' },
+        { start: 'troubled', target: 'turn' },
+        { start: 'seek', target: 'correct' },
+        { start: 'full', target: 'hits' },
+        { start: 'dealer', target: 'corporate' },
+        { start: 'answers', target: 'intense' },
+        { start: 'auto', target: 'theories' },
+        { start: 'everyone', target: 'variations' },
+        { start: 'churches', target: 'weakness' },
+        { start: 'correct', target: 'incredible' },
+        { start: 'content', target: 'within' },
+        { start: 'growth', target: 'named' },
+        { start: 'supreme', target: 'monument' },
+        { start: 'opinion', target: 'care' },
+        { start: 'showed', target: 'instant' },
+        { start: 'recently', target: 'christmas' },
+        { start: 'majority', target: 'yelled' },
+        { start: 'tendency', target: 'fashion' },
+        { start: 'spot', target: 'market' },
+        { start: 'generally', target: 'tilghman' },
+        { start: 'whom', target: 'higher' },
+        { start: 'indication', target: 'high' },
+        { start: 'ethics', target: 'recording' },
+        { start: 'aunt', target: 'pond' },
+        { start: 'appeared', target: 'peculiar' },
+        { start: 'columns', target: 'rarely' },
+        { start: 'indicate', target: 'peter' },
+        { start: 'friendship', target: 'application' },
+        { start: 'surrounded', target: 'judges' },
+        { start: 'rest', target: 'troubled' },
+        { start: 'reasons', target: 'panel' },
+        { start: 'assistant', target: 'fault' },
+        { start: 'respects', target: 'bend' },
+        { start: 'claimed', target: 'varied' },
+        { start: 'newer', target: 'sun' },
+        { start: 'page', target: 'phrase' },
+        { start: 'players', target: 'branches' },
+        { start: 'sober', target: 'warren' },
+        { start: 'critics', target: 'tree' },
+        { start: 'authorized', target: 'sing' },
+        { start: 'sugar', target: 'rain' },
+        { start: 'enterprise', target: 'notte' },
+        { start: 'fool', target: 'presents' },
+        { start: 'conditioned', target: 'contrast' },
+        { start: 'relationships', target: 'phrase' },
+        { start: 'certainty', target: 'silence' },
+        { start: 'panel', target: 'visible' },
+        { start: 'wish', target: 'evident' },
+        { start: 'cattle', target: 'emphasis' },
+        { start: 'drunk', target: 'skin' },
+        { start: 'rational', target: 'composition' },
+        { start: 'mental', target: 'authors' },
+        { start: 'island', target: 'speed' },
+        { start: 'fury', target: 'recognized' },
+        { start: 'horse', target: 'west' },
+        { start: 'occasionally', target: 'infinite' },
+        { start: 'accompanied', target: 'contemporary' },
+        { start: 'junior', target: 'leaders' },
+        { start: 'borden', target: 'look' },
+        { start: 'trained', target: 'famous' },
+        { start: 'units', target: 'mountains' },
+        { start: 'products', target: 'spread' },
+        { start: 'computed', target: 'trial' },
+        { start: 'leaders', target: 'starts' },
+        { start: 'darkness', target: 'word' },
+        { start: 'philosophical', target: 'smoke' },
+        { start: 'principle', target: 'russia' },
+        { start: 'deep', target: 'attended' },
+        { start: 'species', target: 'spread' },
+        { start: 'palace', target: 'mary' },
+        { start: 'constitution', target: 'rain' },
+        { start: 'convenience', target: 'ohio' },
+        { start: 'himself', target: 'minimal' },
+        { start: 'houses', target: 'pounds' },
+        { start: 'completed', target: 'mounted' },
+        { start: 'costs', target: 'palfrey' },
+        { start: 'vital', target: 'cast' },
+        { start: 'stations', target: 'reactionary' },
+        { start: 'widely', target: 'fifth' },
+        { start: 'irish', target: 'cover' },
+        { start: 'canada', target: 'strongest' },
+        { start: 'us', target: 'la' },
+        { start: 'your', target: 'trail' },
+        { start: 'bar', target: 'sometimes' },
+        { start: 'cry', target: 'college' },
+        { start: 'poet', target: 'francis' },
+        { start: 'mess', target: 'pressed' },
+        { start: 'marketing', target: 'border' },
+        { start: 'contemporary', target: 'bar' },
+        { start: 'cleaning', target: 'jean' },
+        { start: 'club', target: 'journey' },
+        { start: 'fields', target: 'snapped' },
+        { start: 'mechanism', target: 'learn' },
+        { start: 'home', target: 'companies' },
+        { start: 'milligrams', target: 'george' },
+        { start: 'lover', target: 'concert' },
+        { start: 'be', target: 'provision' },
+        { start: 'circumstances', target: 'unit' },
+        { start: 'climbed', target: 'finger' },
+        { start: 'germany', target: 'create' },
+        { start: 'belief', target: 'traveling' },
+        { start: 'sink', target: 'cooperative' },
+        { start: 'contains', target: 'stake' },
+        { start: 'structural', target: 'majority' },
+        { start: 'once', target: 'bill' },
+        { start: 'marshall', target: 'prepare' },
+        { start: 'begun', target: 'military' },
+        { start: 'sovereign', target: 'commissioner' },
+        { start: 'khrushchev', target: 'unable' },
+        { start: 'widely', target: 'germans' },
+        { start: 'wounded', target: 'various' },
+        { start: 'objectives', target: 'discuss' },
+        { start: 'absorbed', target: 'gather' },
+        { start: 'resolution', target: 'voluntary' },
+        { start: 'evidence', target: 'dance' },
+        { start: 'wanted', target: 'patents' },
+        { start: 'performed', target: 'drink' },
+        { start: 'smell', target: 'hard' },
+        { start: 'owned', target: 'plan' },
+        { start: 'view', target: 'outcome' },
+        { start: 'tensions', target: 'preceding' },
+        { start: 'autumn', target: 'exchange' },
+        { start: 'substance', target: 'hurried' },
+        { start: 'la', target: 'residential' },
+        { start: 'cady', target: 'pat' },
+        { start: 'naked', target: 'demanding' },
+        { start: 'suspected', target: 'islands' },
+        { start: 'maryland', target: 'something' },
+        { start: 'magic', target: 'whereas' },
+        { start: 'leader', target: 'her' },
+        { start: 'goals', target: 'fence' },
+        { start: 'going', target: 'glory' },
+        { start: 'monthly', target: 'tv' },
+        { start: 'parade', target: 'essentially' },
+        { start: 'measurement', target: 'included' },
+        { start: 'companies', target: 'walls' },
+        { start: 'remains', target: 'demonstrated' },
+        { start: 'unique', target: 'april' },
+        { start: 'surfaces', target: 'instruments' },
+        { start: 'minister', target: 'last' },
+        { start: 'triumph', target: 'expanding' },
+        { start: 'own', target: 'commander' },
+        { start: 'preceding', target: 'deliberately' },
+        { start: 'severe', target: 'cooling' },
+        { start: 'therefore', target: 'relevant' },
+        { start: 'grow', target: 'responsibility' },
+        { start: 'picked', target: 'tom' },
+        { start: 'writes', target: 'devil' },
+        { start: 'purchased', target: 'distributed' },
+        { start: 'planets', target: 'discovered' },
+        { start: 'monthly', target: 'social' },
+        { start: 'retail', target: 'hell' },
+        { start: 'prisoners', target: 'which' },
+        { start: 'history', target: 'profits' },
+        { start: 'voting', target: 'sad' },
+        { start: 'cash', target: 'granted' },
+        { start: 'hit', target: 'confronted' },
+        { start: 'lady', target: 'somewhat' },
+        { start: 'velocity', target: 'english' },
+        { start: 'drank', target: 'legend' },
+        { start: 'normally', target: 'shaking' },
+        { start: 'wildlife', target: 'rome' },
+        { start: 'india', target: 'donald' },
+        { start: 'upper', target: 'totally' },
+        { start: 'knows', target: 'friendly' },
+        { start: 'dealt', target: 'facts' },
+        { start: 'pulled', target: 'referred' },
+        { start: 'statement', target: 'night' },
+        { start: 'troubles', target: 'paintings' },
+        { start: 'views', target: 'factors' },
+        { start: 'either', target: 'injured' },
+        { start: 'uses', target: 'millions' },
+        { start: 'detailed', target: 'probability' },
+        { start: 'dartmouth', target: 'artery' },
+        { start: 'tongue', target: 'composition' },
+        { start: 'evil', target: 'faces' },
+        { start: 'eight', target: 'drawing' },
+        { start: 'beef', target: 'badly' },
+        { start: 'reserve', target: 'handled' },
+        { start: 'blowing', target: 'italy' },
+        { start: 'prevented', target: 'principle' },
+        { start: 'banks', target: 'used' },
+        { start: 'extend', target: 'common' },
+        { start: 'psychological', target: 'label' },
+        { start: 'aside', target: 'difficulty' },
+        { start: 'california', target: 'opening' },
+        { start: 'paid', target: 'what' },
+        { start: 'pete', target: 'grains' },
+        { start: 'character', target: 'component' },
+        { start: 'event', target: 'allies' },
+        { start: 'days', target: 'figure' },
+        { start: 'liberals', target: 'preparation' },
+        { start: 'dozen', target: 'questioning' },
+        { start: 'market', target: 'emotions' },
+        { start: 'snapped', target: 'imposed' },
+        { start: 'first', target: 'dust' },
+        { start: 'frozen', target: 'crazy' },
+        { start: 'particle', target: 'sky' },
+        { start: 'douglas', target: 'coming' },
+        { start: 'transfer', target: 'september' },
+        { start: 'food', target: 'kids' },
+        { start: 'enforced', target: 'horn' },
+        { start: 'phil', target: 'motel' },
+        { start: 'prospective', target: 'via' },
+        { start: 'remember', target: 'endless' },
+        { start: 'argument', target: 'solution' },
+        { start: 'some', target: 'limit' },
+        { start: 'seldom', target: 'gather' },
+        { start: 'solve', target: 'denied' },
+        { start: 'miller', target: 'independence' },
+        { start: 'continuous', target: 'plantation' },
+        { start: 'testimony', target: 'canada' },
+        { start: 'shoes', target: 'gear' },
+        { start: 'sixth', target: 'lying' },
+        { start: 'wage', target: 'happened' },
+        { start: 'doc', target: 'turned' },
+        { start: 'indirect', target: 'steele' },
+        { start: 'quality', target: 'ramey' },
+        { start: 'uniform', target: 'earth' },
+        { start: 'effectively', target: 'skilled' },
+        { start: 'coach', target: 'created' },
+        { start: 'assembly', target: 'potential' },
+        { start: 'technique', target: 'occur' },
+        { start: 'add', target: 'mechanism' },
+        { start: 'observers', target: 'washington' },
+        { start: 'holds', target: 'survival' },
+        { start: 'souls', target: 'shining' },
+        { start: 'do', target: 'facts' },
+        { start: 'marked', target: 'racing' },
+        { start: 'conferences', target: 'distances' },
+        { start: 'writes', target: 'stopped' },
+        { start: 'colony', target: 'addition' },
+        { start: 'parties', target: 'revolutionary' },
+        { start: 'residential', target: 'plant' },
+        { start: 'loves', target: 'assistance' },
+        { start: 'limit', target: 'pointed' },
+        { start: 'believe', target: 'paul' },
+        { start: 'training', target: 'if' },
+        { start: 'decisive', target: 'eve' },
+        { start: 'constitutional', target: 'universe' },
+        { start: 'basic', target: 'stems' },
+        { start: 'attempts', target: 'cooperative' },
+        { start: 'infinite', target: 'covering' },
+        { start: 'together', target: 'managed' },
+        { start: 'goal', target: 'route' },
+        { start: 'agreement', target: 'marshall' },
+        { start: 'residence', target: 'nation' },
+        { start: 'wedding', target: 'legend' },
+        { start: 'yellow', target: 'missile' },
+        { start: 'sons', target: 'perhaps' },
+        { start: 'invariably', target: 'leg' },
+        { start: 'thus', target: 'corporations' },
+        { start: 'vote', target: 'post' },
+        { start: 'screen', target: 'sleeping' },
+        { start: 'smell', target: 'raised' },
+        { start: 'dried', target: 'league' },
+        { start: 'dry', target: 'unable' },
+        { start: 'ignored', target: 'observed' },
+        { start: 'rolled', target: 'harbor' },
+        { start: 'accomplished', target: 'maintenance' },
+        { start: 'interested', target: 'alabama' },
+        { start: 'surprise', target: 'wet' },
+        { start: 'fraction', target: 'live' },
+        { start: 'wishes', target: 'mental' },
+        { start: 'central', target: 'loan' },
+        { start: 'bought', target: 'part' },
+        { start: 'dances', target: 'naval' },
+        { start: 'largely', target: 'sex' },
+        { start: 'knife', target: 'exhibit' },
+        { start: 'furniture', target: 'republic' },
+        { start: 'host', target: 'tv' },
+        { start: 'element', target: 'shame' },
+        { start: 'so', target: 'composition' },
+        { start: 'citizen', target: 'stumbled' },
+        { start: 'wash', target: 'protestant' },
+        { start: 'marketing', target: 'sugar' },
+        { start: 'shoes', target: 'agencies' },
+        { start: 'proposal', target: 'automobile' },
+        { start: 'major', target: 'handsome' },
+        { start: 'officials', target: 'guilty' },
+        { start: 'cycle', target: 'wet' },
+        { start: 'driven', target: 'ambassador' },
+        { start: 'mention', target: 'rear' },
+        { start: 'closer', target: 'festival' },
+        { start: 'experts', target: 'troubled' },
+        { start: 'argument', target: 'masters' },
+        { start: 'tribute', target: 'ritual' },
+        { start: 'emperor', target: 'random' },
+        { start: 'drawing', target: 'them' },
+        { start: 'substantial', target: 'traffic' },
+        { start: 'mouth', target: 'p' },
+        { start: 'tons', target: 'starting' },
+        { start: 'piano', target: 'jews' },
+        { start: 'intentions', target: 'rear' },
+        { start: 'thin', target: 'retail' },
+        { start: 'fast', target: 'european' },
+        { start: 'vertex', target: 'formerly' },
+        { start: 'source', target: 'howard' },
+        { start: 'cool', target: 'too' },
+        { start: 'encounter', target: 'june' },
+        { start: 'nineteenth', target: 'lived' },
+        { start: 'air', target: 'atmosphere' },
+        { start: 'volunteers', target: 'voters' },
+        { start: 'our', target: 'restrictions' },
+        { start: 'hired', target: 'loans' },
+        { start: 'crowd', target: 'lengths' },
+        { start: 'god', target: 'guards' },
+        { start: 'formulas', target: 'motel' },
+        { start: 'characterized', target: 'health' },
+        { start: 'rector', target: 'cattle' },
+        { start: 'early', target: 'unit' },
+        { start: 'fact', target: 'junior' },
+        { start: 'connection', target: 'mantle' },
+        { start: 'prestige', target: 'near' },
+        { start: 'wanted', target: 'stories' },
+        { start: 'victor', target: 'she' },
+        { start: 'triumph', target: 'overwhelming' },
+        { start: 'expectations', target: 'alone' },
+        { start: 'latest', target: 'meets' },
+        { start: 'hollywood', target: 'having' },
+        { start: 'speak', target: 'louis' },
+        { start: 'touched', target: 'davis' },
+        { start: 'scotty', target: 'figured' },
+        { start: 'false', target: 'worthy' },
+        { start: 'pope', target: 'refund' },
+        { start: 'powder', target: 'platform' },
+        { start: 'greater', target: 'league' },
+        { start: 'matter', target: 'mathematics' },
+        { start: 'avenue', target: 'charm' },
+        { start: 'churches', target: 'fatal' },
+        { start: 'paused', target: 'killer' },
+        { start: 'meaning', target: 'attacked' },
+        { start: 'anxiety', target: 'security' },
+        { start: 'cuban', target: 'categories' },
+        { start: 'sauce', target: 'knife' },
+        { start: 'numbers', target: 'clothing' },
+        { start: 'joke', target: 'shoes' },
+        { start: 'painting', target: 'grounds' },
+        { start: 'transformation', target: 'wildly' },
+        { start: 'joke', target: 'orchestra' },
+        { start: 'disk', target: 'joined' },
+        { start: 'impressions', target: 'worked' },
+        { start: 'matter', target: 'magnificent' },
+        { start: 'smell', target: 'depths' },
+        { start: 'worse', target: 'guard' },
+        { start: 'involves', target: 'disk' },
+        { start: 'plantation', target: 'acquire' },
+        { start: 'scientists', target: 'stores' },
+        { start: 'increasingly', target: 'fundamental' },
+        { start: 'band', target: 'fitted' },
+        { start: 'wealth', target: 'both' },
+        { start: 'insure', target: 'mature' },
+        { start: 'patients', target: 'occasional' },
+        { start: 'elements', target: 'tradition' },
+        { start: 'filling', target: 'rise' },
+        { start: 'swing', target: 'displayed' },
+        { start: 'visit', target: 'legislative' },
+        { start: 'supposed', target: 'customer' },
+        { start: 'bases', target: 'clark' },
+        { start: 'fell', target: 'weak' },
+        { start: 'errors', target: 'drawn' },
+        { start: 'tall', target: 'flat' },
+        { start: 'evident', target: 'draft' },
+        { start: 'window', target: 'greg' },
+        { start: 'johnnie', target: 's' },
+        { start: 'anybody', target: 'systems' },
+        { start: 'damage', target: 'rates' },
+        { start: 'processes', target: 'fans' },
+        { start: 'patent', target: 'audience' },
+        { start: 'kay', target: 'crawled' },
+        { start: 'university', target: 'dozen' },
+        { start: 'added', target: 'across' },
+        { start: 'shocked', target: 'active' },
+        { start: 'iron', target: 'fort' },
+        { start: 'rapidly', target: 'majority' },
+        { start: 'leading', target: 'blowing' },
+        { start: 'lawyer', target: 'pale' },
+        { start: 'lively', target: 'poems' },
+        { start: 'announcement', target: 'story' },
+        { start: 'exhibit', target: 'patent' },
+        { start: 'fort', target: 'hours' },
+        { start: 'forgive', target: 'hit' },
+        { start: 'felt', target: 'wondered' },
+        { start: 'fantastic', target: 'hundred' },
+        { start: 'distance', target: 'grant' },
+        { start: 'long', target: 'transferred' },
+        { start: 'tactics', target: 'group' },
+        { start: 'skirt', target: 'eight' },
+        { start: 'hit', target: 'flexible' },
+        
+        ];
 
         class TreeNode {
             constructor(word, parent = null) {
@@ -277,13 +780,15 @@
 
         async function fetchWordData(word) {
             const cleanedWord = cleanWord(word);
+            console.log(`Fetching data for word: ${cleanedWord}`);
             try {
                 const response = await fetch(apiUrl + cleanedWord);
                 if (!response.ok) throw new Error('Word not found');
                 const data = await response.json();
+                console.log(`Fetched data for ${cleanedWord}:`, data);
                 return data[0];
             } catch (error) {
-                console.error('Error fetching word data:', error);
+                console.error(`Error fetching word data for ${cleanedWord}:`, error);
                 return null;
             }
         }
@@ -297,6 +802,7 @@
         }
 
         function updateUI() {
+            console.log('Updating UI');
             document.getElementById('start-word').textContent = startWord;
             document.getElementById('target-word').textContent = targetWord;
             document.getElementById('current-word').textContent = currentWord;
@@ -348,6 +854,7 @@
         }
 
         async function goToWord(node) {
+            console.log('Going to word:', node.word);
             if (node === currentNode) return;
             
             currentNode = node;
@@ -361,15 +868,24 @@
             }
             
             updateUI();
-            const wordData = await fetchWordData(currentWord);
+            await updateDefinitionAndWords(currentWord);
+        }
+
+        async function updateDefinitionAndWords(word) {
+            console.log('Updating definition and words for:', word);
+            const wordData = await fetchWordData(word);
             if (wordData) {
                 const definition = cleanText(wordData.meanings[0].definitions[0].definition);
                 document.getElementById('definition').textContent = definition;
                 displayWords(definition.split(/\s+/));
+            } else {
+                document.getElementById('definition').textContent = 'Definition not found.';
+                document.getElementById('clickable-words').innerHTML = '';
             }
         }
 
         async function handleWordClick(word) {
+            console.log('Handling click for word:', word);
             const cleanedWord = cleanWord(word);
             if (cleanedWord === targetWord) {
                 addToHistory(word);
@@ -391,17 +907,11 @@
                 return;
             }
 
-            const wordData = await fetchWordData(word);
-            if (wordData) {
-                const definition = cleanText(wordData.meanings[0].definitions[0].definition);
-                document.getElementById('definition').textContent = definition;
-                displayWords(definition.split(/\s+/));
-            } else {
-                alert('Failed to fetch word data. Please try again.');
-            }
+            await updateDefinitionAndWords(word);
         }
 
         function addToHistory(word) {
+            console.log('Adding to history:', word);
             let childNode = currentNode.findChild(word);
             if (!childNode) {
                 childNode = currentNode.addChild(word);
@@ -410,6 +920,7 @@
         }
 
         function displayWords(words) {
+            console.log('Displaying words:', words);
             const container = document.getElementById('clickable-words');
             container.innerHTML = '';
             words.forEach(word => {
@@ -428,10 +939,43 @@
             });
         }
 
+        function getDailyWordPair() {
+            const today = new Date();
+            const dayOfMonth = today.getDate();
+            return wordPairs[dayOfMonth - 1] || wordPairs[0]; // Use the first pair if the date exceeds the array length
+        }
+
+        function getNextResetTime() {
+            const now = new Date();
+            const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+            return tomorrow.getTime() - now.getTime();
+        }
+
         async function startGame() {
-            // For demonstration, using fixed words. In a real game, you'd randomly select these.
-            startWord = 'hello';
-            targetWord = 'world';
+            console.log('Starting game');
+            const storedGameState = localStorage.getItem('wordGameState');
+            let gameState;
+
+            if (storedGameState) {
+                gameState = JSON.parse(storedGameState);
+                const now = new Date();
+                if (now.getTime() > gameState.nextResetTime) {
+                    gameState = null;
+                }
+            }
+
+            if (!gameState) {
+                const { start: newStartWord, target: newTargetWord } = getDailyWordPair();
+                gameState = {
+                    startWord: newStartWord,
+                    targetWord: newTargetWord,
+                    nextResetTime: Date.now() + getNextResetTime(),
+                };
+                localStorage.setItem('wordGameState', JSON.stringify(gameState));
+            }
+
+            startWord = gameState.startWord;
+            targetWord = gameState.targetWord;
             currentWord = startWord;
             maxAttempts = 1000;
             attemptsLeft = maxAttempts;
@@ -441,15 +985,10 @@
             currentNode = wordTree;
 
             updateUI();
+            await updateDefinitionAndWords(startWord);
 
-            const wordData = await fetchWordData(startWord);
-            if (wordData) {
-                const definition = cleanText(wordData.meanings[0].definitions[0].definition);
-                document.getElementById('definition').textContent = definition;
-                displayWords(definition.split(/\s+/));
-            } else {
-                alert('Failed to start the game. Please refresh the page.');
-            }
+            // Schedule the next game reset
+            setTimeout(startGame, getNextResetTime());
         }
 
         window.onload = startGame;
