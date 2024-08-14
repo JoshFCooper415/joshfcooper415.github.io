@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word<link rel="icon" href="image.png" type="image/icon type"></title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        
+        #game-container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        #game-board {
+            display: inline-grid;
+            grid-template-columns: repeat(5, 60px);
+            grid-gap: 5px;
+            background-color: #4a4a4a;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .tile {
+            width: 60px;
+            height: 60px;
+            background-color: #f9d77e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: move;
+            user-select: none;
+            transition: all 0.3s ease;
+            border-radius: 5px;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .tile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .tile.drag-over {
+            background-color: #fae7b5;
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+        
+        .tile.selected {
+            background-color: #fae7b5;
+            transform: scale(1.05);
+        }
+        
+        .tile.valid-word {
+            animation: pulse 0.5s ease-in-out infinite alternate;
+        }
+        
+        @keyframes pulse {
+            from { background-color: #f9d77e; }
+            to { background-color: #8aff8a; }
+        }
+        
+        .tile.disappearing {
+            animation: disappear 0.5s ease-out;
+        }
+        
+        @keyframes disappear {
+            to {
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+        
+        .tile-score {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        #score {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        
+        #last-word {
+            font-size: 18px;
+            margin-top: 10px;
+            min-height: 27px;
+        }
+        
+        .game-button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .game-button:hover {
+            background-color: #45a049;
+        }
+        
+        .game-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .game-title img {
+            margin-left: 8px;
+            width: 50px; 
+            height: 50px;
+        }
+
+        
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1 class="game-title">
+            Word
+            <img src="\image.png" alt="Word Game Icon">
+        </h1>
+        <div id="game-board"></div>
+        <div id="score">Score: <span id="score-value">100</span></div>
+        <div id="last-word"></div>
+        <button id="shuffle-button" class="game-button">Shuffle (50 points)</button>
+        <button id="new-tiles-button" class="game-button">New Tiles (100 points)</button>
+    </div>
+
+    <script>
+    const boardSize = 5;
+    let selectedTiles = [];
+    let score = 0;
+    const vowelPercentage = 0.25; // 25% vowels
+    const swapCost = 1;
+    const shuffleCost = 50;
+    const newTilesCost = 100;
+    
+    // Letter frequencies and Scrabble-style point values
+    const letterData = {
+        'E': { freq: 0.111607, points: 1 }, 'A': { freq: 0.084966, points: 1 },
+        'R': { freq: 0.075809, points: 1 }, 'I': { freq: 0.075448, points: 1 },
+        'O': { freq: 0.071635, points: 1 }, 'T': { freq: 0.069509, points: 1 },
+        'N': { freq: 0.066544, points: 1 }, 'S': { freq: 0.057351, points: 1 },
+        'L': { freq: 0.054893, points: 1 }, 'C': { freq: 0.045388, points: 3 },
+        'U': { freq: 0.036308, points: 1 }, 'D': { freq: 0.033844, points: 2 },
+        'P': { freq: 0.031671, points: 3 }, 'M': { freq: 0.030129, points: 3 },
+        'H': { freq: 0.030034, points: 4 }, 'G': { freq: 0.024705, points: 2 },
+        'B': { freq: 0.020720, points: 3 }, 'F': { freq: 0.018121, points: 4 },
+        'Y': { freq: 0.017779, points: 4 }, 'W': { freq: 0.012899, points: 4 },
+        'K': { freq: 0.011016, points: 5 }, 'V': { freq: 0.010074, points: 4 },
+        'X': { freq: 0.002902, points: 8 }, 'Z': { freq: 0.002722, points: 10 },
+        'J': { freq: 0.001965, points: 8 }, 'Q': { freq: 0.001962, points: 10 }
+    };
+
+    const vowels = ['A', 'E', 'I', 'O', 'U'];
+    const consonants = Object.keys(letterData).filter(letter => !vowels.includes(letter));
+
+    // Normalize frequencies for vowels and consonants separately
+    const vowelFrequencies = {};
+    const consonantFrequencies = {};
+    let totalVowelFreq = 0;
+    let totalConsonantFreq = 0;
+
+    for (const [letter, data] of Object.entries(letterData)) {
+        if (vowels.includes(letter)) {
+            vowelFrequencies[letter] = data.freq;
+            totalVowelFreq += data.freq;
+        } else {
+            consonantFrequencies[letter] = data.freq;
+            totalConsonantFreq += data.freq;
+        }
+    }
+
+    for (const letter in vowelFrequencies) {
+        vowelFrequencies[letter] /= totalVowelFreq;
+    }
+    for (const letter in consonantFrequencies) {
+        consonantFrequencies[letter] /= totalConsonantFreq;
+    }
+
+    // Custom dictionary (a set of common English words)
+    const dictionary = new Set([
+            "aaron", "abbey", "able", "about", "above", "abu", "abu", "abuse", "ace", "acid", 
+            "acre", "act", "actor", "acts", "acute", "ada", "adam", "adapt", "add", "added", 
+            "admit", "adopt", "adore", "adult", "after", "again", "age", "aged", "agent", "aging", 
+            "ago", "agree", "ahead", "ahmed", "aid", "aim", "air", "aisle", "aka", "aka", 
+            "akin", "alan", "alan", "alarm", "album", "alert", "alex", "alice", "alien", "alike", 
+            "alive", "all", "allah", "allan", "allan", "allen", "alley", "allow", "ally", "ally", 
+            "alone", "along", "alpha", "also", "alt", "altar", "alter", "amber", "amen", "amen", 
+            "amid", "amino", "among", "ample", "amy", "amy", "ana", "ana", "anal", "and", 
+            "andre", "andy", "angel", "anger", "angle", "angry", "anime", "ankle", "ann", "ann", 
+            "anna", "anna", "anne", "annie", "ant", "anti", "anti", "any", "apart", "apex", 
+            "apple", "apply", "april", "arab", "arc", "arch", "are", "area", "arena", "argue", 
+            "arise", "ark", "arm", "armed", "armor", "arms", "army", "arose", "array", "arrow", 
+            "art", "art", "ash", "ashes", "asian", "aside", "ask", "ass", "asset", "ate", 
+            "atlas", "atlas", "atom", "audio", "audit", "aunt", "auto", "ave", "ave", "avoid", 
+            "awake", "award", "aware", "away", "awe", "awful", "axe", "axis", "axis", "aye", 
+            "babe", "baby", "back", "bacon", "bad", "badge", "badly", "bag", "bail", "bait", 
+            "bake", "baked", "baker", "bald", "ball", "ban", "ban", "band", "bang", "bank", 
+            "bar", "bare", "bare", "bark", "barn", "baron", "barry", "barry", "base", "based", 
+            "bases", "bash", "basic", "basin", "basis", "bass", "bat", "bat", "batch", "bath", 
+            "bath", "bats", "bay", "beach", "beam", "bean", "bear", "beard", "beast", "beat", 
+            "beck", "beck", "bed", "bee", "bee", "beef", "been", "beer", "bees", "beg", 
+            "begin", "begun", "being", "bell", "bella", "belle", "belly", "below", "belt", "ben", 
+            "ben", "bench", "bend", "bent", "berry", "best", "bet", "beta", "beta", "beth", 
+            "beth", "betty", "betty", "bias", "bible", "bid", "big", "bike", "bill", "bill", 
+            "billy", "billy", "bin", "bind", "bingo", "bird", "birth", "bit", "bitch", "bite", 
+            "black", "blade", "blah", "blair", "blair", "blake", "blake", "blame", "blank", "blast", 
+            "bleed", "blend", "bless", "blind", "blink", "bliss", "block", "blood", "bloom", "blow", 
+            "blown", "blue", "blues", "blunt", "board", "boat", "bob", "bob", "bobby", "bobby", 
+            "body", "boil", "bold", "bolt", "bomb", "bon", "bon", "bond", "bone", "bonus", 
+            "boo", "book", "boom", "boost", "boot", "booth", "boots", "bore", "boris", "born", 
+            "boss", "bot", "both", "bound", "bout", "bow", "bowl", "bowls", "box", "boxer", 
+            "boxer", "boy", "boyd", "bra", "brace", "brad", "brad", "brain", "brake", "brand", 
+            "brass", "brave", "bravo", "bread", "break", "bred", "breed", "brett", "brett", "brian", 
+            "brick", "bride", "bride", "brief", "bring", "broad", "brock", "broke", "brook", "brown", 
+            "bruce", "bruno", "brush", "bryan", "buck", "bud", "bud", "buddy", "bug", "build", 
+            "built", "bulk", "bull", "bully", "bum", "bump", "bunch", "bunny", "burke", "burn", 
+            "burnt", "burst", "bury", "bus", "bush", "bust", "busy", "but", "butt", "buy", 
+            "buyer", "buzz", "bye", "cab", "cabin", "cable", "cage", "cairo", "cake", "cal", 
+            "calf", "call", "calm", "cam", "came", "came", "camp", "can", "canal", "candy", 
+            "cane", "canon", "cant", "cap", "cape", "cape", "car", "card", "care", "cargo", 
+            "carl", "carl", "carol", "carol", "carr", "carry", "carry", "cart", "case", "case", 
+            "casey", "cash", "cast", "cat", "cat", "catch", "cause", "cave", "cease", "cedar", 
+            "cell", "cent", "cha", "chad", "chain", "chair", "champ", "chang", "chang", "chaos", 
+            "charm", "chart", "chase", "chat", "cheap", "cheat", "check", "cheek", "cheer", "chef", 
+            "chen", "chess", "chest", "chi", "chick", "chief", "child", "chile", "chili", "chill", 
+            "chin", "chin", "china", "chip", "chip", "chips", "chloe", "choir", "choke", "chop", 
+            "chose", "chris", "chuck", "chuck", "city", "civic", "civil", "claim", "clan", "clara", 
+            "clark", "clark", "clash", "class", "clay", "clay", "clean", "clear", "clerk", "click", 
+            "cliff", "cliff", "climb", "clip", "clips", "clock", "close", "cloth", "cloud", "clown", 
+            "club", "clue", "clyde", "coach", "coal", "coast", "coat", "cock", "cod", "code", 
+            "cohen", "coil", "coin", "coke", "col", "cola", "cola", "cold", "cole", "cole", 
+            "colin", "colin", "color", "coma", "come", "comes", "comic", "con", "cone", "congo", 
+            "cook", "cool", "cop", "cope", "copy", "coral", "cord", "core", "corey", "cork", 
+            "corn", "corp", "corps", "cos", "cost", "costa", "couch", "cough", "could", "count", 
+            "coup", "court", "cover", "covid", "cow", "cox", "crab", "crack", "craft", "craig", 
+            "crane", "crap", "crash", "crawl", "crazy", "cream", "creed", "creek", "creek", "creep", 
+            "crew", "cried", "crime", "crisp", "crop", "cross", "crow", "crowd", "crown", "crude", 
+            "cruel", "crush", "crust", "cry", "cuba", "cuban", "cube", "cubic", "cue", "cult", 
+            "cum", "cup", "curb", "cure", "curry", "curse", "curve", "cut", "cute", "cycle", 
+            "cyrus", "cyrus", "czech", "dad", "daddy", "daily", "dairy", "daisy", "dale", "dale", 
+            "dam", "dame", "damn", "damon", "dan", "dan", "dana", "dance", "danny", "dare", 
+            "dark", "dash", "data", "date", "dave", "david", "dawn", "dawn", "day", 
+            "days", "dead", "deaf", "deal", "dealt", "dean", "dean", "dear", "death", "debt", 
+            "debut", "decay", "deck", "dee", "deed", "deep", "deer", "del", "delay", "delhi", 
+            "delta", "delta", "demon", "demon", "den", "dense", "deny", "depot", "depth", "derby", 
+            "derby", "derek", "desk", "dev", "devil", "devon", "dial", "diana", "diane", "diary", 
+            "dice", "dick", "dick", "did", "didnt", "die", "diego", "diet", "dig", "digit", 
+            "dip", "dirt", "dirty", "dis", "disc", "dish", "disk", "ditch", "dive", "doc", 
+            "dock", "dodge", "doe", "does", "dog", "dogs", "doing", "doll", "dom", "dome", 
+            "don", "don", "done", "dong", "donna", "donna", "donor", "dont", "doom", "door", 
+            "dope", "dose", "dot", "dot", "doubt", "doug", "dough", "down", "doyle", "dozen", 
+            "draft", "drag", "drain", "drake", "drama", "drank", "draw", "drawn", "dream", "dress", 
+            "drew", "drew", "dried", "drift", "drill", "drink", "drive", "drone", "drop", "drove", 
+            "drug", "drum", "drunk", "dry", "dual", "duck", "dude", "due", "dug", "duke", 
+            "duke", "dull", "dumb", "dump", "duo", "dust", "dutch", "dutch", "duty", "dwarf", 
+            "dye", "dying", "dylan", "each", "eager", "eagle", "ear", "earl", "earl", "early", 
+            "earn", "earth", "ease", "east", "easy", "eat", "eaten", "eats", "echo", "eddie", 
+            "eden", "edgar", "edge", "edit", "egg", "ego", "egypt", "eight", "elbow", "elder", 
+            "elect", "eli", "elite", "ellen", "else", "elvis", "emily", "emma", "emma", "empty", 
+            "end", "ended", "enemy", "enjoy", "enter", "entry", "envy", "epic", "equal", "era", 
+            "eric", "eric", "error", "essay", "essex", "ethan", "eva", "evan", "eve", "eve", 
+            "even", "event", "ever", "every", "evil", "exact", "exam", "excel", "exile", "exist", 
+            "exit", "extra", "eye", "eyed", "face", "faced", "fact", "fade", "faded", "fail", 
+            "faint", "fair", "fairy", "faith", "fake", "fall", "false", "fame", "fan", "fan", 
+            "fancy", "far", "fare", "farm", "fast", "fat", "fatal", "fate", "fatty", "fault", 
+            "favor", "fear", "feast", "feat", "fed", "fee", "feed", "feel", "felix", "fell", 
+            "felt", "fence", "ferry", "fest", "fever", "few", "fiber", "fiber", "field", "fifth", 
+            "fifty", "fig", "fight", "file", "fill", "film", "fin", "fin", "final", "find", 
+            "fine", "finn", "fire", "fired", "firm", "first", "fish", "fist", "fit", "five", 
+            "fix", "fixed", "flag", "flame", "flash", "flat", "fled", "flee", "fleet", "flesh", 
+            "flew", "flex", "flint", "flip", "float", "flood", "floor", "flora", "flora", "flour", 
+            "flow", "flown", "floyd", "flu", "fluid", "flush", "fly", "foam", "focus", "fog", 
+            "foil", "fold", "folk", "font", "food", "fool", "foot", "for", "for", "force", 
+            "ford", "forge", "fork", "form", "fort", "forth", "forty", "forum", "foul", "found", 
+            "four", "fox", "frame", "frank", "frank", "fraud", "freak", "fred", "free", "freed", 
+            "fresh", "fried", "frog", "from", "front", "frost", "fruit", "fry", "fuel", "full", 
+            "fully", "fun", "fund", "funds", "funk", "funny", "fur", "fur", "fury", "gain", 
+            "gains", "gal", "game", "gamma", "gang", "gap", "gary", "gas", "gate", "gauge", 
+            "gave", "gay", "gaze", "gear", "gel", "gem", "gen", "gene", "gene", "genre", 
+            "genus", "get", "ghost", "giant", "gif", "gift", "gig", "girl", "give", "given", 
+            "glad", "glass", "glen", "glen", "glenn", "globe", "glory", "glove", "glow", "glue", 
+            "goal", "goat", "god", "god", "goes", "going", "gold", "gold", "golf", "gone", 
+            "good", "goods", "goose", "gore", "gosh", "got", "gown", "grab", "grace", "grace", 
+            "grade", "grain", "gram", "grand", "grant", "grant", "grape", "graph", "grasp", "grass", 
+            "grave", "gray", "great", "greed", "greek", "green", "greet", "greg", "grew", "grey", 
+            "grid", "grief", "grill", "grind", "grip", "gross", "group", "grove", "grow", "grown", 
+            "guard", "guess", "guest", "guide", "guild", "guilt", "gulf", "gulf", "gum", "gum", 
+            "gun", "guru", "gut", "guy", "guy", "gym", "habit", "hack", "had", "hail", 
+            "hair", "hairy", "half", "hall", "halo", "halt", "ham", "han", "hand", "handy", 
+            "hank", "hank", "hans", "happy", "hard", "hardy", "harm", "harry", "harry", "harsh", 
+            "hart", "hat", "hatch", "hate", "haul", "have", "haven", "hawk", "hay", "head", 
+            "heal", "hear", "heart", "heat", "heath", "heavy", "heck", "hedge", "heel", "heir", 
+            "helen", "hell", "hello", "help", "hence", "henry", "henry", "her", "herb", "herb", 
+            "herd", "here", "hero", "hers", "hey", "hide", "high", "hike", "hill", "him", 
+            "hindi", "hindu", "hint", "hip", "hire", "hired", "his", "hit", "hobby", "hold", 
+            "hole", "holly", "holly", "holy", "home", "homer", "homer", "hon", "honda", "honey", 
+            "hong", "honor", "hood", "hook", "hop", "hope", "hoped", "horn", "horny", "horse", 
+            "hose", "host", "hot", "hotel", "hour", "house", "how", "hub", "hug", "huge", 
+            "hugh", "hugo", "huh", "hulk", "hull", "human", "humor", "hung", "hunt", "hurry", 
+            "hurt", "hut", "ian", "ice", "icon", "idaho", "idea", "ideal", "idiot", "idle", 
+            "idol", "ill", "image", "imply", "inch", "index", "india", "ing", "ing", "ink", 
+            "inn", "inner", "input", "inter", "into", "ion", "iowa", "ira", "iran", "iraq", 
+            "iraqi", "irene", "irene", "iris", "irish", "iron", "irony", "isaac", "isis", "islam", 
+            "isle", "iso", "issue", "item", "its", "ivan", "ivory", "ivy", "jack", "jack", 
+            "jacob", "jade", "jail", "jake", "jake", "jam", "jam", "james", "jamie", "jan", 
+            "jane", "jane", "janet", "japan", "japan", "jar", "jared", "jason", "java", "jaw", 
+            "jay", "jay", "jazz", "jean", "jean", "jeans", "jeep", "jeff", "jeff", "jelly", 
+            "jenny", "jenny", "jerk", "jerry", "jerry", "jesse", "jesus", "jet", "jew", "jill", 
+            "jim", "jimmy", "jimmy", "jin", "joan", "job", "job", "joe", "joe", "joel", 
+            "joey", "joey", "john", "join", "joint", "joke", "joker", "jon", "jonas", "jones", 
+            "jong", "jose", "josh", "josh", "joy", "joyce", "juan", "judge", "judge", "judy", 
+            "juice", "juicy", "julia", "julie", "july", "jump", "jun", "june", "june", "junk", 
+            "jury", "just", "kai", "karen", "karl", "karma", "kate", "katie", "kay", "kay", 
+            "keen", "keep", "keith", "kelly", "kelly", "ken", "ken", "kent", "kent", "kept", 
+            "kerry", "kerry", "kevin", "key", "khan", "kick", "kids", "kill", "kim", "kim", 
+            "kind", "king", "king", "kirk", "kirk", "kiss", "kit", "kit", "kitty", "kitty", 
+            "knee", "knew", "knife", "knock", "knot", "know", "known", "kurt", "kyle", "kyle", 
+            "lab", "label", "labor", "lace", "lack", "lad", "laden", "lady", "laid", "lake", 
+            "lamb", "lame", "lamp", "lance", "lance", "land", "lane", "lap", "large", "larry", 
+            "larry", "las", "laser", "last", "late", "later", "latin", "laugh", "laura", "laura", 
+            "lava", "law", "lawn", "lay", "layer", "lazy", "lead", "lead", "leads", "leaf", 
+            "leak", "lean", "leap", "learn", "lease", "least", "leave", "led", "lee", "lee", 
+            "left", "leg", "legal", "legit", "leigh", "lemon", "lend", "lens", "lent", "lent", 
+            "leo", "leon", "les", "less", "let", "level", "levy", "lewis", "lewis", "liar", 
+            "lick", "lid", "lie", "lied", "life", "lift", "light", "like", "lily", "limb", 
+            "lime", "limit", "lin", "lin", "linda", "line", "lined", "liner", "link", "links", 
+            "lion", "lip", "lisa", "list", "list", "lit", "live", "lived", "liver", "liz", 
+            "lloyd", "load", "loan", "lobby", "local", "lock", "lodge", "log", "logic", "lone", 
+            "long", "look", "loop", "loose", "lord", "lord", "lose", "loser", "loss", "lost", 
+            "lot", "lot", "lots", "lou", "loud", "louis", "love", "lover", "low", "lower", 
+            "loyal", "luck", "lucky", "lucy", "lucy", "luis", "luke", "luke", "lump", "lunar", 
+            "lunch", "lung", "lust", "lying", "lynch", "lynn", "lyon", "mac", "mac", "mack", 
+            "macro", "mad", "made", "mag", "magic", "maid", "mail", "main", "maine", "major", 
+            "major", "make", "maker", "male", "male", "mall", "man", "manga", "mann", "manor", 
+            "many", "map", "maple", "mar", "mar", "marc", "marc", "march", "march", "marco", 
+            "marco", "maria", "maria", "marie", "mario", "mark", "mark", "marry", "mars", "marsh", 
+            "marsh", "mary", "mary", "mask", "mason", "mason", "mass", "mass", "mat", "mat", 
+            "match", "mate", "math", "matt", "max", "may", "may", "maya", "maya", "maybe", 
+            "mayo", "mayor", "meal", "mean", "meant", "meat", "medal", "media", "media", "meet", 
+            "mel", "melt", "memo", "men", "menu", "mercy", "mere", "merge", "merit", "merry", 
+            "mesh", "mess", "messy", "met", "meta", "metal", "meter", "miami", "mice", "mick", 
+            "mick", "micro", "mid", "midst", "might", "mike", "mike", "mil", "mil", "milan", 
+            "mild", "mile", "miles", "milk", "mill", "min", "mind", "mine", "mines", "minor", 
+            "mint", "minus", "miss", "mitch", "mix", "mixed", "mob", "mock", "mod", "mode", 
+            "model", "mold", "molly", "molly", "mommy", "mon", "mon", "money", "monk", "month", 
+            "mood", "moody", "moon", "moore", "moral", "more", "moron", "moses", "moss", "most", 
+            "motor", "motto", "mount", "mouse", "mouth", "move", "movie", "mrs", "much", "mud", 
+            "mug", "mum", "music", "must", "myth", "nail", "naive", "naked", "nam", "name", 
+            "nancy", "nancy", "nap", "nash", "nasty", "nat", "nate", "naval", "navy", "nazi", 
+            "near", "neat", "neck", "ned", "need", "needs", "negro", "negro", "neil", "neo", 
+            "nepal", "nerve", "nest", "net", "net", "never", "new", "newly", "news", "next", 
+            "nice", "nice", "niche", "nick", "nick", "niece", "nigel", "night", "nina", "nine", 
+            "ninja", "ninth", "noah", "noble", "nod", "node", "noise", "non", "none", "noon", 
+            "nope", "nor", "norm", "norm", "north", "nose", "not", "notch", "note", "noted", 
+            "nova", "novel", "now", "nude", "null", "nurse", "nut", "oak", "oath", "obey", 
+            "occur", "ocean", "odd", "odds", "odds", "off", "offer", "often", "ohio", "oil", 
+            "old", "old", "older", "ole", "olive", "olive", "omar", "omega", "once", "one", 
+            "onion", "only", "onset", "onto", "open", "opera", "opt", "oral", "orbit", "order", 
+            "ore", "organ", "oscar", "other", "ought", "ounce", "our", "ours", "out", "outer", 
+            "oval", "oven", "over", "owe", "owen", "owing", "owl", "own", "owner", "pablo", 
+            "pablo", "pac", "pace", "pace", "pack", "pact", "pad", "page", "page", "pain", 
+            "paint", "pair", "pal", "pale", "palm", "pan", "pan", "panel", "panic", "pants", 
+            "papa", "paper", "par", "para", "paris", "park", "part", "part", "party", "pass", 
+            "past", "paste", "pat", "pat", "patch", "path", "paul", "paula", "pause", "pay", 
+            "peace", "peach", "peak", "pearl", "pedro", "pedro", "pee", "peek", "peel", "peer", 
+            "pen", "penis", "penny", "penny", "per", "per", "perry", "perry", "peru", "pet", 
+            "pete", "pete", "peter", "peter", "petty", "phase", "phil", "phone", "photo", "piano", 
+            "pic", "pick", "pie", "piece", "pier", "pig", "pile", "pill", "pilot", "pilot", 
+            "pin", "pinch", "pine", "ping", "ping", "pink", "pipe", "piss", "pit", "pitch", 
+            "pity", "pizza", "place", "plain", "plan", "plane", "plant", "plate", "play", "plaza", 
+            "plea", "plot", "plug", "plus", "pod", "poem", "poet", "point", "poker", "polar", 
+            "pole", "pole", "poll", "poll", "polo", "pond", "pony", "pool", "poor", "pop", 
+            "pop", "pope", "porch", "pork", "port", "pose", "post", "pot", "pound", "pour", 
+            "power", "prank", "pray", "prep", "press", "prey", "price", "price", "pride", "prime", 
+            "print", "prior", "prize", "pro", "probe", "prof", "prone", "proof", "prop", "props", 
+            "prose", "prove", "proxy", "pub", "pull", "pulse", "pump", "punch", "punk", "pupil", 
+            "puppy", "pure", "purse", "push", "pussy", "put", "quad", "queen", "queer", "quest", 
+            "queue", "quick", "quiet", "quit", "quite", "quiz", "quo", "quote", "race", "rack", 
+            "radar", "radio", "rage", "raid", "rail", "rain", "rainy", "raise", "rally", "ralph", 
+            "ralph", "ram", "ram", "ramp", "ran", "ran", "ranch", "rand", "rand", "randy", 
+            "randy", "rang", "range", "rank", "rap", "rape", "rapid", "rare", "rat", "rate", 
+            "rated", "ratio", "raven", "raw", "ray", "ray", "razor", "reach", "react", "read", 
+            "ready", "real", "real", "realm", "rear", "rebel", "red", "red", "reed", "reef", 
+            "ref", "refer", "reid", "reign", "relax", "relay", "rely", "remix", "renew", "rent", 
+            "rep", "reply", "reset", "rest", "rev", "rex", "rex", "rice", "rich", "rich", 
+            "rick", "rick", "ricky", "rid", "ride", "rider", "ridge", "rifle", "rig", "right", 
+            "rigid", "riley", "rim", "ring", "rio", "rio", "riot", "rip", "rise", "risen", 
+            "risk", "risky", "rita", "rita", "rival", "river", "road", "roar", "roast", "rob", 
+            "rob", "robin", "robin", "robot", "rock", "rocky", "rod", "rod", "rode", "roger", 
+            "roger", "rogue", "rogue", "role", "roll", "roman", "rome", "romeo", "ron", "roof", 
+            "room", "root", "root", "rope", "rory", "rosa", "rose", "ross", "ross", "rot", 
+            "rough", "round", "route", "rover", "row", "roy", "royal", "rub", "ruby", "rude", 
+            "rug", "rugby", "ruin", "rule", "ruler", "rumor", "run", "rural", "rush", "rust", 
+            "ruth", "ruth", "sack", "sad", "sadly", "safe", "saga", "sage", "said", "sail", 
+            "saint", "sake", "salad", "sale", "sally", "sally", "salon", "salt", "salty", "sam", 
+            "sam", "same", "san", "san", "sand", "sandy", "sandy", "sang", "sank", "santa", 
+            "sara", "sarah", "sat", "satan", "satan", "sauce", "save", "saved", "saw", "say", 
+            "scale", "scam", "scan", "scar", "scare", "scary", "scene", "scent", "scope", "score", 
+            "scots", "scott", "scout", "scrap", "screw", "scum", "sea", "seal", "sean", "seat", 
+            "sec", "see", "seed", "seek", "seem", "seen", "seize", "self", "sell", "semi", 
+            "sen", "send", "sense", "sent", "sept", "sept", "serum", "serve", "set", "seth", 
+            "seth", "setup", "seven", "sex", "sexy", "shade", "shady", "shaft", "shah", "shake", 
+            "shall", "shame", "shane", "shape", "shape", "share", "shark", "sharp", "shave", "shaw", 
+            "shaw", "shawn", "she", "shed", "sheep", "sheer", "sheet", "shelf", "shell", "shift", 
+            "shine", "shiny", "ship", "shirt", "shock", "shoe", "shook", "shoot", "shop", "shore", 
+            "short", "shot", "shout", "show", "shown", "shut", "shy", "sick", "side", "sided", 
+            "sides", "siege", "sigh", "sight", "sign", "silk", "silly", "silva", "sim", "simon", 
+            "sin", "since", "sing", "singh", "sink", "sir", "sir", "sit", "site", "six", 
+            "sixth", "sixty", "size", "sized", "sizes", "skate", "ski", "skies", "skill", "skin", 
+            "skip", "skip", "skirt", "skull", "sky", "slack", "slam", "slap", "slate", "slave", 
+            "slave", "sleep", "slept", "slice", "slick", "slide", "slim", "slip", "slope", "slot", 
+            "slow", "slut", "small", "smart", "smash", "smell", "smile", "smith", "smoke", "snack", 
+            "snake", "snap", "sneak", "snow", "snow", "soap", "sober", "soda", "sofa", "sofia", 
+            "soft", "soil", "solar", "sold", "sole", "solid", "solo", "solve", "some", "son", 
+            "son", "song", "sonic", "sons", "soon", "sore", "sorry", "sort", "soul", "sound", 
+            "soup", "sour", "south", "south", "spa", "space", "space", "span", "spare", "spark", 
+            "speak", "spear", "speed", "spell", "spend", "spent", "sperm", "spice", "spicy", "spike", 
+            "spike", "spill", "spin", "spine", "spit", "spite", "split", "spoil", "spoke", "spoon", 
+            "sport", "spot", "spray", "spy", "spy", "squad", "sri", "sri", "stab", "stack", 
+            "staff", "stage", "stain", "stake", "stall", "stamp", "stan", "stand", "star", "star", 
+            "stare", "stark", "start", "state", "state", "stay", "stays", "steak", "steal", "steam", 
+            "steel", "steep", "steer", "stem", "step", "stern", "stern", "steve", "stick", "stiff", 
+            "still", "sting", "stir", "stock", "stoke", "stole", "stone", "stone", "stood", "stop", 
+            "store", "storm", "story", "stove", "strap", "straw", "stray", "strip", "stuck", "stud", 
+            "study", "stuff", "stunt", "style", "sub", "such", "suck", "sudan", "sue", "sue", 
+            "sugar", "suit", "suite", "sum", "sun", "sung", "sung", "sunk", "sunny", "super", 
+            "sur", "sure", "surf", "surge", "susan", "swamp", "swan", "swap", "swear", "sweat", 
+            "sweep", "sweet", "swept", "swift", "swim", "swing", "swiss", "swiss", "sword", "sworn", 
+            "sync", "syrup", "tab", "tab", "table", "tag", "tail", "take", "taken", "tale", 
+            "tales", "talk", "tall", "tamil", "tan", "tank", "tap", "tape", "tape", "task", 
+            "taste", "tasty", "tate", "tax", "taxi", "tea", "teach", "team", "tear", "tech", 
+            "tech", "ted", "ted", "teddy", "tee", "teen", "teens", "teeth", "tell", "temp", 
+            "tempo", "ten", "tend", "tense", "tent", "tenth", "term", "terry", "terry", "test", 
+            "texas", "text", "thai", "than", "thank", "that", "thats", "the", "the", "thee", 
+            "theft", "their", "them", "theme", "then", "there", "these", "they", "thick", "thief", 
+            "thigh", "thin", "thing", "think", "think", "third", "this", "tho", "tho", "those", 
+            "those", "thou", "three", "threw", "throw", "thumb", "thus", "thy", "tick", "tidal", 
+            "tide", "tie", "tied", "tier", "tiger", "tight", "til", "tile", "till", "tim", 
+            "time", "times", "tin", "tina", "tiny", "tip", "tire", "tired", "title", "toast", 
+            "today", "todd", "toe", "token", "told", "toll", "tom", "tomb", "tommy", "tommy", 
+            "ton", "tone", "tony", "tony", "too", "took", "tool", "tooth", "top", "topic", 
+            "tops", "torch", "tore", "torn", "tory", "tory", "toss", "total", "touch", "tough", 
+            "tour", "tow", "towel", "tower", "town", "toxic", "toy", "trace", "track", "tract", 
+            "tracy", "trade", "trail", "train", "trap", "traps", "trash", "tray", "treat", "tree", 
+            "trek", "trend", "trent", "tri", "trial", "tribe", "trick", "tried", "trim", "trio", 
+            "trio", "trip", "troll", "trout", "troy", "troy", "truck", "true", "truly", "trump", 
+            "trunk", "trust", "truth", "try", "tub", "tube", "tumor", "tune", "tuned", "turbo", 
+            "turbo", "turf", "turn", "turns", "tweet", "twice", "twin", "twist", "two", "tyler", 
+            "type", "ugh", "ugly", "ultra", "uncle", "under", "union", "unit", "unite", "unity", 
+            "until", "unto", "upon", "upper", "upset", "urban", "urban", "urge", "urine", "usage", 
+            "use", "used", "user", "usual", "utah", "utter", "vague", "vain", "val", "valid", 
+            "value", "valve", "van", "van", "vary", "vast", "vault", "vein", "vent", "venue", 
+            "venus", "vera", "verb", "verse", "very", "vest", "vet", "via", "vic", "vice", 
+            "vice", "video", "view", "villa", "vince", "vine", "vinyl", "vip", "viral", "virus", 
+            "visa", "visit", "vista", "vital", "vivid", "vocal", "vodka", "vogue", "voice", "void", 
+            "vol", "vote", "vote", "voter", "wade", "wade", "wage", "wages", "wagon", "waist", 
+            "wait", "wake", "walk", "wall", "walsh", "walt", "walt", "wan", "wang", "want", 
+            "war", "ward", "warm", "warn", "was", "wash", "waste", "watch", "water", "wave", 
+            "wave", "wax", "way", "wayne", "ways", "weak", "wear", "web", "wee", "weed", 
+            "week", "weigh", "weird", "well", "welsh", "welsh", "wendy", "went", "were", "west", 
+            "wet", "whale", "what", "whats", "wheat", "wheel", "when", "where", "which", "while", 
+            "whip", "white", "who", "whoa", "whole", "whom", "whore", "whose", "why", "wide", 
+            "widow", "width", "wife", "wild", "will", "will", "win", "win", "wind", "wind", 
+            "wine", "wing", "wipe", "wire", "wired", "wise", "wish", "wit", "witch", "with", 
+            "woke", "wolf", "wolf", "woman", "won", "wont", "woo", "wood", "woody", "woody", 
+            "wool", "word", "wore", "work", "works", "world", "worm", "worn", "worry", "worse", 
+            "worst", "worth", "would", "wound", "wow", "wrap", "wrath", "wreck", "wrist", "write", 
+            "wrong", "wrote", "yacht", "yahoo", "yahoo", "yale", "yale", "yang", "yard", "yea", 
+            "yeah", "year", "yell", "yemen", "yen", "yep", "yes", "yet", "yield", "yoga", 
+            "york", "you", "young", "your", "yours", "youth", "yuan", "yuan", "zach", "zen", 
+            "zero", "zip", "zone", "zoo", "zoom"
+        ]);
+
+    function getRandomLetter(isVowel) {
+        const frequencies = isVowel ? vowelFrequencies : consonantFrequencies;
+        const rand = Math.random();
+        let cumulativeProbability = 0;
+        for (const [letter, frequency] of Object.entries(frequencies)) {
+            cumulativeProbability += frequency;
+            if (rand < cumulativeProbability) {
+                return letter;
+            }
+        }
+        return isVowel ? 'E' : 'T'; // Fallback to most common vowel/consonant
+    }
+
+    function createBoard() {
+        const gameBoard = document.getElementById('game-board');
+        gameBoard.innerHTML = '';
+        const totalTiles = boardSize * boardSize;
+        const vowelCount = Math.round(totalTiles * vowelPercentage);
+        const consonantCount = totalTiles - vowelCount;
+        
+        const letters = [
+            ...Array(vowelCount).fill().map(() => getRandomLetter(true)),
+            ...Array(consonantCount).fill().map(() => getRandomLetter(false))
+        ];
+        
+        // Shuffle the letters
+        for (let i = letters.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [letters[i], letters[j]] = [letters[j], letters[i]];
+        }
+        
+        letters.forEach((letter, index) => {
+            const tile = document.createElement('div');
+            tile.className = 'tile';
+            tile.innerHTML = `${letter}<span class="tile-score">${letterData[letter].points}</span>`;
+            tile.draggable = true;
+            tile.id = `tile-${index}`;
+            tile.addEventListener('dragstart', dragStart);
+            tile.addEventListener('dragover', dragOver);
+            tile.addEventListener('drop', drop);
+            tile.addEventListener('dragenter', dragEnter);
+            tile.addEventListener('dragleave', dragLeave);
+            tile.addEventListener('touchstart', touchStart);
+            tile.addEventListener('click', handleClick);
+            gameBoard.appendChild(tile);
+        });
+        
+        checkForWords();
+        updateButtons();
+    }
+    
+    let touchStartTime;
+    let touchStartX;
+    let touchStartY;
+
+    function touchStart(e) {
+        touchStartTime = Date.now();
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    }
+
+    function handleClick(e) {
+        const clickDuration = Date.now() - touchStartTime;
+        const distanceMoved = Math.sqrt(
+            Math.pow(e.clientX - touchStartX, 2) + 
+            Math.pow(e.clientY - touchStartY, 2)
+        );
+
+        // If it's a short tap without much movement, treat it as a selection
+        if (clickDuration < 200 && distanceMoved < 10) {
+            selectTile(e.target);
+        }
+    }
+
+    function selectTile(tile) {
+        if (selectedTiles.length === 0) {
+            tile.classList.add('selected');
+            selectedTiles.push(tile);
+        } else if (selectedTiles.length === 1) {
+            if (selectedTiles[0] === tile) {
+                // Deselect if the same tile is tapped twice
+                tile.classList.remove('selected');
+                selectedTiles = [];
+            } else if (isAdjacent(selectedTiles[0], tile)) {
+                swapTiles(selectedTiles[0], tile);
+                selectedTiles[0].classList.remove('selected');
+                selectedTiles = [];
+                checkForWords();
+            } else {
+                // If not adjacent, select the new tile instead
+                selectedTiles[0].classList.remove('selected');
+                tile.classList.add('selected');
+                selectedTiles = [tile];
+            }
+        }
+    }
+
+    function isAdjacent(tile1, tile2) {
+        const index1 = Array.from(tile1.parentNode.children).indexOf(tile1);
+        const index2 = Array.from(tile2.parentNode.children).indexOf(tile2);
+        const row1 = Math.floor(index1 / boardSize);
+        const col1 = index1 % boardSize;
+        const row2 = Math.floor(index2 / boardSize);
+        const col2 = index2 % boardSize;
+        return (Math.abs(row1 - row2) + Math.abs(col1 - col2) === 1);
+    }
+
+    function swapTiles(tile1, tile2) {
+        const tempInnerHTML = tile1.innerHTML;
+        tile1.innerHTML = tile2.innerHTML;
+        tile2.innerHTML = tempInnerHTML;
+
+        // Add a brief animation to emphasize the swap
+        tile1.style.transform = 'scale(1.1)';
+        tile2.style.transform = 'scale(1.1)';
+        setTimeout(() => {
+            tile1.style.transform = '';
+            tile2.style.transform = '';
+        }, 200);
+
+        // Deduct the swap cost
+        score -= swapCost;
+        updateScore();
+    }
+    
+    function dragStart(e) {
+        e.dataTransfer.setData('text/plain', e.target.id);
+        e.target.style.opacity = '0.5';
+    }
+    
+    function dragOver(e) {
+        e.preventDefault();
+    }
+    
+    function dragEnter(e) {
+        e.preventDefault();
+        e.target.classList.add('drag-over');
+    }
+    
+    function dragLeave(e) {
+        e.target.classList.remove('drag-over');
+    }
+    
+    function drop(e) {
+        e.preventDefault();
+        const id = e.dataTransfer.getData('text');
+        const draggableElement = document.getElementById(id);
+        const dropzone = e.target;
+    
+        // Swap the tiles
+        if (dropzone.classList.contains('tile') && draggableElement !== dropzone) {
+            const tempInnerHTML = dropzone.innerHTML;
+            dropzone.innerHTML = draggableElement.innerHTML;
+            draggableElement.innerHTML = tempInnerHTML;
+    
+            // Deduct the swap cost
+            score -= swapCost;
+            updateScore();
+    
+            checkForWords();
+        }
+    
+        draggableElement.style.opacity = '1';
+        dropzone.classList.remove('drag-over');
+    }
+
+
+
+    function checkForWords() {
+        const bestWord = findBestWord();
+        if (bestWord) {
+            const wordString = bestWord.map(tile => tile.textContent.charAt(0)).join('');
+            const wordScore = bestWord.reduce((sum, tile) => sum + letterData[tile.textContent.charAt(0)].points, 0);
+            
+            score += wordScore;
+            updateScore();
+            document.getElementById('last-word').textContent = `Last word: ${wordString} (+${wordScore} points)`;
+            
+            bestWord.forEach(tile => {
+                tile.classList.add('valid-word');
+            });
+            
+            // Delay the replacement of tiles
+            setTimeout(() => {
+                bestWord.forEach(tile => {
+                    tile.classList.remove('valid-word');
+                    tile.classList.add('disappearing');
+                    setTimeout(() => {
+                        tile.classList.remove('disappearing');
+                        const newLetter = vowels.includes(tile.textContent.charAt(0)) ? getRandomLetter(true) : getRandomLetter(false);
+                        tile.innerHTML = `${newLetter}<span class="tile-score">${letterData[newLetter].points}</span>`;
+                    }, 500);
+                });
+                // Check for new words after all tiles have been replaced
+                setTimeout(checkForWords, 600);
+            }, 1000);
+        }
+        updateButtons();
+    }
+    
+    function findBestWord() {
+        let bestWord = null;
+        let bestScore = 0;
+        const board = document.getElementById('game-board');
+        const tiles = Array.from(board.children);
+    
+        // Helper function to check and update best word
+        function checkAndUpdateBestWord(word) {
+            const wordString = word.map(tile => tile.textContent.charAt(0)).join('');
+            if (isValidWord(wordString)) {
+                const wordScore = word.reduce((sum, tile) => sum + letterData[tile.textContent.charAt(0)].points, 0);
+                if (wordScore > bestScore) {
+                    bestScore = wordScore;
+                    bestWord = word;
+                }
+            }
+        }
+    
+        // Check horizontal words
+        for (let row = 0; row < boardSize; row++) {
+            for (let col = 0; col < boardSize - 2; col++) {
+                for (let len = 3; len <= boardSize - col; len++) {
+                    const word = [];
+                    for (let i = 0; i < len; i++) {
+                        word.push(tiles[row * boardSize + col + i]);
+                    }
+                    checkAndUpdateBestWord(word);
+                }
+            }
+        }
+    
+        // Check vertical words
+        for (let col = 0; col < boardSize; col++) {
+            for (let row = 0; row < boardSize - 2; row++) {
+                for (let len = 3; len <= boardSize - row; len++) {
+                    const word = [];
+                    for (let i = 0; i < len; i++) {
+                        word.push(tiles[(row + i) * boardSize + col]);
+                    }
+                    checkAndUpdateBestWord(word);
+                }
+            }
+        }
+    
+        return bestWord;
+    }
+    
+    function findWords() {
+        const words = [];
+        const board = document.getElementById('game-board');
+        const tiles = Array.from(board.children);
+    
+        // Helper function to check and add valid words
+        function checkAndAddWord(word) {
+            const wordString = word.map(tile => tile.textContent.charAt(0)).join('');
+            if (isValidWord(wordString) && !words.some(w => w.toString() === word.toString())) {
+                words.push(word);
+            }
+        }
+    
+        // Check horizontal words
+        for (let row = 0; row < boardSize; row++) {
+            for (let col = 0; col < boardSize - 2; col++) {
+                for (let len = 3; len <= boardSize - col; len++) {
+                    const word = [];
+                    for (let i = 0; i < len; i++) {
+                        word.push(tiles[row * boardSize + col + i]);
+                    }
+                    checkAndAddWord(word);
+                }
+            }
+        }
+    
+        // Check vertical words
+        for (let col = 0; col < boardSize; col++) {
+            for (let row = 0; row < boardSize - 2; row++) {
+                for (let len = 3; len <= boardSize - row; len++) {
+                    const word = [];
+                    for (let i = 0; i < len; i++) {
+                        word.push(tiles[(row + i) * boardSize + col]);
+                    }
+                    checkAndAddWord(word);
+                }
+            }
+        }
+    
+        return words;
+    }
+    
+    function isValidWord(word) {
+        return dictionary.has(word.toLowerCase());
+    }
+    function findWords() {
+        const words = [];
+        const board = document.getElementById('game-board');
+        const tiles = Array.from(board.children);
+
+        // Check horizontal words
+        for (let row = 0; row < boardSize; row++) {
+            for (let col = 0; col < boardSize - 2; col++) {
+                for (let len = 3; len <= boardSize - col; len++) {
+                    const word = [];
+                    for (let i = 0; i < len; i++) {
+                        word.push(tiles[row * boardSize + col + i]);
+                    }
+                    if (isValidWord(word.map(tile => tile.textContent.charAt(0)).join(''))) {
+                        words.push(word);
+                    }
+                }
+            }
+        }
+
+        // Check vertical words
+        for (let col = 0; col < boardSize; col++) {
+            for (let row = 0; row < boardSize - 2; row++) {
+                for (let len = 3; len <= boardSize - row; len++) {
+                    const word = [];
+                    for (let i = 0; i < len; i++) {
+                        word.push(tiles[(row + i) * boardSize + col]);
+                    }
+                    if (isValidWord(word.map(tile => tile.textContent.charAt(0)).join(''))) {
+                        words.push(word);
+                    }
+                }
+            }
+        }
+
+        return words;
+    }
+
+    function updateScore() {
+        document.getElementById('score-value').textContent = score;
+        updateButtons();
+    }
+
+    function updateButtons() {
+        document.getElementById('shuffle-button').disabled = score < shuffleCost;
+        document.getElementById('new-tiles-button').disabled = score < newTilesCost;
+    }
+
+    function shuffleBoard() {
+        if (score >= shuffleCost) {
+            score -= shuffleCost;
+            const tiles = Array.from(document.getElementById('game-board').children);
+            for (let i = tiles.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [tiles[i].innerHTML, tiles[j].innerHTML] = [tiles[j].innerHTML, tiles[i].innerHTML];
+            }
+            updateScore();
+            checkForWords();
+        }
+    }
+
+    function newTiles() {
+        if (score >= newTilesCost) {
+            score -= newTilesCost;
+            createBoard();
+            updateScore();
+        }
+    }
+
+    // Initialize the game
+    createBoard();
+
+    // Event listeners for buttons
+    document.getElementById('shuffle-button').addEventListener('click', shuffleBoard);
+    document.getElementById('new-tiles-button').addEventListener('click', newTiles);
+    </script>
+</body>
+</html>
