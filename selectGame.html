@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Fun Games</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+        }
+        .container {
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            box-sizing: border-box;
+            align-content: center;
+        }
+        .game-card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        .game-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .game-description {
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="gameContainer"></div>
+
+    <script>
+        // Array of game objects
+        const games = [
+            { title: "Gambit", description: "A simple 1v1 strategy game", url: "gambit.html" },
+            { title: "word match", description: "Match 3 but with words!", url: "wordmatch.html" },
+            { title: "Daily Word Association Game", description: "A challenging daily word game", url: "wordGame.html" },
+            { title: "Pretty Colors", description: "A neat particle effect", url: "prettycolors.html" },
+        ];
+
+        // Function to create a game card
+        function createGameCard(game) {
+            const card = document.createElement('a');
+            card.className = 'game-card';
+            card.href = game.url;
+            card.innerHTML = `
+                <div class="game-title">${game.title}</div>
+                <div class="game-description">${game.description}</div>
+            `;
+            return card;
+        }
+
+        // Function to render all game cards
+        function renderGames() {
+            const container = document.getElementById('gameContainer');
+            games.forEach(game => {
+                container.appendChild(createGameCard(game));
+            });
+        }
+
+        // Render games when the page loads
+        window.onload = renderGames;
+    </script>
+</body>
+</html>
