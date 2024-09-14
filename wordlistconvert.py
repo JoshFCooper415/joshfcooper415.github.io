@@ -1,6 +1,6 @@
 def process_word_list(input_file, output_file):
     with open(input_file, 'r') as f:
-        words = [word.strip().lower() for word in f if 3 <= len(word.strip()) <= 5]
+        words = [word.strip().lower() for word in f if 4 <= len(word.strip()) <= 5]
 
     words.sort()
 
