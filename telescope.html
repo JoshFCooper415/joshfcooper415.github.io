@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <title>AI Telescope | Advanced Content Detection</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔭</text></svg>">
@@ -417,175 +418,52 @@
     </div>
 
     <script>
-        const API_URL = 'http://108.18.219.188:5080';
-        const themeToggle = document.getElementById('theme-toggle');
-        const body = document.body;
-
-        themeToggle.addEventListener('change', () => {
-            body.classList.toggle('dark-mode');
-        });
-        const tabs = document.querySelectorAll('.tab');
-        const tabContents = document.querySelectorAll('.tab-content');
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const tabId = tab.getAttribute('data-tab');
-                
-                tabs.forEach(t => t.classList.remove('active'));
-                tabContents.forEach(content => content.classList.remove('active'));
-                
-                tab.classList.add('active');
-                document.getElementById(`${tabId}-content`).classList.add('active');
-            });
-        });
-
-        // Modal functionality
-        const modal = document.getElementById('features-modal');
-        const btn = document.getElementById('show-features');
-        const span = document.getElementsByClassName('close')[0];
-        document.querySelectorAll('textarea').forEach(textarea => {
-            textarea.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    analyze();
-                }
-            });
-        });
-        btn.onclick = function() {
-            modal.style.display = 'block';
-        }
-
-        span.onclick = function() {
-            modal.style.display = 'none';
-        }
-
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = 'none';
-            }
-        }
-
-        // Drag and drop functionality
-        function handleDrop(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                const file = files[0];
+        const API_URL = '//108.18.219.188:5080';
+    
+        // Function to handle file uploads
+        function handleFileUpload(file) {
+            return new Promise((resolve, reject) => {
                 const reader = new FileReader();
-
-                reader.onload = function(event) {
-                    if (e.target.tagName === 'TEXTAREA') {
-                        e.target.value = event.target.result;
-                    } else if (e.target.classList.contains('file-drop-area')) {
-                        displayImage(event.target.result);
-                    }
+                reader.onload = (event) => {
+                    resolve(event.target.result);
                 };
-
-                if (e.target.tagName === 'TEXTAREA') {
-                    reader.readAsText(file);
-                } else if (e.target.classList.contains('file-drop-area')) {
-                    reader.readAsDataURL(file);
-                }
-            }
-
-            e.target.classList.remove('drag-over');
-        }
-
-        function handleDragOver(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            e.target.classList.add('drag-over');
-        }
-
-        function handleDragLeave(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            e.target.classList.remove('drag-over');
-        }
-
-        const dropTargets = document.querySelectorAll('textarea, .file-drop-area');
-        dropTargets.forEach(target => {
-            target.addEventListener('drop', handleDrop);
-            target.addEventListener('dragover', handleDragOver);
-            target.addEventListener('dragleave', handleDragLeave);
-        });
-        
-        // File input change handler
-        document.getElementById('image-input').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    displayImage(event.target.result);
-                };
+                reader.onerror = (error) => reject(error);
                 reader.readAsDataURL(file);
-            }
-        });
-
-        // Image paste functionality
-        const imageDropArea = document.querySelector('#image-content .file-drop-area');
-        imageDropArea.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                analyze();
-            }
-        });
-
-        imageDropArea.addEventListener('paste', handlePaste);
-        
-        function handlePaste(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            const items = e.clipboardData.items;
-
-            for (let i = 0; i < items.length; i++) {
-                if (items[i].type.indexOf('image') !== -1) {
-                    const blob = items[i].getAsFile();
-                    const reader = new FileReader();
-
-                    reader.onload = function(event) {
-                        displayImage(event.target.result);
-                    };
-
-                    reader.readAsDataURL(blob);
-                    break;
+            });
+        }
+    
+        // Function to analyze content
+        async function analyzeContent(content, type) {
+            try {
+                const response = await fetch(`${API_URL}/analyze`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ content, type }),
+                });
+    
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
+    
+                return await response.json();
+            } catch (error) {
+                console.error('Error:', error);
+                throw error;
             }
         }
-
-        function displayImage(src) {
-            const img = document.createElement('img');
-            img.src = src;
-            img.style.maxWidth = '100%';
-            img.style.maxHeight = '200px';
-            imageDropArea.innerHTML = '';
-            imageDropArea.appendChild(img);
-        }
-
-        // Make the drop area focusable for better accessibility
-        imageDropArea.setAttribute('tabindex', '0');
-
-        // Allow pasting when the drop area is focused
-        imageDropArea.addEventListener('keydown', function(e) {
-            if (e.key === 'v' && (e.ctrlKey || e.metaKey)) {
-                // Trigger the paste event
-                document.execCommand('paste');
-            }
-        });
-
-        // Updated analysis functionality
+    
+        // Event listener for analyze buttons
         document.querySelectorAll('.btn').forEach(button => {
             if (button.textContent.includes('Analyze')) {
                 button.addEventListener('click', async () => {
                     const resultContent = document.querySelector('.result-content');
                     resultContent.innerHTML = '<p class="analyzing">Analyzing</p>';
-
+    
                     const activeTab = document.querySelector('.tab-content.active');
                     let content, contentType;
-
+    
                     if (activeTab.id === 'text-content' || activeTab.id === 'code-content') {
                         content = activeTab.querySelector('textarea').value;
                         contentType = 'text';
@@ -599,74 +477,22 @@
                             return;
                         }
                     }
-
+    
                     if (!content) {
                         resultContent.innerHTML = '<p>Error: No content to analyze</p>';
                         return;
                     }
-
-                    if (contentType === 'image') {
-                        // Remove the data URL prefix if present
-                        content = content.replace(/^data:image\/(png|jpg|jpeg|gif);base64,/, '');
-                    }
-                    async function analyzeContent(content, type) {
-                        try {
-                            const response = await fetch(`${API_URL}/analyze`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({ content, type }),
-                            });
-                    
-                            if (!response.ok) {
-                                throw new Error(`HTTP error! status: ${response.status}`);
-                            }
-                    
-                            const data = await response.json();
-                            return data;
-                        } catch (error) {
-                            console.error('Error:', error);
-                            throw error;
-                        }
-                    }
+    
                     try {
-    const response = await fetch(`${API_URL}/analyze`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            content: content,
-            type: contentType
-        }),
-    });
-                        if (!response.ok) {
-                            throw new Error('API request failed');
-                        }
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        }
-                        const data = await response.json();
+                        const data = await analyzeContent(content, contentType);
                         
                         let resultHTML = '<h3>Analysis Results:</h3>';
                         
-                        if (data.final_result) {
-                            resultHTML += `<p><strong>Final Result:</strong> ${data.final_result.is_ai_generated ? 'AI-generated' : 'Not AI-generated'}</p>`;
-                            resultHTML += `<p><strong>Confidence:</strong> ${(data.final_result.confidence * 100).toFixed(2)}%</p>`;
-                            resultHTML += `<p><strong>Method:</strong> ${data.final_result.method}</p>`;
-                        }
-
-                        if (data.huggingface) {
-                            resultHTML += '<h4>HuggingFace Model:</h4>';
-                            resultHTML += `<p>${data.huggingface.result}</p>`;
-                        }
-
                         if (data.aeroblade) {
                             resultHTML += '<h4>AEROBLADE:</h4>';
                             resultHTML += `<p>${data.aeroblade.result}</p>`;
                         }
-
+    
                         resultContent.innerHTML = resultHTML;
                     } catch (error) {
                         resultContent.innerHTML = `<p>Error: Failed to analyze content. ${error.message}</p>`;
@@ -674,7 +500,142 @@
                 });
             }
         });
-        document.addEventListener('DOMContentLoaded', setupEventListeners);
-</script>
+    
+        // Tab functionality
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+    
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(`${tabId}-content`).classList.add('active');
+            });
+        });
+    
+        // Modal functionality
+        const modal = document.getElementById('features-modal');
+        const btn = document.getElementById('show-features');
+        const span = document.getElementsByClassName('close')[0];
+    
+        btn.onclick = function() {
+            modal.style.display = 'block';
+        }
+    
+        span.onclick = function() {
+            modal.style.display = 'none';
+        }
+    
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    
+        // Drag and drop functionality
+        function handleDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+    
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                const reader = new FileReader();
+    
+                reader.onload = function(event) {
+                    if (e.target.tagName === 'TEXTAREA') {
+                        e.target.value = event.target.result;
+                    } else if (e.target.classList.contains('file-drop-area')) {
+                        displayImage(event.target.result);
+                    }
+                };
+    
+                if (e.target.tagName === 'TEXTAREA') {
+                    reader.readAsText(file);
+                } else if (e.target.classList.contains('file-drop-area')) {
+                    reader.readAsDataURL(file);
+                }
+            }
+    
+            e.target.classList.remove('drag-over');
+        }
+    
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.target.classList.add('drag-over');
+        }
+    
+        function handleDragLeave(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.target.classList.remove('drag-over');
+        }
+    
+        const dropTargets = document.querySelectorAll('textarea, .file-drop-area');
+        dropTargets.forEach(target => {
+            target.addEventListener('drop', handleDrop);
+            target.addEventListener('dragover', handleDragOver);
+            target.addEventListener('dragleave', handleDragLeave);
+        });
+    
+        // File input change handler
+        document.getElementById('image-input').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    displayImage(event.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    
+        // Image paste functionality
+        const imageDropArea = document.querySelector('#image-content .file-drop-area');
+        imageDropArea.addEventListener('paste', handlePaste);
+        
+        function handlePaste(e) {
+            e.preventDefault();
+            e.stopPropagation();
+    
+            const items = e.clipboardData.items;
+    
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    const blob = items[i].getAsFile();
+                    const reader = new FileReader();
+    
+                    reader.onload = function(event) {
+                        displayImage(event.target.result);
+                    };
+    
+                    reader.readAsDataURL(blob);
+                    break;
+                }
+            }
+        }
+    
+        function displayImage(src) {
+            const img = document.createElement('img');
+            img.src = src;
+            img.style.maxWidth = '100%';
+            img.style.maxHeight = '200px';
+            imageDropArea.innerHTML = '';
+            imageDropArea.appendChild(img);
+        }
+    
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+    
+        themeToggle.addEventListener('change', () => {
+            body.classList.toggle('dark-mode');
+        });
+    </script>
 </body>
 </html>
