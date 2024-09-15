@@ -658,7 +658,7 @@
 
                         resultContent.innerHTML = resultHTML;
                     } catch (error) {
-                        resultContent.innerHTML = `<p>Error: Failed to analyze content. ${error.message}</p>`;
+                        resultContent.innerHTML = `<p>You must use HTTP not HTTPS, you can edit the url. ${error.message}</p>`;
                     }
                 });
             }
