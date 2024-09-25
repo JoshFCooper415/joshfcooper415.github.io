@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Performance and Efficiency Analysis</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1, h2 { color: #2c3e50; }
+        .chart-container { margin-bottom: 150px; height: 400px; }
+    </style>
+</head>
+<body>
+    <h1>Model Performance and Efficiency Analysis</h1>
+
+    <p>This page presents an analysis of various transformer model configurations, comparing their performance and efficiency across different dataset sizes and low-rank matrix factorization settings. Notably a rank of 256 is higher than the rank of the full rank matrix in this experiment.</p>
+
+    <div class="chart-container">
+        <h2>Model Performance vs Dataset Size</h2>
+        <h2></h2>
+        <canvas id="performance-chart"></canvas>
+        <p>This chart shows the validation loss for different model configurations (varying ranks and full-rank) across different dataset sizes. Lower validation loss indicates better performance.</p>
+    </div>
+
+    <div class="chart-container">
+        <h2>Model Efficiency vs Dataset Size</h2>
+    
+        <canvas id="efficiency-chart"></canvas>
+        <p>This chart displays the efficiency metric (validation loss * parameter count) for different model configurations across dataset sizes. Lower values indicate better efficiency, representing a balance between performance and model size.</p>
+        
+    </div>
+
+    <h2>Key Insights</h2>
+    <ul>
+        <li>Increasing dataset size consistently improves performance and efficiency for all model configurations.</li>
+        <li>Low-rank models (especially ranks 32 and 64) show better parameter efficiency, particularly for smaller datasets.</li>
+        <li>The full-rank model achieves the best raw performance and becomes increasingly efficient with larger datasets.</li>
+        <li>Higher rank models (128 and 256) offer a balance between efficiency and performance, suitable for scenarios where both factors are important.</li>
+        <li>The choice between low-rank and full-rank models depends on the available dataset size, computational resources, and the balance between performance and efficiency requirements.</li>
+    </ul>
+
+    <script>
+        const datasetSizes = [10000, 50000, 100000, 500000];
+        
+        const performanceData = {
+            rank32: [14.37, 12.68, 11.92, 9.81],
+            rank64: [13.81, 12.61, 11.66, 8.81],
+            rank128: [14.24, 12.37, 11.24, 7.52],
+            rank256: [14.12, 12.39, 10.64, 6.86],
+            fullRank: [10.92, 9.35, 6.93, 4.38]
+        };
+
+        const calculateEfficiency = (loss, params) => (loss * params) / 1e9;
+        const paramCounts = {
+            rank32: 15137649,
+            rank64: 17343889,
+            rank128: 21756369,
+            rank256: 30581329,
+            fullRank: 28156497
+        };
+
+        const efficiencyData = Object.fromEntries(
+            Object.entries(performanceData).map(([key, values]) => [
+                key,
+                values.map((loss, i) => calculateEfficiency(loss, paramCounts[key]))
+            ])
+        );
+
+        function createChart(canvasId, label, datasets) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: datasetSizes,
+                    datasets: Object.entries(datasets).map(([key, data], index) => ({
+                        label: key,
+                        data: data,
+                        borderColor: ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#ff0000'][index],
+                        fill: false
+                    }))
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'logarithmic',
+                            title: {
+                                display: true,
+                                text: 'Dataset Size'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: label
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        createChart('performance-chart', 'Validation Loss', performanceData);
+        createChart('efficiency-chart', 'Efficiency (Loss * Param Count) / 1e9', efficiencyData);
+    </script>
+</body>
+</html>
