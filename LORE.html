@@ -3,29 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LORE</title>
+    <title>LORE: Comprehensive Analysis</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; }
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 1000px; margin: 0 auto; padding: 20px; }
         h1, h2 { color: #2c3e50; }
         .chart-container { margin-bottom: 140px; height: 400px; }
     </style>
 </head>
 <body>
-    <h1>Low Rank Everything</h1>
+    <h1>Low Rank Everything: Comprehensive Analysis</h1>
 
-    <p>This page presents an analysis of various transformer model configurations, comparing their performance and efficiency across different dataset sizes, low-rank matrix factorization settings, and mixture of ranks models with different ranks.</p>
+    <p>This page presents a comprehensive analysis of various transformer model configurations, comparing their performance and efficiency across different dataset sizes, low-rank matrix factorization settings, and mixture of ranks models with different ranks.</p>
 
     <div class="chart-container">
-        <h2>Model Performance vs Dataset Size</h2>
+        <h2>Model Performance vs Dataset Size (Various Ranks)</h2>
         <canvas id="performance-chart"></canvas>
         <p>This chart shows the validation loss for different model configurations (varying ranks, full-rank, and mixture of ranks with different ranks) across different dataset sizes. Lower validation loss indicates better performance.</p>
     </div>
 
     <div class="chart-container">
-        <h2>Model Efficiency vs Dataset Size</h2>
+        <h2>Model Efficiency vs Dataset Size (Various Ranks)</h2>
         <canvas id="efficiency-chart"></canvas>
         <p>This chart displays the efficiency metric (validation loss * parameter count) for different model configurations across dataset sizes. Lower values indicate better efficiency, representing a balance between performance and model size.</p>
+    </div>
+
+    <div class="chart-container">
+        <h2>Model Performance: Progressive vs Regressive vs Full Rank</h2>
+        <canvas id="prog-reg-performance-chart"></canvas>
+        <p>This chart compares the validation loss for progressive rank, regressive rank, and full rank configurations across different dataset sizes. Lower validation loss indicates better performance.</p>
+    </div>
+
+    <div class="chart-container">
+        <h2>Loss Efficiency: Progressive vs Regressive vs Full Rank</h2>
+        <canvas id="loss-efficiency-chart"></canvas>
+        <p>This chart shows the loss efficiency (validation loss * parameter count / 1e9) for progressive rank, regressive rank, and full rank configurations across different dataset sizes. Lower values indicate better efficiency.</p>
     </div>
 
     <h2>Key Insights</h2>
@@ -33,7 +45,9 @@
         <li>Increasing dataset size consistently improves performance and efficiency for all model configurations.</li>
         <li>The mixture of ranks models show competitive performance, with higher ranks generally performing better, especially for larger dataset sizes.</li>
         <li>Low-rank models and mixture of ranks models with lower ranks show better parameter efficiency, particularly for smaller datasets.</li>
-        <li>The full-rank model achieves the best raw performance</li>
+        <li>The full-rank and mostly full rank models achieve the best raw performance, but low-rank models offer competitive efficiency especially when combined with full rank layers.</li>
+        <li>Progressive and regressive rank configurations perform similarly in terms of both performance and efficiency.</li>
+        <li>The efficiency advantage of low-rank models is more pronounced for smaller datasets.</li>
         <li>The choice between low-rank, full-rank, and mixture of ranks models depends on the available dataset size, computational resources, and the balance between performance and efficiency requirements.</li>
     </ul>
 
@@ -70,6 +84,33 @@
             ])
         );
 
+        const progressiveRegressiveData = [
+            {
+                datasetSize: 10000,
+                progressive: { loss: 10.825037068993469, params: 35795025 },
+                regressive: { loss: 10.773437042101662, params: 35795025 },
+                fullRank: { loss: 10.78803736106543, params: 38400081 }
+            },
+            {
+                datasetSize: 50000,
+                progressive: { loss: 6.960823767968339, params: 35795025 },
+                regressive: { loss: 6.970895640594257, params: 35795025 },
+                fullRank: { loss: 8.444640987600208, params: 38400081 }
+            },
+            {
+                datasetSize: 100000,
+                progressive: { loss: 5.308266962445632, params: 35795025 },
+                regressive: { loss: 5.299455035264392, params: 35795025 },
+                fullRank: { loss: 5.592441617040735, params: 38400081 }
+            },
+            {
+                datasetSize: 500000,
+                progressive: { loss: 4.1251631169405965, params: 35795025 },
+                regressive: { loss: 4.099729900576103, params: 35795025 },
+                fullRank: { loss: 4.154697136038435, params: 38400081 }
+            }
+        ];
+
         function createChart(canvasId, label, datasets) {
             const ctx = document.getElementById(canvasId).getContext('2d');
             new Chart(ctx, {
@@ -105,8 +146,65 @@
             });
         }
 
+        function createProgressiveRegressiveChart(canvasId, label, dataKey) {
+            const data = progressiveRegressiveData.map(item => ({
+                x: item.datasetSize,
+                progressive: dataKey === 'loss' ? item.progressive[dataKey] : item.progressive[dataKey] * item.progressive.params / 1e9,
+                regressive: dataKey === 'loss' ? item.regressive[dataKey] : item.regressive[dataKey] * item.regressive.params / 1e9,
+                fullRank: dataKey === 'loss' ? item.fullRank[dataKey] : item.fullRank[dataKey] * item.fullRank.params / 1e9
+            }));
+
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Progressive Rank',
+                            data: data.map(d => ({ x: d.x, y: d.progressive })),
+                            borderColor: '#8884d8',
+                            fill: false
+                        },
+                        {
+                            label: 'Regressive Rank',
+                            data: data.map(d => ({ x: d.x, y: d.regressive })),
+                            borderColor: '#82ca9d',
+                            fill: false
+                        },
+                        {
+                            label: 'Full Rank',
+                            data: data.map(d => ({ x: d.x, y: d.fullRank })),
+                            borderColor: '#ff7300',
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'logarithmic',
+                            title: {
+                                display: true,
+                                text: 'Dataset Size'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: label
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
         createChart('performance-chart', 'Validation Loss', performanceData);
         createChart('efficiency-chart', 'Efficiency (Loss * Param Count) / 1e9', efficiencyData);
+        createProgressiveRegressiveChart('prog-reg-performance-chart', 'Validation Loss', 'loss');
+        createProgressiveRegressiveChart('loss-efficiency-chart', 'Loss Efficiency', 'loss');
     </script>
 </body>
 </html>
