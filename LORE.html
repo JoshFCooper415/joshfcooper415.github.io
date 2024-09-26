@@ -3,41 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Model Performance and Efficiency Analysis</title>
+    <title>LORE</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; }
         h1, h2 { color: #2c3e50; }
-        .chart-container { margin-bottom: 150px; height: 400px; }
+        .chart-container { margin-bottom: 140px; height: 400px; }
     </style>
 </head>
 <body>
-    <h1>Model Performance and Efficiency Analysis</h1>
+    <h1>Low Rank Everything</h1>
 
-    <p>This page presents an analysis of various transformer model configurations, comparing their performance and efficiency across different dataset sizes and low-rank matrix factorization settings. Notably a rank of 256 is higher than the rank of the full rank matrix in this experiment.</p>
+    <p>This page presents an analysis of various transformer model configurations, comparing their performance and efficiency across different dataset sizes, low-rank matrix factorization settings, and mixture of ranks models with different ranks.</p>
 
     <div class="chart-container">
         <h2>Model Performance vs Dataset Size</h2>
-        <h2></h2>
         <canvas id="performance-chart"></canvas>
-        <p>This chart shows the validation loss for different model configurations (varying ranks and full-rank) across different dataset sizes. Lower validation loss indicates better performance.</p>
+        <p>This chart shows the validation loss for different model configurations (varying ranks, full-rank, and mixture of ranks with different ranks) across different dataset sizes. Lower validation loss indicates better performance.</p>
     </div>
 
     <div class="chart-container">
         <h2>Model Efficiency vs Dataset Size</h2>
-    
         <canvas id="efficiency-chart"></canvas>
         <p>This chart displays the efficiency metric (validation loss * parameter count) for different model configurations across dataset sizes. Lower values indicate better efficiency, representing a balance between performance and model size.</p>
-        
     </div>
 
     <h2>Key Insights</h2>
     <ul>
         <li>Increasing dataset size consistently improves performance and efficiency for all model configurations.</li>
-        <li>Low-rank models (especially ranks 32 and 64) show better parameter efficiency, particularly for smaller datasets.</li>
-        <li>The full-rank model achieves the best raw performance and becomes increasingly efficient with larger datasets.</li>
-        <li>Higher rank models (128 and 256) offer a balance between efficiency and performance, suitable for scenarios where both factors are important.</li>
-        <li>The choice between low-rank and full-rank models depends on the available dataset size, computational resources, and the balance between performance and efficiency requirements.</li>
+        <li>The mixture of ranks models show competitive performance, with higher ranks generally performing better, especially for larger dataset sizes.</li>
+        <li>Low-rank models and mixture of ranks models with lower ranks show better parameter efficiency, particularly for smaller datasets.</li>
+        <li>The full-rank model achieves the best raw performance</li>
+        <li>The choice between low-rank, full-rank, and mixture of ranks models depends on the available dataset size, computational resources, and the balance between performance and efficiency requirements.</li>
     </ul>
 
     <script>
@@ -48,7 +45,10 @@
             rank64: [13.81, 12.61, 11.66, 8.81],
             rank128: [14.24, 12.37, 11.24, 7.52],
             rank256: [14.12, 12.39, 10.64, 6.86],
-            fullRank: [10.92, 9.35, 6.93, 4.38]
+            fullRank: [10.92, 9.35, 6.93, 4.38],
+            mixtureRank32: [12.90, 11.70, 10.96, 8.54],
+            mixtureRank64: [13.01, 11.40, 10.32, 7.09],
+            mixtureRank128: [12.91, 11.10, 9.46, 5.77]
         };
 
         const calculateEfficiency = (loss, params) => (loss * params) / 1e9;
@@ -57,7 +57,10 @@
             rank64: 17343889,
             rank128: 21756369,
             rank256: 30581329,
-            fullRank: 28156497
+            fullRank: 28156497,
+            mixtureRank32: 16547745,
+            mixtureRank64: 20130241,
+            mixtureRank128: 27295233
         };
 
         const efficiencyData = Object.fromEntries(
@@ -76,7 +79,7 @@
                     datasets: Object.entries(datasets).map(([key, data], index) => ({
                         label: key,
                         data: data,
-                        borderColor: ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#ff0000'][index],
+                        borderColor: ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#ff0000', '#00ff00', '#0000ff', '#ff00ff'][index],
                         fill: false
                     }))
                 },
