@@ -146,12 +146,12 @@
             });
         }
 
-        function createProgressiveRegressiveChart(canvasId, label, dataKey) {
+        function createProgressiveRegressiveChart(canvasId, label, isEfficiency) {
             const data = progressiveRegressiveData.map(item => ({
                 x: item.datasetSize,
-                progressive: item.progressive[dataKey] * item.progressive.params / 1e9,
-                regressive: item.regressive[dataKey] * item.regressive.params / 1e9,
-                fullRank: item.fullRank[dataKey] * item.fullRank.params / 1e9
+                progressive: isEfficiency ? item.progressive.loss * item.progressive.params / 1e9 : item.progressive.loss,
+                regressive: isEfficiency ? item.regressive.loss * item.regressive.params / 1e9 : item.regressive.loss,
+                fullRank: isEfficiency ? item.fullRank.loss * item.fullRank.params / 1e9 : item.fullRank.loss
             }));
 
             const ctx = document.getElementById(canvasId).getContext('2d');
@@ -203,8 +203,8 @@
 
         createChart('performance-chart', 'Validation Loss', performanceData);
         createChart('efficiency-chart', 'Efficiency (Loss * Param Count) / 1e9', efficiencyData);
-        createProgressiveRegressiveChart('prog-reg-performance-chart', 'Validation Loss', 'loss');
-        createProgressiveRegressiveChart('loss-efficiency-chart', 'Loss Efficiency', 'loss');
+        createProgressiveRegressiveChart('prog-reg-performance-chart', 'Validation Loss', false);
+        createProgressiveRegressiveChart('loss-efficiency-chart', 'Loss Efficiency', true);
     </script>
 </body>
 </html>
