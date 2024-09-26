@@ -45,7 +45,7 @@
         <li>Increasing dataset size consistently improves performance and efficiency for all model configurations.</li>
         <li>The mixture of ranks models show competitive performance, with higher ranks generally performing better, especially for larger dataset sizes.</li>
         <li>Low-rank models and mixture of ranks models with lower ranks show better parameter efficiency, particularly for smaller datasets.</li>
-        <li>The full-rank and mostly full rank models achieve the best raw performance, but low-rank models offer competitive efficiency especially when combined with full rank layers.</li>
+        <li>The full-rank model achieves the best raw performance, but low-rank models offer competitive efficiency.</li>
         <li>Progressive and regressive rank configurations perform similarly in terms of both performance and efficiency.</li>
         <li>The efficiency advantage of low-rank models is more pronounced for smaller datasets.</li>
         <li>The choice between low-rank, full-rank, and mixture of ranks models depends on the available dataset size, computational resources, and the balance between performance and efficiency requirements.</li>
@@ -87,27 +87,27 @@
         const progressiveRegressiveData = [
             {
                 datasetSize: 10000,
-                progressive: { loss: 10.825037068993469, params: 35795025 },
-                regressive: { loss: 10.773437042101662, params: 35795025 },
-                fullRank: { loss: 10.78803736106543, params: 38400081 }
+                progressive: { loss: 10.825037068993469, params: 27000000 },
+                regressive: { loss: 10.773437042101662, params: 27000000 },
+                fullRank: { loss: 10.78803736106543, params: 28000000 }
             },
             {
                 datasetSize: 50000,
-                progressive: { loss: 6.960823767968339, params: 35795025 },
-                regressive: { loss: 6.970895640594257, params: 35795025 },
-                fullRank: { loss: 8.444640987600208, params: 38400081 }
+                progressive: { loss: 6.960823767968339, params: 27000000 },
+                regressive: { loss: 6.970895640594257, params: 27000000 },
+                fullRank: { loss: 8.444640987600208, params: 28000000 }
             },
             {
                 datasetSize: 100000,
-                progressive: { loss: 5.308266962445632, params: 35795025 },
-                regressive: { loss: 5.299455035264392, params: 35795025 },
-                fullRank: { loss: 5.592441617040735, params: 38400081 }
+                progressive: { loss: 5.308266962445632, params: 27000000 },
+                regressive: { loss: 5.299455035264392, params: 27000000 },
+                fullRank: { loss: 5.592441617040735, params: 28000000 }
             },
             {
                 datasetSize: 500000,
-                progressive: { loss: 4.1251631169405965, params: 35795025 },
-                regressive: { loss: 4.099729900576103, params: 35795025 },
-                fullRank: { loss: 4.154697136038435, params: 38400081 }
+                progressive: { loss: 4.1251631169405965, params: 27000000 },
+                regressive: { loss: 4.099729900576103, params: 27000000 },
+                fullRank: { loss: 4.154697136038435, params: 28000000 }
             }
         ];
 
@@ -149,9 +149,9 @@
         function createProgressiveRegressiveChart(canvasId, label, dataKey) {
             const data = progressiveRegressiveData.map(item => ({
                 x: item.datasetSize,
-                progressive: dataKey === 'loss' ? item.progressive[dataKey] : item.progressive[dataKey] * item.progressive.params / 1e9,
-                regressive: dataKey === 'loss' ? item.regressive[dataKey] : item.regressive[dataKey] * item.regressive.params / 1e9,
-                fullRank: dataKey === 'loss' ? item.fullRank[dataKey] : item.fullRank[dataKey] * item.fullRank.params / 1e9
+                progressive: item.progressive[dataKey] * item.progressive.params / 1e9,
+                regressive: item.regressive[dataKey] * item.regressive.params / 1e9,
+                fullRank: item.fullRank[dataKey] * item.fullRank.params / 1e9
             }));
 
             const ctx = document.getElementById(canvasId).getContext('2d');
