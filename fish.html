@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Fish School Animation</title>
+    <title>Fish School Animation with Lilypads</title>
     <style>
         body {
             margin: 0;
@@ -10,6 +10,7 @@
             align-items: center;
             min-height: 100vh;
             background: rgb(40, 44, 52);
+            overflow: hidden;
         }
         canvas {
             border: 1px solid #333;
@@ -133,15 +134,117 @@
             }
         }
 
+        class Lilypad {
+            constructor(x, y, size) {
+                this.position = new Vector(x, y);
+                this.size = size;
+                this.angle = Math.random() * Math.PI * 2;
+                this.wobbleOffset = Math.random() * Math.PI * 2;
+                this.wobbleSpeed = 0.5 + Math.random() * 0.5;
+            }
+
+            update(time) {
+                // Add gentle wobble motion
+                this.angle = Math.sin(time * this.wobbleSpeed + this.wobbleOffset) * 0.05;
+            }
+
+            display(ctx) {
+                ctx.save();
+                ctx.translate(this.position.x, this.position.y);
+                ctx.rotate(this.angle);
+
+                // Draw lilypad
+                ctx.fillStyle = '#2d5a27';
+                ctx.strokeStyle = '#1a3517';
+                ctx.lineWidth = 2;
+                
+                // Main pad
+                ctx.beginPath();
+                ctx.arc(0, 0, this.size, 0, Math.PI * 2);
+                // Create a split/cut in the lilypad
+                ctx.lineTo(this.size * 0.3, 0);
+                ctx.arc(0, 0, this.size * 0.3, 0, Math.PI * 0.3);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                // Veins
+                ctx.strokeStyle = '#3a7034';
+                ctx.lineWidth = 1;
+                for (let i = 0; i < 8; i++) {
+                    const angle = (i / 8) * Math.PI * 2;
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.lineTo(
+                        Math.cos(angle) * this.size * 0.9,
+                        Math.sin(angle) * this.size * 0.9
+                    );
+                    ctx.stroke();
+                }
+
+                ctx.restore();
+            }
+        }
+
         function noise(x, y) {
             return (Math.sin(x * 0.5 + y * 0.7) + Math.sin(x * 0.8 + y * 0.3)) * 0.5;
         }
-
+        class FoodPellet {
+            constructor(x, y) {
+                this.position = new Vector(x, y);
+                this.size = 4;
+                this.lifespan = 1000; // Food disappears after 1000 frames
+                this.eaten = false;
+            }
+        
+            display(ctx) {
+                ctx.fillStyle = '#e9a067';
+                ctx.strokeStyle = '#c17f45';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(this.position.x, this.position.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+            }
+        
+            update() {
+                this.lifespan--;
+                return this.lifespan > 0 && !this.eaten;
+            }
+        }
         class Fish {
             constructor(origin) {
                 this.spine = new Chain(origin, 12, 16, Math.PI / 8);
-                this.bodyColor = `rgb(${Math.random() * 100 + 58}, ${Math.random() * 100 + 124}, ${Math.random() * 100 + 165})`;
-                this.finColor = `rgb(${Math.random() * 100 + 129}, ${Math.random() * 100 + 195}, ${Math.random() * 100 + 215})`;
+                
+                // Enhanced color generation
+                const colorSchemes = [
+                    // Tropical color schemes
+                    {
+                        body: `rgb(${200 + Math.random() * 55}, ${100 + Math.random() * 55}, ${0 + Math.random() * 55})`,  // Orange/Yellow
+                        fin: `rgb(${220 + Math.random() * 35}, ${150 + Math.random() * 55}, ${0 + Math.random() * 55})`
+                    },
+                    {
+                        body: `rgb(${0 + Math.random() * 55}, ${100 + Math.random() * 55}, ${200 + Math.random() * 55})`,  // Blue
+                        fin: `rgb(${50 + Math.random() * 55}, ${150 + Math.random() * 55}, ${220 + Math.random() * 35})`
+                    },
+                    {
+                        body: `rgb(${180 + Math.random() * 55}, ${0 + Math.random() * 55}, ${180 + Math.random() * 55})`,  // Purple
+                        fin: `rgb(${200 + Math.random() * 55}, ${50 + Math.random() * 55}, ${200 + Math.random() * 55})`
+                    },
+                    {
+                        body: `rgb(${200 + Math.random() * 55}, ${0 + Math.random() * 55}, ${100 + Math.random() * 55})`,  // Pink
+                        fin: `rgb(${220 + Math.random() * 35}, ${50 + Math.random() * 55}, ${150 + Math.random() * 55})`
+                    },
+                    {
+                        body: `rgb(${0 + Math.random() * 55}, ${180 + Math.random() * 55}, ${180 + Math.random() * 55})`,  // Teal
+                        fin: `rgb(${50 + Math.random() * 55}, ${200 + Math.random() * 55}, ${200 + Math.random() * 55})`
+                    }
+                ];
+                
+                const scheme = colorSchemes[Math.floor(Math.random() * colorSchemes.length)];
+                this.bodyColor = scheme.body;
+                this.finColor = scheme.fin;
+
                 this.bodyWidth = [17, 20, 21, 20.75, 19.25, 16, 12.75, 9.5, 8, 4.75];
                 
                 this.position = origin.copy();
@@ -152,7 +255,11 @@
                 this.targetVelocity = this.velocity.copy();
                 this.smoothingFactor = 0.15;
                 this.momentum = 0.92;
-                
+
+                //Food
+                this.foodDetectionRadius = 200;
+                this.foodAttractionStrength = 10;
+                this.eatingDistance = 15;
                 // Boid parameters
                 this.maxSpeed = 3;
                 this.maxForce = 0.1;
@@ -179,7 +286,39 @@
                 smoothed.mult(1 / this.previousPositions.length);
                 return smoothed;
             }
-
+            seekFood(foodPellets) {
+                let steering = new Vector();
+                let nearestDist = Infinity;
+                let nearestFood = null;
+        
+                // Find the nearest food pellet
+                for (let food of foodPellets) {
+                    let d = this.position.dist(food.position);
+                    if (d < this.foodDetectionRadius && d < nearestDist) {
+                        nearestDist = d;
+                        nearestFood = food;
+                    }
+                }
+        
+                // If food is found, seek it
+                if (nearestFood) {
+                    let desired = Vector.sub(nearestFood.position, this.position);
+                    let dist = desired.x * desired.x + desired.y * desired.y;
+                    
+                    // If close enough, eat the food
+                    if (dist < this.eatingDistance * this.eatingDistance) {
+                        nearestFood.eaten = true;
+                        return new Vector();
+                    }
+        
+                    desired.normalize();
+                    desired.mult(this.maxSpeed);
+                    steering = Vector.sub(desired, this.velocity);
+                    steering.setMag(this.maxForce * this.foodAttractionStrength);
+                }
+        
+                return steering;
+            }
             align(boids) {
                 let steering = new Vector();
                 let total = 0;
@@ -278,20 +417,30 @@
                 return steer;
             }
 
-            flock(boids) {
+            flock(boids, foodPellets) {
                 let alignment = this.align(boids);
                 let cohesion = this.cohesion(boids);
                 let separation = this.separation(boids);
                 let avoidWalls = this.avoidWalls();
+                let food = this.seekFood(foodPellets);
                 
                 this.time += this.timeStep;
                 let wanderAngle = noise(this.time, 0) * Math.PI * 2;
                 let wanderForce = Vector.fromAngle(wanderAngle);
                 wanderForce.mult(0.02);
                 
-                alignment.mult(0.5);
-                cohesion.mult(0.3);
-                separation.mult(1.5);
+                // Adjust weights when food is present
+                if (food.x !== 0 || food.y !== 0) {
+                    alignment.mult(0.2);   // Reduce alignment when seeking food
+                    cohesion.mult(0.1);    // Reduce cohesion when seeking food
+                    separation.mult(1.0);   // Keep separation important
+                    food.mult(2.0);        // Strong food seeking behavior
+                } else {
+                    alignment.mult(0.5);
+                    cohesion.mult(0.3);
+                    separation.mult(1.5);
+                }
+                
                 avoidWalls.mult(2.0);
                 
                 let totalForce = new Vector();
@@ -300,6 +449,7 @@
                 totalForce.add(separation);
                 totalForce.add(avoidWalls);
                 totalForce.add(wanderForce);
+                totalForce.add(food);
                 
                 if (totalForce.x !== 0 || totalForce.y !== 0) {
                     totalForce.setMag(this.maxForce);
@@ -307,37 +457,25 @@
                 
                 this.acceleration.add(totalForce);
             }
-
             update() {
-                // Apply momentum to acceleration
                 this.acceleration.mult(this.momentum);
-                
-                // Update target velocity
                 this.targetVelocity.add(this.acceleration);
                 this.targetVelocity.setMag(this.maxSpeed);
                 
-                // Smooth the actual velocity
                 this.velocity.x = this.smooth(this.velocity.x, this.targetVelocity.x, this.smoothingFactor);
                 this.velocity.y = this.smooth(this.velocity.y, this.targetVelocity.y, this.smoothingFactor);
                 
-                // Update position
                 this.position.add(this.velocity);
                 
-                // Update position history
                 this.previousPositions.push(this.position.copy());
                 this.previousPositions.shift();
                 
-                // Get smoothed position for spine
                 const smoothedPos = this.getSmoothedPosition();
-                
-                // Calculate next position based on current velocity direction
                 const velocityAngle = this.velocity.heading();
                 const nextPos = Vector.fromAngle(velocityAngle).mult(16).add(smoothedPos);
                 
-                // Update spine with smoothed positions
                 this.spine.resolve(smoothedPos);
                 
-                // Reset acceleration
                 this.acceleration.mult(0);
             }
 
@@ -345,7 +483,6 @@
                 const j = this.spine.joints;
                 const a = this.spine.angles;
                 
-                // Use actual angles for smoother rotation
                 const headToMid1 = relativeAngleDiff(a[0], a[6]);
                 const headToMid2 = relativeAngleDiff(a[0], a[7]);
                 const headToTail = headToMid1 + relativeAngleDiff(a[6], a[11]);
@@ -354,15 +491,15 @@
                 ctx.lineWidth = 1;
                 ctx.fillStyle = this.finColor;
 
-                // Pectoral fins (adjusted positions)
+                // Pectoral fins
                 this.drawFin(ctx, 3, Math.PI / 3, 0, a[2] - Math.PI / 4, 40, 16);
                 this.drawFin(ctx, 3, -Math.PI / 3, 0, a[2] + Math.PI / 4, 40, 16);
 
-                // Ventral fins (adjusted positions)
+                // Ventral fins
                 this.drawFin(ctx, 7, Math.PI / 2, 0, a[6] - Math.PI / 4, 24, 8);
                 this.drawFin(ctx, 7, -Math.PI / 2, 0, a[6] + Math.PI / 4, 24, 8);
 
-                // Caudal fins with smoother width calculation
+                // Caudal fins
                 ctx.beginPath();
                 for (let i = 8; i < 12; i++) {
                     const progress = (i - 8) / 4;
@@ -383,11 +520,10 @@
                 ctx.fill();
                 ctx.stroke();
 
-                // Body with corrected angle calculations
+                // Body
                 ctx.fillStyle = this.bodyColor;
                 ctx.beginPath();
                 
-                // Right half
                 for (let i = 0; i < 10; i++) {
                     const x = this.getPos(i, Math.PI / 2, 0, 'x');
                     const y = this.getPos(i, Math.PI / 2, 0, 'y');
@@ -395,10 +531,8 @@
                     else ctx.lineTo(x, y);
                 }
 
-                // Bottom
                 ctx.lineTo(this.getPos(9, Math.PI, 0, 'x'), this.getPos(9, Math.PI, 0, 'y'));
 
-                // Left half
                 for (let i = 9; i >= 0; i--) {
                     ctx.lineTo(
                         this.getPos(i, -Math.PI / 2, 0, 'x'),
@@ -406,7 +540,6 @@
                     );
                 }
 
-                // Head with adjusted curves
                 ctx.lineTo(this.getPos(0, -Math.PI / 6, 0, 'x'), this.getPos(0, -Math.PI / 6, 0, 'y'));
                 ctx.lineTo(this.getPos(0, 0, 2, 'x'), this.getPos(0, 0, 2, 'y'));
                 ctx.lineTo(this.getPos(0, Math.PI / 6, 0, 'x'), this.getPos(0, Math.PI / 6, 0, 'y'));
@@ -414,7 +547,7 @@
                 ctx.fill();
                 ctx.stroke();
 
-                // Dorsal fin with smoother curves
+                // Dorsal fin
                 ctx.fillStyle = this.finColor;
                 ctx.beginPath();
                 ctx.moveTo(j[4].x, j[4].y);
@@ -434,7 +567,7 @@
                 ctx.fill();
                 ctx.stroke();
 
-                // Eyes with corrected positions
+                // Eyes
                 ctx.fillStyle = '#fff';
                 ctx.beginPath();
                 ctx.arc(
@@ -454,6 +587,7 @@
                 ctx.fill();
                 ctx.stroke();
             }
+
             drawFin(ctx, i, angleOffset, lengthOffset, rotation, width, height) {
                 ctx.save();
                 ctx.translate(
@@ -486,33 +620,120 @@
             return ((a2 - a1 + Math.PI) % (Math.PI * 2)) - Math.PI;
         }
 
-        // Create fish school
-        const fishes = [];
-        const numFish = 15;
+        // Initialize scene
+        // Initialize lilypads with spacing
+const fishes = [];
+const lilypads = [];
+const foodPellets = [];
+const numFish = 15;
+const numLilypads = 8;
+const margin = 100;
+const minSpacing = 100; // Minimum distance between lilypad centers
+const maxAttempts = 50; // Maximum attempts to place each lilypad
+canvas.addEventListener('click', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    foodPellets.push(new FoodPellet(x, y));
+});
 
-        // Initialize fish with spread out positions
-        for (let i = 0; i < numFish; i++) {
-            const margin = 100;
+for (let i = 0; i < numLilypads; i++) {
+    let placed = false;
+    let attempts = 0;
+    
+    while (!placed && attempts < maxAttempts) {
+        const size = 30 + Math.random() * 20;
+        const randomX = margin + Math.random() * (canvas.width - 2 * margin);
+        const randomY = margin + Math.random() * (canvas.height - 2 * margin);
+        
+        // Check if position is valid
+        let isValid = true;
+        for (const pad of lilypads) {
+            const dx = randomX - pad.position.x;
+            const dy = randomY - pad.position.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance < (size + pad.size + minSpacing)) {
+                isValid = false;
+                break;
+            }
+        }
+        
+        if (isValid) {
+            lilypads.push(new Lilypad(randomX, randomY, size));
+            placed = true;
+        }
+        
+        attempts++;
+    }
+    
+    // If we couldn't place after max attempts, try with a smaller spacing
+    if (!placed) {
+        const size = 30 + Math.random() * 20;
+        const fallbackSpacing = minSpacing / 2;
+        
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
             const randomX = margin + Math.random() * (canvas.width - 2 * margin);
             const randomY = margin + Math.random() * (canvas.height - 2 * margin);
-            fishes.push(new Fish(new Vector(randomX, randomY)));
+            
+            let tooClose = false;
+            for (const pad of lilypads) {
+                const dx = randomX - pad.position.x;
+                const dy = randomY - pad.position.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < (size + pad.size + fallbackSpacing)) {
+                    tooClose = true;
+                    break;
+                }
+            }
+            
+            if (!tooClose) {
+                lilypads.push(new Lilypad(randomX, randomY, size));
+                break;
+            }
         }
+    }
+}
 
+// Initialize fish after lilypads
+for (let i = 0; i < numFish; i++) {
+    const randomX = margin + Math.random() * (canvas.width - 2 * margin);
+    const randomY = margin + Math.random() * (canvas.height - 2 * margin);
+    fishes.push(new Fish(new Vector(randomX, randomY)));
+}
         // Animation loop
         function animate() {
+            const time = Date.now() * 0.001;
             ctx.fillStyle = 'rgb(40, 44, 52)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+        
+            // Update and remove eaten/expired food
+            for (let i = foodPellets.length - 1; i >= 0; i--) {
+                if (!foodPellets[i].update()) {
+                    foodPellets.splice(i, 1);
+                }
+            }
+        
+            // Display food
+            for (let food of foodPellets) {
+                food.display(ctx);
+            }
+        
+            // Update and display fish with food awareness
             for (let fish of fishes) {
-                fish.flock(fishes);
+                fish.flock(fishes, foodPellets);
                 fish.update();
                 fish.display(ctx);
             }
-
+        
+            // Display lilypads last
+            for (let lilypad of lilypads) {
+                lilypad.update(time);
+                lilypad.display(ctx);
+            }
+        
             requestAnimationFrame(animate);
         }
-
-        // Start the animation
+        // Start animation
         animate();
     </script>
 </body>
