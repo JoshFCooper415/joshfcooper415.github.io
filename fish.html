@@ -192,26 +192,88 @@
         class FoodPellet {
             constructor(x, y) {
                 this.position = new Vector(x, y);
-                this.size = 4;
-                this.lifespan = 1000; // Food disappears after 1000 frames
+                
+                // Create radial spread velocity
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 2 + Math.random() * 3;
+                this.velocity = new Vector(
+                    Math.cos(angle) * speed,
+                    Math.sin(angle) * speed
+                );
+                
+                this.size = 2 + Math.random() * 1.5;
+                this.lifespan = 800 + Math.random() * 400;
                 this.eaten = false;
+                this.rotation = Math.random() * Math.PI * 2;
+                this.corners = 3 + Math.floor(Math.random() * 3);
+                this.points = this.generatePoints();
+                
+                // Settling properties
+                this.settling = true;
+                this.settleTime = 10 + Math.random() * 5; // Shorter settle time
+                this.friction = 0.65;
+            }
+        
+            generatePoints() {
+                const points = [];
+                for (let i = 0; i < this.corners; i++) {
+                    const angle = (i / this.corners) * Math.PI * 2;
+                    const radius = this.size * (0.8 + Math.random() * 0.4);
+                    points.push({
+                        x: Math.cos(angle) * radius,
+                        y: Math.sin(angle) * radius
+                    });
+                }
+                return points;
             }
         
             display(ctx) {
+                ctx.save();
+                ctx.translate(this.position.x, this.position.y);
+                ctx.rotate(this.rotation);
+        
                 ctx.fillStyle = '#e9a067';
                 ctx.strokeStyle = '#c17f45';
-                ctx.lineWidth = 1;
+                ctx.lineWidth = 0.5;
                 ctx.beginPath();
-                ctx.arc(this.position.x, this.position.y, this.size, 0, Math.PI * 2);
+                ctx.moveTo(this.points[0].x, this.points[0].y);
+                for (let i = 1; i < this.points.length; i++) {
+                    ctx.lineTo(this.points[i].x, this.points[i].y);
+                }
+                ctx.closePath();
                 ctx.fill();
                 ctx.stroke();
+        
+                ctx.restore();
             }
         
             update() {
+                if (this.settling && this.settleTime > 0) {
+                    this.position.add(this.velocity);
+                    
+                    // Apply friction to slow down movement
+                    this.velocity.x *= this.friction;
+                    this.velocity.y *= this.friction;
+                    
+                    // Update rotation based on movement
+                    this.rotation += this.velocity.x * 0.1;
+                    
+                    this.settleTime--;
+                    
+                    // Stop all movement when settle time runs out
+                    if (this.settleTime <= 0) {
+                        this.velocity.x = 0;
+                        this.velocity.y = 0;
+                        this.settling = false;
+                    }
+                }
+        
                 this.lifespan--;
                 return this.lifespan > 0 && !this.eaten;
             }
         }
+        
+        
         class Fish {
             constructor(origin) {
                 this.spine = new Chain(origin, 12, 16, Math.PI / 8);
@@ -257,11 +319,11 @@
                 this.momentum = 0.92;
 
                 //Food
-                this.foodDetectionRadius = 200;
+                this.foodDetectionRadius = 300;
                 this.foodAttractionStrength = 10;
-                this.eatingDistance = 15;
+                this.eatingDistance = 20;
                 // Boid parameters
-                this.maxSpeed = 3;
+                this.maxSpeed = 3.5;
                 this.maxForce = 0.1;
                 this.perceptionRadius = 100;
                 this.separationRadius = 45;
@@ -632,10 +694,20 @@ const minSpacing = 100; // Minimum distance between lilypad centers
 const maxAttempts = 50; // Maximum attempts to place each lilypad
 canvas.addEventListener('click', (event) => {
     const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    foodPellets.push(new FoodPellet(x, y));
+    const baseX = event.clientX - rect.left;
+    const baseY = event.clientY - rect.top;
+    
+    // Create a random number of pellets (5-12)
+    const numPellets = 5 + Math.floor(Math.random() * 7);
+    
+    for (let i = 0; i < numPellets; i++) {
+        // Tighter initial spread
+        const spreadX = baseX + (Math.random() - 0.5) * 20;
+        const spreadY = baseY + (Math.random() - 0.5) * 20;
+        foodPellets.push(new FoodPellet(spreadX, spreadY));
+    }
 });
+
 
 for (let i = 0; i < numLilypads; i++) {
     let placed = false;
