@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Word Vector Game</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .game-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .word-display {
+            font-size: 24px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .current-word {
+            font-size: 28px;
+            color: #2c5282;
+            font-weight: bold;
+        }
+        .input-container {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .closest-words {
+            margin: 20px 0;
+        }
+        .word-item {
+            padding: 8px;
+            margin: 4px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        .history {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        .history-item {
+            margin: 5px 0;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        input[type="text"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 200px;
+        }
+        select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .moves {
+            text-align: right;
+            color: #666;
+        }
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Word Vector Game</h1>
+        <p>Try to reach the target word by adding or subtracting words!</p>
+        
+        <div class="word-display">
+            <div>Starting word: <span id="baseWord">loading...</span></div>
+            <div>Target word: <span id="targetWord">loading...</span></div>
+            <div>Current closest word: <span id="currentWord" class="current-word">loading...</span></div>
+        </div>
+        
+        <div class="input-container">
+            <select id="operation">
+                <option value="+">+</option>
+                <option value="-">-</option>
+            </select>
+            <input type="text" id="wordInput" placeholder="Enter a word">
+            <button onclick="makeGuess()" id="guessButton">Try</button>
+        </div>
+        
+        <div class="history">
+            <h3>Move History:</h3>
+            <div id="moveHistory"></div>
+        </div>
+        
+        <div class="closest-words">
+            <h3>Closest words to current vector:</h3>
+            <div id="closestWords"></div>
+        </div>
+        
+        <div class="moves">Moves: <span id="moveCount">0</span></div>
+        
+        <button onclick="newGame()" id="newGameButton">New Game</button>
+    </div>
+
+    <script>
+        const API_URL = 'https://api.conceptnet.io/relatedness';
+        let gameState = {
+            currentWord: '',
+            targetWord: '',
+            moves: 0,
+            history: []
+        };
+
+        async function getWordVector(word) {
+            try {
+                const response = await fetch(`${API_URL}?node1=/c/en/${word}&node2=/c/en/entity`);
+                if (!response.ok) throw new Error('Word not found');
+                const data = await response.json();
+                return data.value;
+            } catch (error) {
+                throw new Error('Unable to get word vector');
+            }
+        }
+
+        async function findSimilarWords(word) {
+            try {
+                const promises = [
+                    'dog', 'cat', 'house', 'car', 'book', 'tree', 'food', 'water',
+                    'person', 'city', 'music', 'color', 'bird', 'fish', 'computer'
+                ].map(async (compareWord) => {
+                    const response = await fetch(
+                        `${API_URL}?node1=/c/en/${word}&node2=/c/en/${compareWord}`
+                    );
+                    const data = await response.json();
+                    return { word: compareWord, similarity: data.value };
+                });
+                
+                const results = await Promise.all(promises);
+                return results.sort((a, b) => b.similarity - a.similarity);
+            } catch (error) {
+                throw new Error('Unable to find similar words');
+            }
+        }
+
+        async function makeGuess() {
+            const guessButton = document.getElementById('guessButton');
+            const wordInput = document.getElementById('wordInput');
+            const operation = document.getElementById('operation').value;
+            const word = wordInput.value.toLowerCase().trim();
+            
+            if (!word) return;
+            
+            guessButton.disabled = true;
+            try {
+                const similarWords = await findSimilarWords(word);
+                gameState.currentWord = similarWords[0].word;
+                gameState.moves++;
+                gameState.history.push(`${operation} ${word} → ${gameState.currentWord}`);
+                
+                updateDisplay();
+                
+                if (gameState.currentWord === gameState.targetWord) {
+                    alert(`Congratulations! You solved it in ${gameState.moves} moves!`);
+                }
+            } catch (error) {
+                alert('Invalid word or API error. Please try another word.');
+            } finally {
+                guessButton.disabled = false;
+                wordInput.value = '';
+            }
+        }
+
+        function updateDisplay() {
+            document.getElementById('currentWord').textContent = gameState.currentWord;
+            document.getElementById('moveCount').textContent = gameState.moves;
+            
+            const historyContainer = document.getElementById('moveHistory');
+            historyContainer.innerHTML = gameState.history
+                .map(move => `<div class="history-item">${move}</div>`)
+                .join('');
+        }
+
+        async function newGame() {
+            const newGameButton = document.getElementById('newGameButton');
+            newGameButton.disabled = true;
+            
+            try {
+                const startWords = ['dog', 'cat', 'house', 'car', 'book', 'tree'];
+                const targetWords = ['food', 'water', 'person', 'city', 'music'];
+                
+                gameState = {
+                    currentWord: startWords[Math.floor(Math.random() * startWords.length)],
+                    targetWord: targetWords[Math.floor(Math.random() * targetWords.length)],
+                    moves: 0,
+                    history: []
+                };
+                
+                document.getElementById('baseWord').textContent = gameState.currentWord;
+                document.getElementById('targetWord').textContent = gameState.targetWord;
+                document.getElementById('currentWord').textContent = gameState.currentWord;
+                document.getElementById('moveHistory').innerHTML = '';
+                document.getElementById('moveCount').textContent = '0';
+            } catch (error) {
+                alert('Error starting new game. Please try again.');
+            } finally {
+                newGameButton.disabled = false;
+            }
+        }
+
+        document.getElementById('wordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                makeGuess();
+            }
+        });
+
+        // Start first game
+        newGame();
+    </script>
+</body>
+</html>

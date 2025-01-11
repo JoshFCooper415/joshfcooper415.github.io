@@ -8,472 +8,405 @@
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        @keyframes jiggle {
-            0% { transform: rotate(0deg); }
-            25% { transform: rotate(-5deg); }
-            75% { transform: rotate(5deg); }
-            100% { transform: rotate(0deg); }
+        .chess-title { font-family: 'Cinzel', serif; }
+        .chess-cell-dark { background-color: #4a3728; }
+        .chess-cell-light { background-color: #e8d0aa; }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        .jiggle {
-            animation: jiggle 0.3s ease-in-out;
+        .progress-bar { transition: width 0.3s ease-in-out; }
+        .game-container { box-shadow: 0 0 50px rgba(0, 0, 0, 0.5); }
+        .piece {
+            touch-action: none;
+            user-select: none;
         }
-        @keyframes swap-pop {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-        .swap-pop {
-            animation: swap-pop 0.2s ease-in-out;
-        }
-        @keyframes flash {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-        .flash {
-            animation: flash 0.5s ease-in-out;
-        }
-        @keyframes special-clear {
-            0% { transform: scale(1); filter: brightness(1); }
-            50% { transform: scale(1.3); filter: brightness(1.5); }
-            100% { transform: scale(1); filter: brightness(1); }
-        }
-        .special-clear {
-            animation: special-clear 0.5s ease-in-out;
-        }
-        .chess-cell-dark {
-            background-color: #b88b4a;
-        }
-        .chess-cell-light {
-            background-color: #e3c16f;
-        }
-        .special-text {
-            text-shadow: 0 0 10px gold;
-            animation: special-clear 1s ease-in-out;
-        }
-        @keyframes rainbow {
-            0% { background: linear-gradient(45deg, #ff0000, #ff7f00); }
-            25% { background: linear-gradient(45deg, #ff7f00, #ffff00); }
-            50% { background: linear-gradient(45deg, #ffff00, #00ff00); }
-            75% { background: linear-gradient(45deg, #00ff00, #0000ff); }
-            100% { background: linear-gradient(45deg, #0000ff, #ff0000); }
-        }
-        .rainbow-piece {
-            animation: rainbow 2s linear infinite;
-        }
+        .dragging { opacity: 0.5; }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<body class="bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 min-h-screen flex items-center justify-center p-4">
     <div id="root"></div>
     <script type="text/babel">
-        const PIECES = {
-            PAWN: { 
-                symbol: '♟', 
-                color: 'bg-blue-400', 
-                textColor: 'text-blue-800',
-                moves: [[0, -1]], 
-                maxDistance: 1,
-                points: 30
-            },
-            ROOK: { 
-                symbol: '♜', 
-                color: 'bg-red-400',
-                textColor: 'text-red-800',
-                moves: [[0, 1], [0, -1], [1, 0], [-1, 0]], 
-                maxDistance: 5,
-                points: 10
-            },
-            BISHOP: { 
-                symbol: '♝', 
-                color: 'bg-green-400',
-                textColor: 'text-green-800',
-                moves: [[1, 1], [1, -1], [-1, 1], [-1, -1]], 
-                maxDistance: 5,
-                points: 25
-            },
-            QUEEN: { 
-                symbol: '♛', 
-                color: 'bg-purple-400',
-                textColor: 'text-purple-800',
-                moves: [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]], 
-                maxDistance: 5,
-                points: 15
-            },
-            KNIGHT: { 
-                symbol: '♞', 
-                color: 'bg-yellow-400',
-                textColor: 'text-yellow-800',
-                moves: [[2, 1], [2, -1], [-2, 1], [-2, -1], [1, 2], [1, -2], [-1, 2], [-1, -2]], 
-                maxDistance: 1,
-                points: 20
-            },
-            KING: { 
-                symbol: '♚', 
-                color: 'bg-orange-400',
-                textColor: 'text-orange-800',
-                moves: [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]], 
-                maxDistance: 1,
-                points: 10
-            },
-            RAINBOW_QUEEN: {
-                symbol: '♛',
-                color: 'bg-white',
-                textColor: 'text-white',
-                moves: [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]],
-                maxDistance: 5,
-                points: 50,
-                isWildcard: true,
-                multiplier: 2
-            }
-        };
-
         const BOARD_SIZE = 6;
         const MATCH_SIZE = 3;
         const ANIMATION_DURATION = 200;
 
+        const PIECES = {
+            PAWN: { symbol: '♟', color: 'from-blue-400 to-blue-600', textColor: 'text-white', moves: [[0, -1]], maxDistance: 1, points: 30, movable: true },
+            ROOK: { symbol: '♜', color: 'from-red-400 to-red-600', textColor: 'text-white', moves: [[0, 1], [0, -1], [1, 0], [-1, 0]], maxDistance: 5, points: 40, movable: true },
+            BISHOP: { symbol: '♝', color: 'from-green-400 to-green-600', textColor: 'text-white', moves: [[1, 1], [1, -1], [-1, 1], [-1, -1]], maxDistance: 5, points: 35, movable: true },
+            QUEEN: { symbol: '♛', color: 'from-purple-400 to-purple-600', textColor: 'text-white', moves: [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]], maxDistance: 5, points: 50, movable: true },
+            KNIGHT: { symbol: '♞', color: 'from-yellow-400 to-yellow-600', textColor: 'text-white', moves: [[2, 1], [2, -1], [-2, 1], [-2, -1], [1, 2], [1, -2], [-1, 2], [-1, -2]], maxDistance: 1, points: 45, movable: true },
+            KING: { symbol: '♚', color: 'from-orange-400 to-orange-600', textColor: 'text-white', moves: [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]], maxDistance: 1, points: 60, movable: true },
+            BLACK: { symbol: '♟', color: 'from-gray-800 to-gray-900', textColor: 'text-white', moves: [], maxDistance: 0, points: 0, movable: false }
+        };
+
         const LEVELS = [
-            { targetScore: 1000, moves: 15 },
-            { targetScore: 2500, moves: 12 },
-            { targetScore: 5000, moves: 10 },
-            { targetScore: 10000, moves: 8 },
-            { targetScore: 20000, moves: 6 },
-            { targetScore: 40000, moves: 4 }
+            { targetScore: 1000, moves: 15, name: "Pawn's Opening", background: 'from-blue-900 to-blue-800' },
+            { targetScore: 2500, moves: 12, name: "Knight's Gambit", background: 'from-yellow-900 to-yellow-800' },
+            { targetScore: 5000, moves: 10, name: "Bishop's Attack", background: 'from-green-900 to-green-800' },
+            { targetScore: 10000, moves: 8, name: "Rook's Defense", background: 'from-red-900 to-red-800' },
+            { targetScore: 20000, moves: 6, name: "Queen's Gambit", background: 'from-purple-900 to-purple-800' },
+            { targetScore: 40000, moves: 4, name: "King's Endgame", background: 'from-orange-900 to-orange-800' }
         ];
+
+        function getRandomPiece(excludeBlack = false) {
+            const pieces = Object.keys(PIECES).filter(p => excludeBlack ? p !== 'BLACK' : true);
+            return pieces[Math.floor(Math.random() * pieces.length)];
+        }
 
         function ChessMatch3() {
             const [board, setBoard] = React.useState([]);
             const [selected, setSelected] = React.useState(null);
+            const [draggedPiece, setDraggedPiece] = React.useState(null);
             const [score, setScore] = React.useState(0);
             const [validMoves, setValidMoves] = React.useState([]);
             const [isAnimating, setIsAnimating] = React.useState(false);
-            const [jigglingPieces, setJigglingPieces] = React.useState(new Set());
-            const [swappingPieces, setSwappingPieces] = React.useState(new Set());
-            const [specialClearPieces, setSpecialClearPieces] = React.useState(new Set());
             const [level, setLevel] = React.useState(0);
             const [movesLeft, setMovesLeft] = React.useState(LEVELS[0].moves);
             const [gameState, setGameState] = React.useState('playing');
-            const [specialText, setSpecialText] = React.useState('');
+            const [hint, setHint] = React.useState(null);
 
-            React.useEffect(() => {
-                initializeBoard();
-            }, []);
+            React.useEffect(() => { initializeBoard(); }, []);
 
-            const initializeBoard = () => {
+            function initializeBoard() {
                 const newBoard = Array(BOARD_SIZE).fill(0).map(() => 
                     Array(BOARD_SIZE).fill(0).map(() => {
-                        const pieceTypes = Object.keys(PIECES).filter(p => p !== 'RAINBOW_QUEEN');
-                        return pieceTypes[Math.floor(Math.random() * pieceTypes.length)];
+                        return Math.random() < 0.15 ? 'BLACK' : getRandomPiece(true);
                     })
                 );
                 setBoard(newBoard);
-            };
+            }
 
-            const showSpecialEffect = (text) => {
-                setSpecialText(text);
-                setTimeout(() => setSpecialText(''), 1000);
-            };
-
-            const getValidMoves = (row, col, piece) => {
-                const moves = new Set();
+            function getValidMoves(row, col, piece) {
+                if (!PIECES[piece].movable) return [];
+                const moves = [];
                 const pieceData = PIECES[piece];
                 
                 pieceData.moves.forEach(([dx, dy]) => {
                     for (let dist = 1; dist <= pieceData.maxDistance; dist++) {
                         const newRow = row + dy * dist;
                         const newCol = col + dx * dist;
-                        
-                        if (newRow >= 0 && newRow < BOARD_SIZE && 
-                            newCol >= 0 && newCol < BOARD_SIZE) {
-                            moves.add(`${newRow}-${newCol}`);
-                        } else {
-                            break;
+                        if (newRow >= 0 && newRow < BOARD_SIZE && newCol >= 0 && newCol < BOARD_SIZE) {
+                            const targetPiece = board[newRow][newCol];
+                            if (!targetPiece || PIECES[targetPiece].movable) {
+                                moves.push([newRow, newCol]);
+                            }
+                            if (targetPiece) break;
                         }
                     }
                 });
-                
-                return Array.from(moves).map(pos => {
-                    const [r, c] = pos.split('-').map(Number);
-                    return [r, c];
-                });
-            };
+                return moves;
+            }
 
-            const checkMatches = () => {
+            function checkMatches() {
                 const matches = new Set();
-                const matchGroups = [];
 
-                const piecesMatch = (piece1, piece2) => {
-                    return piece1 === piece2 || 
-                           piece1 === 'RAINBOW_QUEEN' || 
-                           piece2 === 'RAINBOW_QUEEN';
-                };
-
-                // Check horizontal matches
                 for (let i = 0; i < BOARD_SIZE; i++) {
                     for (let j = 0; j <= BOARD_SIZE - MATCH_SIZE; j++) {
                         const piece = board[i][j];
-                        let matchLength = 1;
-                        let currentMatch = [`${i}-${j}`];
-                        let rainbowCount = piece === 'RAINBOW_QUEEN' ? 1 : 0;
+                        if (!PIECES[piece].movable) continue;
                         
-                        for (let k = 1; k < BOARD_SIZE - j; k++) {
-                            if (piecesMatch(piece, board[i][j + k])) {
-                                matchLength++;
-                                currentMatch.push(`${i}-${j + k}`);
-                                if (board[i][j + k] === 'RAINBOW_QUEEN') {
-                                    rainbowCount++;
-                                }
-                            } else {
-                                break;
-                            }
+                        let matchCount = 1;
+                        for (let k = 1; k < MATCH_SIZE; k++) {
+                            if (board[i][j + k] === piece) matchCount++;
+                            else break;
                         }
                         
-                        if (matchLength >= MATCH_SIZE) {
-                            matchGroups.push({
-                                piece: piece,
-                                positions: currentMatch.map(pos => pos.split('-').map(Number)),
-                                type: 'horizontal',
-                                row: i,
-                                multiplier: Math.pow(2, rainbowCount)
-                            });
-                            currentMatch.forEach(pos => matches.add(pos));
+                        if (matchCount >= MATCH_SIZE) {
+                            for (let k = 0; k < matchCount; k++) {
+                                matches.add(`${i}-${j + k}`);
+                            }
                         }
                     }
                 }
 
-                // Check vertical matches
                 for (let j = 0; j < BOARD_SIZE; j++) {
                     for (let i = 0; i <= BOARD_SIZE - MATCH_SIZE; i++) {
                         const piece = board[i][j];
-                        let matchLength = 1;
-                        let currentMatch = [`${i}-${j}`];
-                        let rainbowCount = piece === 'RAINBOW_QUEEN' ? 1 : 0;
+                        if (!PIECES[piece].movable) continue;
                         
-                        for (let k = 1; k < BOARD_SIZE - i; k++) {
-                            if (piecesMatch(piece, board[i + k][j])) {
-                                matchLength++;
-                                currentMatch.push(`${i + k}-${j}`);
-                                if (board[i + k][j] === 'RAINBOW_QUEEN') {
-                                    rainbowCount++;
-                                }
-                            } else {
-                                break;
+                        let matchCount = 1;
+                        for (let k = 1; k < MATCH_SIZE; k++) {
+                            if (board[i + k][j] === piece) matchCount++;
+                            else break;
+                        }
+                        
+                        if (matchCount >= MATCH_SIZE) {
+                            for (let k = 0; k < matchCount; k++) {
+                                matches.add(`${i + k}-${j}`);
                             }
                         }
-                        
-                        if (matchLength >= MATCH_SIZE) {
-                            matchGroups.push({
-                                piece: piece,
-                                positions: currentMatch.map(pos => pos.split('-').map(Number)),
-                                type: 'vertical',
-                                col: j,
-                                multiplier: Math.pow(2, rainbowCount)
-                            });
-                            currentMatch.forEach(pos => matches.add(pos));
-                        }
                     }
                 }
 
-                return {
-                    positions: Array.from(matches).map(pos => pos.split('-').map(Number)),
-                    matchGroups: matchGroups
-                };
-            };
+                return Array.from(matches).map(pos => pos.split('-').map(Number));
+            }
 
-            const handlePawnPromotion = (board) => {
-                const newBoard = [...board];
-                let promoted = false;
-                
+            function handleMatchesAndDrop(currentBoard) {
+                const newBoard = [...currentBoard.map(row => [...row])];
+                let hasMatches = false;
+
+                // Clear matches
+                const matches = checkMatches();
+                if (matches.length > 0) {
+                    hasMatches = true;
+                    matches.forEach(([r, c]) => {
+                        if (PIECES[newBoard[r][c]].movable) {
+                            setScore(prev => prev + PIECES[newBoard[r][c]].points);
+                            newBoard[r][c] = null;
+                        }
+                    });
+                }
+
+                // Drop pieces
                 for (let col = 0; col < BOARD_SIZE; col++) {
-                    if (board[0][col] === 'PAWN') {
-                        newBoard[0][col] = 'RAINBOW_QUEEN';
-                        promoted = true;
-                        showSpecialEffect('Pawn Promoted!');
-                    }
-                }
-                
-                if (promoted) {
-                    setBoard(newBoard);
-                }
-                return newBoard;
-            };
-
-            const processMatches = async (matchResult, currentBoard) => {
-                const newBoard = [...currentBoard];
-                const { positions: matches, matchGroups } = matchResult;
-                
-                let scoreIncrease = 0;
-                let promotionCol = -1;  // Track which column to promote
-            
-                matchGroups.forEach(group => {
-                    const basePoints = PIECES[group.piece].points;
-                    scoreIncrease += basePoints * group.positions.length * (group.multiplier || 1);
-            
-                    // Check for pawn promotion
-                    if (group.piece === 'PAWN' && group.positions.length >= 3) {
-                        // Choose the topmost position in the matched group for promotion
-                        const topPosition = group.positions.reduce((top, current) => {
-                            return current[0] < top[0] ? current : top;
-                        });
-                        promotionCol = topPosition[1];
-                        showSpecialEffect('Pawn Promotion!');
-                    }
-                });
-                setScore(prevScore => prevScore + scoreIncrease);
-            
-                // Process falling pieces
-                matches.forEach(([r, c]) => {
-                    for (let row = r; row > 0; row--) {
-                        newBoard[row][c] = newBoard[row - 1][c];
-                    }
-                    const pieceTypes = Object.keys(PIECES).filter(p => p !== 'RAINBOW_QUEEN');
-                    newBoard[0][c] = pieceTypes[Math.floor(Math.random() * pieceTypes.length)];
-                });
-            
-                // Apply promotion after pieces have fallen
-                if (promotionCol !== -1) {
-                    newBoard[0][promotionCol] = 'RAINBOW_QUEEN';
-                }
-                
-                setBoard(newBoard);
-                await new Promise(resolve => setTimeout(resolve, ANIMATION_DURATION));
-                
-                const newMatchResult = checkMatches();
-                if (newMatchResult.positions.length > 0) {
-                    await processMatches(newMatchResult, newBoard);
-                }
-            };
-            const handleMove = async () => {
-                setMovesLeft(prev => prev - 1);
-                if (movesLeft <= 1) {
-                    if (score >= LEVELS[level].targetScore) {
-                        if (level < LEVELS.length - 1) {
-                            setLevel(prev => prev + 1);
-                            setMovesLeft(LEVELS[level + 1].moves);
-                            showSpecialEffect('Level Up!');
-                        } else {
-                            setGameState('won');
-                            showSpecialEffect('You Won!');
+                    let emptySpaces = 0;
+                    for (let row = BOARD_SIZE - 1; row >= 0; row--) {
+                        const piece = newBoard[row][col];
+                        if (!piece) {
+                            emptySpaces++;
+                        } else if (PIECES[piece].movable && emptySpaces > 0) {
+                            newBoard[row + emptySpaces][col] = piece;
+                            newBoard[row][col] = null;
                         }
-                    } else {
-                        setGameState('lost');
-                        showSpecialEffect('Game Over!');
+                    }
+
+                    // Fill empty spaces at top
+                    for (let row = 0; row < BOARD_SIZE; row++) {
+                        if (!newBoard[row][col]) {
+                            newBoard[row][col] = getRandomPiece(true);
+                        }
                     }
                 }
-            };
 
-            const resetGame = () => {
-                setLevel(0);
-                setScore(0);
-                setMovesLeft(LEVELS[0].moves);
-                setGameState('playing');
-                initializeBoard();
-            };
+                return { newBoard, hasMatches };
+            }
 
-            const handleCellClick = async (row, col) => {
+            async function processMatches(currentBoard) {
+                let processing = true;
+                let boardState = [...currentBoard.map(row => [...row])];
+
+                while (processing) {
+                    const { newBoard, hasMatches } = handleMatchesAndDrop(boardState);
+                    boardState = newBoard;
+                    setBoard(newBoard);
+                    
+                    if (hasMatches) {
+                        await new Promise(resolve => setTimeout(resolve, ANIMATION_DURATION));
+                    } else {
+                        processing = false;
+                    }
+                }
+            }
+
+            async function makeMove(fromRow, fromCol, toRow, toCol) {
+                if (isAnimating) return false;
+                setIsAnimating(true);
+
+                const newBoard = [...board.map(row => [...row])];
+                const temp = newBoard[toRow][toCol];
+                newBoard[toRow][toCol] = newBoard[fromRow][fromCol];
+                newBoard[fromRow][fromCol] = temp;
+
+                if (checkMatches().length > 0) {
+                    setBoard(newBoard);
+                    await processMatches(newBoard);
+                    handleMove();
+                    setIsAnimating(false);
+                    return true;
+                } else {
+                    setBoard(board);
+                    setIsAnimating(false);
+                    return false;
+                }
+            }
+
+            function handleMove() {
+                setMovesLeft(prev => {
+                    const newMoves = prev - 1;
+                    if (newMoves <= 0) {
+                        if (score >= LEVELS[level].targetScore) {
+                            if (level < LEVELS.length - 1) {
+                                setLevel(l => l + 1);
+                                return LEVELS[level + 1].moves;
+                            } else {
+                                setGameState('won');
+                            }
+                        } else {
+                            setGameState('lost');
+                        }
+                    }
+                    return newMoves;
+                });
+            }
+
+            async function handleCellClick(row, col) {
                 if (isAnimating || gameState !== 'playing') return;
 
                 if (!selected) {
+                    const piece = board[row][col];
+                    if (!PIECES[piece].movable) return;
+                    
                     setSelected([row, col]);
-                    setValidMoves(getValidMoves(row, col, board[row][col]));
+                    setValidMoves(getValidMoves(row, col, piece));
+                    setHint(null);
                 } else {
                     const [selectedRow, selectedCol] = selected;
                     const isValidMove = validMoves.some(([r, c]) => r === row && c === col);
 
                     if (isValidMove) {
-                        setIsAnimating(true);
-                        
-                        setSwappingPieces(new Set([`${row}-${col}`, `${selectedRow}-${selectedCol}`]));
-                        
-                        const newBoard = [...board];
-                        const temp = newBoard[row][col];
-                        newBoard[row][col] = newBoard[selectedRow][selectedCol];
-                        newBoard[selectedRow][selectedCol] = temp;
-                        setBoard(newBoard);
-
-                        await new Promise(resolve => setTimeout(resolve, 200));
-                        setSwappingPieces(new Set());
-
-                        const matchResult = checkMatches();
-                        if (matchResult.positions.length > 0) {
-                            await processMatches(matchResult, newBoard);
-                            handleMove();
-                        } else {
-                            setJigglingPieces(new Set([`${row}-${col}`, `${selectedRow}-${selectedCol}`]));
-                            await new Promise(resolve => setTimeout(resolve, 300));
-                            
-                            const revertBoard = [...newBoard];
-                            const temp = revertBoard[row][col];
-                            revertBoard[row][col] = revertBoard[selectedRow][selectedCol];
-                            revertBoard[selectedRow][selectedCol] = temp;
-                            setBoard(revertBoard);
-                            
-                            setJigglingPieces(new Set());
-                        }
-                        setIsAnimating(false);
+                        await makeMove(selectedRow, selectedCol, row, col);
                     }
                     
                     setSelected(null);
                     setValidMoves([]);
                 }
-            };
+            }
+
+            function handleDragStart(e, row, col) {
+                const piece = board[row][col];
+                if (!PIECES[piece].movable || isAnimating || gameState !== 'playing') {
+                    e.preventDefault();
+                    return false;
+                }
+                setDraggedPiece({ row, col });
+                e.currentTarget.classList.add('dragging');
+                setValidMoves(getValidMoves(row, col, piece));
+                setHint(null);
+            }
+
+            function handleDragEnd(e) {
+                e.currentTarget.classList.remove('dragging');
+                setDraggedPiece(null);
+                setValidMoves([]);
+            }
+
+            async function handleDrop(e, row, col) {
+                e.preventDefault();
+                if (!draggedPiece || isAnimating) return;
+
+                const { row: fromRow, col: fromCol } = draggedPiece;
+                const isValidMove = validMoves.some(([r, c]) => r === row && c === col);
+
+                if (isValidMove) {
+                    await makeMove(fromRow, fromCol, row, col);
+                }
+            }
+
+            function showHint() {
+                for (let i = 0; i < BOARD_SIZE; i++) {
+                    for (let j = 0; j < BOARD_SIZE; j++) {
+                        const piece = board[i][j];
+                        if (!PIECES[piece].movable) continue;
+                        
+                        const moves = getValidMoves(i, j, piece);
+                        for (const [moveRow, moveCol] of moves) {
+                            const tempBoard = board.map(row => [...row]);
+                            const temp = tempBoard[moveRow][moveCol];
+                            tempBoard[moveRow][moveCol] = tempBoard[i][j];
+                            tempBoard[i][j] = temp;
+                            
+                            if (checkMatches().length > 0) {
+                                setHint({ start: [i, j], end: [moveRow, moveCol] });
+                            return;
+                        }
+                    }
+                }
+                setHint(null);
+            }
+
+            function resetGame() {
+                setLevel(0);
+                setScore(0);
+                setMovesLeft(LEVELS[0].moves);
+                setGameState('playing');
+                setHint(null);
+                initializeBoard();
+            }
 
             return (
-                <div className="flex flex-col items-center gap-4">
-                    <div className="flex flex-col items-center gap-2">
-                        <div className="text-2xl font-bold">Score: {score}</div>
-                        <div className="text-xl">Target: {LEVELS[level].targetScore}</div>
-                        <div className="text-xl">Moves Left: {movesLeft}</div>
-                        <div className="text-xl">Level: {level + 1}</div>
-                        {specialText && (
-                            <div className="text-3xl font-bold special-text">{specialText}</div>
-                        )}
-                        {gameState !== 'playing' && (
-                            <button 
-                                onClick={resetGame}
-                                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                            >
-                                Play Again
-                            </button>
-                        )}
+                <div className={`game-container bg-gradient-to-br ${LEVELS[level].background} p-8 rounded-2xl flex flex-col items-center gap-6`}>
+                    <h1 className="chess-title text-4xl font-bold text-white mb-2">Chess Match 3</h1>
+                    
+                    <div className="grid grid-cols-2 gap-6 mb-6">
+                        <div className="glass-effect rounded-xl p-4 text-center">
+                            <div className="text-lg text-white">Score: {score}</div>
+                            <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+                                <div className="progress-bar bg-gradient-to-r from-blue-400 to-blue-600 rounded-full h-2"
+                                    style={{ width: `${Math.min(100, (score / LEVELS[level].targetScore) * 100)}%` }}
+                                />
+                            </div>
+                        </div>
+                        <div className="glass-effect rounded-xl p-4 text-center">
+                            <div className="text-lg text-white">Moves: {movesLeft}</div>
+                            <div className="text-sm text-gray-300">Level {level + 1}</div>
+                        </div>
                     </div>
-                    <div className="grid grid-cols-6 gap-0 p-4 bg-gray-700 rounded-lg shadow-lg">
+
+                    <div className="grid grid-cols-6 gap-0 bg-gray-800 rounded-xl p-3 shadow-2xl">
                         {board.map((row, rowIndex) => (
-                            row.map((piece, colIndex) => {
-                                const isSelected = selected && selected[0] === rowIndex && selected[1] === colIndex;
-                                const isValidMove = validMoves.some(([r, c]) => r === rowIndex && c === colIndex);
-                                const isJiggling = jigglingPieces.has(`${rowIndex}-${colIndex}`);
-                                const isSwapping = swappingPieces.has(`${rowIndex}-${colIndex}`);
-                                const isSpecialClear = specialClearPieces.has(`${rowIndex}-${colIndex}`);
-                                const isLight = (rowIndex + colIndex) % 2 === 0;
-                                const isRainbowQueen = piece === 'RAINBOW_QUEEN';
-                                
-                                return (
-                                    <div
-                                        key={`${rowIndex}-${colIndex}`}
-                                        className={`w-14 h-14 flex items-center justify-center cursor-pointer relative
-                                            ${isSelected ? 'ring-2 ring-blue-500' : ''}
-                                            ${isValidMove ? 'ring-2 ring-green-500' : ''}
-                                            ${isLight ? 'chess-cell-light' : 'chess-cell-dark'}
-                                            ${isSpecialClear ? 'flash' : ''}`}
-                                        onClick={() => gameState === 'playing' && handleCellClick(rowIndex, colIndex)}
-                                    >
-                                        <div 
+                            row.map((piece, colIndex) => (
+                                <div
+                                    key={`${rowIndex}-${colIndex}`}
+                                    className={`
+                                        w-14 h-14 flex items-center justify-center cursor-pointer relative
+                                        ${(rowIndex + colIndex) % 2 === 0 ? 'chess-cell-light' : 'chess-cell-dark'}
+                                        ${selected && selected[0] === rowIndex && selected[1] === colIndex ? 'ring-2 ring-blue-500' : ''}
+                                        ${validMoves.some(([r, c]) => r === rowIndex && c === colIndex) ? 'ring-2 ring-green-500' : ''}
+                                        ${hint && ((hint.start[0] === rowIndex && hint.start[1] === colIndex) || 
+                                                 (hint.end[0] === rowIndex && hint.end[1] === colIndex)) ? 'ring-2 ring-yellow-500' : ''}
+                                    `}
+                                    onClick={() => handleCellClick(rowIndex, colIndex)}
+                                    onDragOver={(e) => e.preventDefault()}
+                                    onDrop={(e) => handleDrop(e, rowIndex, colIndex)}
+                                >
+                                    {piece && (
+                                        <div
+                                            draggable={PIECES[piece].movable}
+                                            onDragStart={(e) => handleDragStart(e, rowIndex, colIndex)}
+                                            onDragEnd={handleDragEnd}
                                             className={`
-                                                ${isJiggling ? 'jiggle' : ''}
-                                                ${isSwapping ? 'swap-pop' : ''}
-                                                ${isRainbowQueen ? 'rainbow-piece' : ''}
-                                                w-11 h-11 rounded-lg flex items-center justify-center shadow-md
-                                                ${PIECES[piece].color} ${PIECES[piece].textColor}
+                                                piece w-11 h-11 rounded-lg flex items-center justify-center
+                                                bg-gradient-to-br ${PIECES[piece].color}
+                                                ${PIECES[piece].textColor}
+                                                shadow-lg transform 
+                                                ${PIECES[piece].movable ? 'hover:scale-110' : ''}
+                                                transition-all duration-200
                                             `}
                                         >
-                                            <span className="text-xl font-bold select-none">
+                                            <span className="text-2xl select-none">
                                                 {PIECES[piece].symbol}
                                             </span>
                                         </div>
-                                    </div>
-                                );
-                            })
+                                    )}
+                                </div>
+                            ))
                         ))}
+                    </div>
+
+                    <div className="flex gap-4">
+                        {gameState !== 'playing' ? (
+                            <button 
+                                onClick={resetGame}
+                                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 
+                                         text-white rounded-lg hover:from-blue-600 hover:to-blue-700 
+                                         transition-all duration-200 font-bold"
+                            >
+                                Play Again
+                            </button>
+                        ) : (
+                            <button 
+                                onClick={showHint}
+                                className="px-4 py-2 glass-effect text-white rounded-lg 
+                                         hover:bg-gray-700 transition-colors"
+                            >
+                                Hint
+                            </button>
+                        )}
                     </div>
                 </div>
             );
@@ -483,3 +416,4 @@
     </script>
 </body>
 </html>
+                                
