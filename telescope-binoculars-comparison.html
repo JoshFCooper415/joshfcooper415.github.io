@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    margin: 20px;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+  }
+  
+  h2 {
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  th, td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #ddd;
+  }
+  
+  th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+  }
+  
+  td:first-child {
+    text-align: left;
+    font-weight: 500;
+    background-color: #f5f5f5;
+  }
+  
+  .better-telescope {
+    background-color: rgba(0, 255, 0, 0.2);
+  }
+  
+  .metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .telescope-value {
+    font-size: 0.875rem;
+    color: #666;
+  }
+  
+  .binoculars-value {
+    font-weight: bold;
+  }
+  
+  .difference {
+    font-size: 0.875rem;
+    color: #666;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>Telescope vs Binoculars Detection Performance</h2>
+  <table>
+    <tr>
+      <th>Attack Type</th>
+      <th>Claude-instant</th>
+      <th>ChatGPT</th>
+      <th>Google-PaLM</th>
+      <th>Llama-2-70b</th>
+    </tr>
+    <tr>
+      <td>Direct Prompt</td>
+      <td class="better-telescope">
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 71.4%</div>
+          <div class="binoculars-value">Binoculars: 51.8%</div>
+          <div class="difference">Diff: +19.6%</div>
+        </div>
+      </td>
+      <td>
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 100.0%</div>
+          <div class="binoculars-value">Binoculars: 99.1%</div>
+          <div class="difference">Diff: +0.9%</div>
+        </div>
+      </td>
+      <td>
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 85.7%</div>
+          <div class="binoculars-value">Binoculars: 99.1%</div>
+          <div class="difference">Diff: -13.4%</div>
+        </div>
+      </td>
+      <td>
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 94.6%</div>
+          <div class="binoculars-value">Binoculars: 100.0%</div>
+          <div class="difference">Diff: -5.4%</div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>Prompt Few Shot</td>
+      <td class="better-telescope">
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 78.6%</div>
+          <div class="binoculars-value">Binoculars: 62.5%</div>
+          <div class="difference">Diff: +16.1%</div>
+        </div>
+      </td>
+      <td class="better-telescope">
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 98.2%</div>
+          <div class="binoculars-value">Binoculars: 92.9%</div>
+          <div class="difference">Diff: +5.3%</div>
+        </div>
+      </td>
+      <td>
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 79.5%</div>
+          <div class="binoculars-value">Binoculars: 90.2%</div>
+          <div class="difference">Diff: -10.7%</div>
+        </div>
+      </td>
+      <td>
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 89.3%</div>
+          <div class="binoculars-value">Binoculars: 95.5%</div>
+          <div class="difference">Diff: -6.2%</div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>Prompt SICO</td>
+      <td class="better-telescope">
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 45.5%</div>
+          <div class="binoculars-value">Binoculars: 25.9%</div>
+          <div class="difference">Diff: +19.6%</div>
+        </div>
+      </td>
+      <td>
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 97.3%</div>
+          <div class="binoculars-value">Binoculars: 99.1%</div>
+          <div class="difference">Diff: -1.8%</div>
+        </div>
+      </td>
+      <td>
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 90.2%</div>
+          <div class="binoculars-value">Binoculars: 100.0%</div>
+          <div class="difference">Diff: -9.8%</div>
+        </div>
+      </td>
+      <td>
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 97.3%</div>
+          <div class="binoculars-value">Binoculars: 100.0%</div>
+          <div class="difference">Diff: -2.7%</div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>Paraphrase Dipper</td>
+      <td class="better-telescope">
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 81.3%</div>
+          <div class="binoculars-value">Binoculars: 73.2%</div>
+          <div class="difference">Diff: +8.1%</div>
+        </div>
+      </td>
+      <td>
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 95.5%</div>
+          <div class="binoculars-value">Binoculars: 99.1%</div>
+          <div class="difference">Diff: -3.6%</div>
+        </div>
+      </td>
+      <td>
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 83.0%</div>
+          <div class="binoculars-value">Binoculars: 99.1%</div>
+          <div class="difference">Diff: -16.1%</div>
+        </div>
+      </td>
+      <td>
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 91.1%</div>
+          <div class="binoculars-value">Binoculars: 100.0%</div>
+          <div class="difference">Diff: -8.9%</div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>Back Translation</td>
+      <td class="better-telescope">
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 15.2%</div>
+          <div class="binoculars-value">Binoculars: 5.4%</div>
+          <div class="difference">Diff: +9.8%</div>
+        </div>
+      </td>
+      <td class="better-telescope">
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 30.4%</div>
+          <div class="binoculars-value">Binoculars: 8.9%</div>
+          <div class="difference">Diff: +21.5%</div>
+        </div>
+      </td>
+      <td>
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 33.9%</div>
+          <div class="binoculars-value">Binoculars: 39.3%</div>
+          <div class="difference">Diff: -5.4%</div>
+        </div>
+      </td>
+      <td>
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 47.3%</div>
+          <div class="binoculars-value">Binoculars: 49.1%</div>
+          <div class="difference">Diff: -1.8%</div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>Polish Paraphrase</td>
+      <td class="better-telescope">
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 76.8%</div>
+          <div class="binoculars-value">Binoculars: 10.7%</div>
+          <div class="difference">Diff: +66.1%</div>
+        </div>
+      </td>
+      <td class="better-telescope">
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 99.1%</div>
+          <div class="binoculars-value">Binoculars: 92.9%</div>
+          <div class="difference">Diff: +6.2%</div>
+        </div>
+      </td>
+      <td>
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 85.7%</div>
+          <div class="binoculars-value">Binoculars: 90.2%</div>
+          <div class="difference">Diff: -4.5%</div>
+        </div>
+      </td>
+      <td>
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 96.4%</div>
+          <div class="binoculars-value">Binoculars: 98.2%</div>
+          <div class="difference">Diff: -1.8%</div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>Adversarial Character</td>
+      <td class="better-telescope">
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 7.1%</div>
+          <div class="binoculars-value">Binoculars: 6.3%</div>
+          <div class="difference">Diff: +0.8%</div>
+        </div>
+      </td>
+      <td>
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 23.2%</div>
+          <div class="binoculars-value">Binoculars: 61.6%</div>
+          <div class="difference">Diff: -38.4%</div>
+        </div>
+      </td>
+      <td>
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 8.9%</div>
+          <div class="binoculars-value">Binoculars: 68.8%</div>
+          <div class="difference">Diff: -59.9%</div>
+        </div>
+      </td>
+      <td>
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 15.2%</div>
+          <div class="binoculars-value">Binoculars: 85.7%</div>
+          <div class="difference">Diff: -70.5%</div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>Adversarial Word</td>
+      <td class="better-telescope">
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 17.9%</div>
+          <div class="binoculars-value">Binoculars: 8.0%</div>
+          <div class="difference">Diff: +9.9%</div>
+        </div>
+      </td>
+      <td class="better-telescope">
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 92.9%</div>
+          <div class="binoculars-value">Binoculars: 52.7%</div>
+          <div class="difference">Diff: +40.2%</div>
+        </div>
+      </td>
+      <td>
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 64.3%</div>
+          <div class="binoculars-value">Binoculars: 69.6%</div>
+          <div class="difference">Diff: -5.3%</div>
+        </div>
+      </td>
+      <td>
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 69.6%</div>
+          <div class="binoculars-value">Binoculars: 85.7%</div>
+          <div class="difference">Diff: -16.1%</div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>Adversarial Character-Word</td>
+      <td>
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 3.6%</div>
+          <div class="binoculars-value">Binoculars: 8.9%</div>
+          <div class="difference">Diff: -5.3%</div>
+        </div>
+      </td>
+      <td>
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 30.4%</div>
+          <div class="binoculars-value">Binoculars: 64.3%</div>
+          <div class="difference">Diff: -33.9%</div>
+        </div>
+      </td>
+      <td>
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 21.4%</div>
+          <div class="binoculars-value">Binoculars: 77.7%</div>
+          <div class="difference">Diff: -56.3%</div>
+        </div>
+      </td>
+      <td>
+        <div class="metrics">
+          <div class="telescope-value">Telescope: 30.4%</div>
+          <div
