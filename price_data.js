@@ -79,6 +79,15 @@ const priceData = {
             'War Pick': {
                 'Poor': '1 Moon', 'Common': '2 Moons', 'Good': '5 Moons', 'Fine': '1 Sun', 'Superior': '3 Suns', 'Luxury': '8 Suns'
             },
+            'Club': {
+                'Poor': '1 Terra', 'Common': '2 Terras', 'Good': '4 Terras'
+            },
+            'Great Club': {
+                'Poor': '2 Terras', 'Common': '4 Terras', 'Good': '8 Terras'
+            },
+            'Great Sword': {
+                'Poor': '8 Moons', 'Common': '1 Sun', 'Good': '2 Suns', 'Fine': '4 Suns', 'Superior': '8 Suns', 'Luxury': '15 Suns'
+            },
         },
         'B. Ranged Weapons': {
             'Arbalest': {
@@ -802,6 +811,9 @@ const priceData = {
             'Wheat': {
                 'Poor': '1 Terra', 'Common': '2 Terras', 'Good': '4 Terras'
             },
+            'Sweet spine': {
+                'Common': '1 Moon', 'Good': '1 Sun', 'Fine': '2 Suns'
+            },
         },
         'B. Meats (per pound)': {
             'Bacon': {
@@ -880,11 +892,17 @@ const priceData = {
             'Nutmeg': {
                 'Common': '4 Moons', 'Good': '8 Moons', 'Fine': '2 Suns', 'Superior': '4 Suns', 'Luxury': '8 Suns'
             },
-            'Saffron': {
-                'Common': '8 Moons', 'Good': '2 Suns', 'Fine': '4 Suns', 'Superior': '8 Suns', 'Luxury': '15 Suns'
-            },
             'Salt (lb)': {
                 'Poor': '5 Terras', 'Common': '1 Moon', 'Good': '2 Moons', 'Fine': '4 Moons', 'Superior': '8 Moons'
+            },
+            'Saffron (per ounce)': {
+                'Common': '8 Moons', 'Good': '2 Suns', 'Fine': '4 Suns', 'Superior': '8 Suns', 'Luxury': '15 Suns'
+            },
+            'Coffee Beans': {
+                'Common': '3 Moons', 'Good': '6 Moons', 'Fine': '1 Sun', 'Superior': '2 Suns', 'Luxury': '4 Suns'
+            },
+            'Tea Leaves': {
+                'Common': '4 Moons', 'Good': '8 Moons', 'Fine': '2 Suns', 'Superior': '4 Suns', 'Luxury': '8 Suns'
             },
         },
         'E. Preserved Foods (per pound)': {
@@ -923,6 +941,9 @@ const priceData = {
             },
             'Salted Pork': {
                 'Poor': '3 Terras', 'Common': '6 Terras', 'Good': '1 Moon', 'Fine': '2 Moons', 'Superior': '4 Moons'
+            },
+            'Trail Rations (1 day)': {
+                'Poor': '2 Terras', 'Common': '4 Terras', 'Good': '8 Terras'
             },
         },
         'F. Sweets and Luxuries (per pound)': {
@@ -1372,6 +1393,156 @@ const priceData = {
             'Portable Ram': {
                 'Poor': '2 Suns', 'Common': '4 Suns', 'Good': '8 Suns', 'Fine': '15 Suns'
             },
+            'Chalk (10 pieces)': {
+                'Poor': '1 Terra', 'Common': '2 Terras', 'Good': '4 Terras', 'Fine': '8 Terras'
+            },
+            'String (50 feet)': {
+                'Poor': '1 Terra', 'Common': '2 Terras', 'Good': '4 Terras', 'Fine': '8 Terras', 'Superior': '2 Moons'
+            },
+            'Twine (100 feet)': {
+                'Poor': '2 Terras', 'Common': '4 Terras', 'Good': '8 Terras', 'Fine': '2 Moons', 'Superior': '4 Moons'
+            },
+            'Small Bells (3)': {
+                'Poor': '2 Terras', 'Common': '4 Terras', 'Good': '8 Terras', 'Fine': '2 Moons', 'Superior': '4 Moons', 'Luxury': '1 Sun'
+            },
+            'Flint and Steel': {
+                'Poor': '3 Terras', 'Common': '6 Terras', 'Good': '1 Moon', 'Fine': '2 Moons', 'Superior': '4 Moons'
+            },
+            'Manacles': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
+            },
+            'Paint (pot)': {
+                'Poor': '3 Terras', 'Common': '6 Terras', 'Good': '1 Moon', 'Fine': '2 Moons', 'Superior': '4 Moons', 'Luxury': '8 Moons'
+            },
+            'Wax (block)': {
+                'Poor': '2 Terras', 'Common': '4 Terras', 'Good': '8 Terras', 'Fine': '2 Moons', 'Superior': '4 Moons', 'Luxury': '8 Moons'
+            },
+            'Chain (10 feet)': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
+            },
+            'Manacle Lock Pick': {
+                'Common': '5 Moons', 'Good': '1 Sun', 'Fine': '2 Suns', 'Superior': '4 Suns', 'Luxury': '8 Suns'
+            },
+            'Grease/Oil (flask)': {
+                'Poor': '2 Terras', 'Common': '4 Terras', 'Good': '8 Terras', 'Fine': '2 Moons', 'Superior': '4 Moons'
+            },
+            'Marking Stones': {
+                'Poor': '1 Terra', 'Common': '2 Terras', 'Good': '4 Terras', 'Fine': '8 Terras'
+            },
+            'Metal File': {
+                'Poor': '4 Terras', 'Common': '8 Terras', 'Good': '2 Moons', 'Fine': '4 Moons', 'Superior': '8 Moons', 'Luxury': '2 Suns'
+            },
+            'Signal Mirror': {
+                'Poor': '4 Terras', 'Common': '8 Terras', 'Good': '2 Moons', 'Fine': '4 Moons', 'Superior': '8 Moons', 'Luxury': '2 Suns'
+            },
+            'Chest': {
+                'Poor': '1 Moon', 'Common': '2 Moons', 'Good': '4 Moons', 'Fine': '8 Moons', 'Superior': '2 Suns', 'Luxury': '4 Suns'
+            },
+            'Crowbar': {
+                'Poor': '6 Terras', 'Common': '1 Moon', 'Good': '2 Moons', 'Fine': '4 Moons', 'Superior': '8 Moons'
+            },
+            'Iron Spikes (10)': {
+                'Poor': '4 Terras', 'Common': '8 Terras', 'Good': '2 Moons', 'Fine': '4 Moons'
+            },
+            'Lock': {
+                'Poor': '2 Moons', 'Common': '4 Moons', 'Good': '8 Moons', 'Fine': '1 Sun', 'Superior': '2 Suns', 'Luxury': '4 Suns'
+            },
+            'Merchant\'s Scale': {
+                'Poor': '1 Moon', 'Common': '2 Moons', 'Good': '4 Moons', 'Fine': '8 Moons', 'Superior': '1 Sun', 'Luxury': '2 Suns'
+            },
+            'Mirror (steel)': {
+                'Poor': '1 Moon', 'Common': '2 Moons', 'Good': '4 Moons', 'Fine': '8 Moons', 'Superior': '1 Sun', 'Luxury': '2 Suns'
+            },
+            'Soap': {
+                'Poor': '1 Terra', 'Common': '2 Terras', 'Good': '4 Terras', 'Fine': '8 Terras', 'Superior': '2 Moons', 'Luxury': '4 Moons'
+            },
+            'Bedroll': {
+                'Poor': '4 Terras', 'Common': '8 Terras', 'Good': '2 Moons', 'Fine': '4 Moons', 'Superior': '8 Moons'
+            },
+            'Fishing Tackle': {
+                'Poor': '5 Terras', 'Common': '1 Moon', 'Good': '2 Moons', 'Fine': '4 Moons', 'Superior': '8 Moons', 'Luxury': '2 Suns'
+            },
+            'Grappling Hook': {
+                'Poor': '5 Terras', 'Common': '1 Moon', 'Good': '2 Moons', 'Fine': '4 Moons', 'Superior': '8 Moons'
+            },
+            'Hammer': {
+                'Poor': '3 Terras', 'Common': '6 Terras', 'Good': '1 Moon', 'Fine': '2 Moons', 'Superior': '4 Moons', 'Luxury': '8 Moons'
+            },
+            'Mess Kit': {
+                'Poor': '3 Terras', 'Common': '6 Terras', 'Good': '1 Moon', 'Fine': '2 Moons', 'Superior': '4 Moons', 'Luxury': '8 Moons'
+            },
+            'Piton (each)': {
+                'Poor': '1 Terra', 'Common': '2 Terras', 'Good': '4 Terras', 'Fine': '8 Terras'
+            },
+            'Pole (10-foot)': {
+                'Poor': '2 Terras', 'Common': '4 Terras', 'Good': '8 Terras', 'Fine': '2 Moons'
+            },
+            'Shovel': {
+                'Poor': '6 Terras', 'Common': '1 Moon', 'Good': '2 Moons', 'Fine': '4 Moons', 'Superior': '8 Moons'
+            },
+            'Signal Whistle': {
+                'Poor': '2 Terras', 'Common': '4 Terras', 'Good': '8 Terras', 'Fine': '2 Moons', 'Superior': '4 Moons', 'Luxury': '8 Moons'
+            },
+            'Tent (two person)': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
+            },
+            'Whetstone': {
+                'Poor': '1 Terra', 'Common': '2 Terras', 'Good': '4 Terras', 'Fine': '8 Terras', 'Superior': '2 Moons'
+            },
+            'Bullseye Lantern': {
+                'Poor': '2 Moons', 'Common': '4 Moons', 'Good': '8 Moons', 'Fine': '1 Sun', 'Superior': '2 Suns', 'Luxury': '4 Suns'
+            },
+            'Hooded Lantern': {
+                'Poor': '1 Moon', 'Common': '2 Moons', 'Good': '4 Moons', 'Fine': '8 Moons', 'Superior': '1 Sun', 'Luxury': '2 Suns'
+            },
+            'Lamp': {
+                'Poor': '3 Terras', 'Common': '6 Terras', 'Good': '1 Moon', 'Fine': '2 Moons', 'Superior': '4 Moons', 'Luxury': '8 Moons'
+            },
+            'Backpack': {
+                'Poor': '8 Terras', 'Common': '2 Moons', 'Good': '4 Moons', 'Fine': '8 Moons', 'Superior': '2 Suns', 'Luxury': '4 Suns'
+            },
+            'Barrel': {
+                'Poor': '6 Terras', 'Common': '1 Moon', 'Good': '2 Moons', 'Fine': '4 Moons', 'Superior': '8 Moons'
+            },
+            'Basket': {
+                'Poor': '2 Terras', 'Common': '4 Terras', 'Good': '8 Terras', 'Fine': '2 Moons'
+            },
+            'Bucket': {
+                'Poor': '2 Terras', 'Common': '4 Terras', 'Good': '8 Terras', 'Fine': '2 Moons'
+            },
+            'Case (map/scroll)': {
+                'Poor': '4 Terras', 'Common': '8 Terras', 'Good': '2 Moons', 'Fine': '4 Moons', 'Superior': '8 Moons', 'Luxury': '2 Suns'
+            },
+            'Flask/Tankard': {
+                'Poor': '1 Terra', 'Common': '2 Terras', 'Good': '4 Terras', 'Fine': '1 Moon', 'Superior': '2 Moons', 'Luxury': '5 Moons'
+            },
+            'Glass Bottle': {
+                'Poor': '4 Terras', 'Common': '8 Terras', 'Good': '2 Moons', 'Fine': '4 Moons', 'Superior': '8 Moons', 'Luxury': '2 Suns'
+            },
+            'Jug/Pitcher': {
+                'Poor': '1 Terra', 'Common': '2 Terras', 'Good': '4 Terras', 'Fine': '1 Moon', 'Superior': '2 Moons', 'Luxury': '5 Moons'
+            },
+            'Sack': {
+                'Poor': '1 Terra', 'Common': '2 Terras', 'Good': '4 Terras', 'Fine': '8 Terras'
+            },
+            'Vial': {
+                'Poor': '2 Terras', 'Common': '4 Terras', 'Good': '8 Terras', 'Fine': '2 Moons', 'Superior': '4 Moons', 'Luxury': '1 Sun'
+            },
+            'Waterskin': {
+                'Poor': '3 Terras', 'Common': '6 Terras', 'Good': '1 Moon', 'Fine': '2 Moons', 'Superior': '4 Moons', 'Luxury': '8 Moons'
+            },
+            'Rope (50 ft, hemp)': {
+                'Poor': '3 Terras', 'Common': '6 Terras', 'Good': '1 Moon', 'Fine': '2 Moons'
+            },
+            'Rope (50 ft, silk)': {
+                'Common': '2 Moons', 'Good': '4 Moons', 'Fine': '8 Moons', 'Superior': '1 Sun', 'Luxury': '2 Suns'
+            },
+            'Torch': {
+                'Poor': '2 Bits', 'Common': '4 Bits', 'Good': '8 Bits'
+            },
+            'Candle': {
+                'Poor': '1 Bit', 'Common': '2 Bits', 'Good': '4 Bits', 'Fine': '8 Bits'
+            },
         },
         'B. Magical Components and Supplies': {
             'Crystal': {
@@ -1444,10 +1615,331 @@ const priceData = {
         },
         'F. Slave Costs': {
             'Hokori Laborer': {
-                'Poor': '1 Sun', 'Common': '5 Suns', 'Good': '15 Suns', 'Superior': '20 Suns'
+                'Poor': '1 Sun', 'Common': '5 Suns', 'Good': '15 Suns', 'Fine': '20 Suns', 'Superior': '30 Suns'
             },
             'Hokori Warrior': {
-                'Poor': '10 Suns', 'Common': '30 Suns', 'Good': '80 Suns', 'Superior': '300 Suns', 'Luxury': '500 Suns'
+                'Poor': '10 Suns', 'Common': '30 Suns', 'Good': '80 Suns', 'Fine': '130 Suns', 'Superior': '300 Suns', 'Luxury': '500 Suns'
+            },
+        },
+        'A. Basic Equipment': {
+            'Rope (50 ft, hemp)': {
+                'Poor': '3 Terras', 'Common': '6 Terras', 'Good': '1 Moon', 'Fine': '2 Moons'
+            },
+            'Rope (50 ft, silk)': {
+                'Common': '2 Moons', 'Good': '4 Moons', 'Fine': '8 Moons', 'Superior': '1 Sun', 'Luxury': '2 Suns'
+            },
+            'Torch': {
+                'Poor': '2 Bits', 'Common': '4 Bits', 'Good': '8 Bits'
+            },
+            'Candle': {
+                'Poor': '1 Bit', 'Common': '2 Bits', 'Good': '4 Bits', 'Fine': '8 Bits'
+            },
+        },
+        'B. Vehicles and Transportation': {
+            'Cart': {
+                'Poor': '2 Suns', 'Common': '4 Suns', 'Good': '8 Suns', 'Fine': '15 Suns'
+            },
+            'Boat (Row)': {
+                'Poor': '5 Suns', 'Common': '10 Suns', 'Good': '20 Suns', 'Fine': '40 Suns', 'Superior': '80 Suns'
+            },
+            'Ship (Sailing)': {
+                'Poor': '200 Suns', 'Common': '400 Suns', 'Good': '800 Suns', 'Fine': '1500 Suns', 'Superior': '3000 Suns', 'Luxury': '6000 Suns'
+            },
+            'Sled': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns'
+            },
+            'Carriage': {
+                'Common': '25 Suns', 'Good': '50 Suns', 'Fine': '100 Suns', 'Superior': '200 Suns', 'Luxury': '400 Suns'
+            },
+            'Chariot': {
+                'Poor': '15 Suns', 'Common': '30 Suns', 'Good': '60 Suns', 'Fine': '120 Suns', 'Superior': '240 Suns', 'Luxury': '500 Suns'
+            },
+            'Wagon': {
+                'Poor': '10 Suns', 'Common': '20 Suns', 'Good': '40 Suns', 'Fine': '80 Suns', 'Superior': '150 Suns'
+            },
+            'Wheel (replacement)': {
+                'Poor': '2 Suns', 'Common': '4 Suns', 'Good': '8 Suns', 'Fine': '15 Suns', 'Superior': '30 Suns'
+            },
+            'Axle (replacement)': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns'
+            },
+            'Harness': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
+            },
+            'Canvas Cover': {
+                'Poor': '2 Suns', 'Common': '4 Suns', 'Good': '8 Suns', 'Fine': '15 Suns', 'Superior': '30 Suns'
+            },
+        },
+        'C. Professional Tools': {
+            'Cook\'s Tools': {
+                'Poor': '3 Moons', 'Common': '6 Moons', 'Good': '1 Sun', 'Fine': '2 Suns', 'Superior': '4 Suns', 'Luxury': '8 Suns'
+            },
+            'Thieves\' Tools': {
+                'Poor': '2 Moons', 'Common': '4 Moons', 'Good': '8 Moons', 'Fine': '1 Sun', 'Superior': '2 Suns'
+            },
+            'Tinker\'s Tools': {
+                'Poor': '5 Moons', 'Common': '1 Sun', 'Good': '2 Suns', 'Fine': '4 Suns', 'Superior': '8 Suns'
+            },
+        },
+        'D. Writing Supplies': {
+            'Ink (1 oz. bottle)': {
+                'Common': '3 Terras', 'Good': '6 Terras', 'Fine': '1 Moon', 'Superior': '2 Moons', 'Luxury': '4 Moons'
+            },
+            'Quill': {
+                'Poor': '1 Terra', 'Common': '2 Terras', 'Good': '4 Terras', 'Fine': '8 Terras'
+            },
+            'Parchment (sheet)': {
+                'Common': '10 Terras', 'Good': '1 Moon', 'Fine': '2 Moons', 'Superior': '4 Moons', 'Luxury': '8 Moons'
+            },
+            'Sealing Wax': {
+                'Poor': '2 Terras', 'Common': '4 Terras', 'Good': '8 Terras', 'Fine': '2 Moons', 'Superior': '4 Moons', 'Luxury': '8 Moons'
+            },
+            'Blank Book (25 sheets)': {
+                'Common': '3 Suns', 'Good': '6 Suns', 'Fine': '12 Suns', 'Superior': '25 Suns', 'Luxury': '50 Suns'
+            },
+            'Blank Book (50 sheets)': {
+                'Common': '6 Suns', 'Good': '12 Suns', 'Fine': '25 Suns', 'Superior': '50 Suns', 'Luxury': '100 Suns'
+            },
+            'Blank Book (100 sheets)': {
+                'Common': '12 Suns', 'Good': '25 Suns', 'Fine': '50 Suns', 'Superior': '100 Suns', 'Luxury': '200 Suns'
+            },
+        },
+        'E. Metals and Materials (per pound)': {
+            'Iron': {
+                'Poor': '2 Terras', 'Common': '4 Terras', 'Good': '8 Terras'
+            },
+            'Steel': {
+                'Poor': '8 Terras', 'Common': '2 Moons', 'Good': '4 Moons', 'Fine': '8 Moons'
+            },
+            'Lead': {
+                'Poor': '15 Suns', 'Common': '30 Suns', 'Good': '60 Suns', 'Fine': '120 Suns'
+            },
+            'Silver': {
+                'Common': '1 Sun', 'Good': '2 Suns', 'Fine': '4 Suns', 'Superior': '8 Suns'
+            },
+            'Gold': {
+                'Common': '15 Suns', 'Good': '30 Suns', 'Fine': '60 Suns', 'Superior': '120 Suns'
+            },
+            'Argentum': {
+                'Good': '60 Suns', 'Fine': '120 Suns', 'Superior': '200 Suns', 'Luxury': '300 Suns'
+            },
+            'Weapon Silvering': {
+                'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
+            },
+            'Weapon Argented': {
+                'Good': '120 Suns', 'Fine': '250 Suns', 'Superior': '450 Suns', 'Luxury': '600 Suns'
+            },
+        },
+        'F. Drugs and Medicine': {
+            'Pipe': {
+                'Poor': '2 Terras', 'Common': '4 Terras', 'Good': '8 Terras', 'Fine': '2 Moons', 'Superior': '4 Moons', 'Luxury': '1 Sun'
+            },
+            'Tobacco (oz)': {
+                'Common': '2 Terras', 'Good': '4 Terras', 'Fine': '8 Terras', 'Superior': '2 Moons', 'Luxury': '4 Moons'
+            },
+            'Opium (oz)': {
+                'Common': '3 Moons', 'Good': '6 Moons', 'Fine': '1 Sun', 'Superior': '2 Suns', 'Luxury': '4 Suns'
+            },
+            'Milk of Poppy (vial)': {
+                'Common': '2 Moons', 'Good': '4 Moons', 'Fine': '8 Moons', 'Superior': '1 Sun', 'Luxury': '2 Suns'
+            },
+            'Hemlock (oz)': {
+                'Common': '1 Moon', 'Good': '2 Moons', 'Fine': '4 Moons', 'Superior': '8 Moons'
+            },
+            'Nightshade Extract (vial)': {
+                'Common': '3 Moons', 'Good': '6 Moons', 'Fine': '1 Sun', 'Superior': '2 Suns'
+            },
+            'Willow Bark (oz)': {
+                'Poor': '2 Terras', 'Common': '4 Terras', 'Good': '8 Terras', 'Fine': '2 Moons', 'Superior': '4 Moons', 'Luxury': '8 Moons'
+            },
+            'Mandrake Root (oz)': {
+                'Common': '4 Moons', 'Good': '8 Moons', 'Fine': '1 Sun', 'Superior': '2 Suns', 'Luxury': '4 Suns'
+            },
+            'Hemp Oil (vial)': {
+                'Poor': '2 Moons', 'Common': '4 Moons', 'Good': '8 Moons', 'Fine': '1 Sun', 'Superior': '2 Suns', 'Luxury': '4 Suns'
+            },
+        },
+        'G. Fresh Produce (per pound)': {
+            'Common Vegetables': {
+                'Poor': '1 Terra', 'Common': '2 Terras', 'Good': '4 Terras'
+            },
+            'Local Fruits': {
+                'Poor': '2 Terras', 'Common': '4 Terras', 'Good': '8 Terras'
+            },
+        },
+        'H. Lodging/Inn (per night)': {
+            'Floor Space': {
+                'Poor': '1 Bit', 'Common': '2 Bits'
+            },
+            'Shared Room': {
+                'Poor': '2 Terras', 'Common': '4 Terras'
+            },
+            'Private Room': {
+                'Poor': '4 Terras', 'Common': '8 Terras', 'Good': '2 Moons', 'Fine': '4 Moons', 'Superior': '8 Moons'
+            },
+            'Suite': {
+                'Common': '2 Moons', 'Good': '4 Moons', 'Fine': '8 Moons', 'Superior': '1 Sun', 'Luxury': '2 Suns'
+            },
+        },
+        'E. Musical Instruments': {
+            'Drum': {
+                'Poor': '3 Moons', 'Common': '6 Moons', 'Good': '1 Sun', 'Fine': '2 Suns', 'Superior': '4 Suns', 'Luxury': '8 Suns'
+            },
+            'Flute': {
+                'Poor': '2 Moons', 'Common': '4 Moons', 'Good': '8 Moons', 'Fine': '1 Sun', 'Superior': '2 Suns', 'Luxury': '4 Suns'
+            },
+            'Horn': {
+                'Poor': '5 Moons', 'Common': '1 Sun', 'Good': '2 Suns', 'Fine': '4 Suns', 'Superior': '8 Suns', 'Luxury': '15 Suns'
+            },
+            'Lute': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
+            },
+            'Lyre': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
+            },
+            'Pan Flute': {
+                'Poor': '3 Moons', 'Common': '6 Moons', 'Good': '1 Sun', 'Fine': '2 Suns', 'Superior': '4 Suns', 'Luxury': '8 Suns'
+            },
+            'Shawm': {
+                'Poor': '4 Moons', 'Common': '8 Moons', 'Good': '1 Sun', 'Fine': '2 Suns', 'Superior': '4 Suns', 'Luxury': '8 Suns'
+            },
+            'Viol': {
+                'Poor': '2 Suns', 'Common': '4 Suns', 'Good': '8 Suns', 'Fine': '15 Suns', 'Superior': '30 Suns', 'Luxury': '60 Suns'
+            },
+        },
+        'A. Vehicles and Components': {
+            'Sled': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns'
+            },
+            'Carriage': {
+                'Common': '25 Suns', 'Good': '50 Suns', 'Fine': '100 Suns', 'Superior': '200 Suns', 'Luxury': '400 Suns'
+            },
+            'Chariot': {
+                'Poor': '15 Suns', 'Common': '30 Suns', 'Good': '60 Suns', 'Fine': '120 Suns', 'Superior': '240 Suns', 'Luxury': '500 Suns'
+            },
+            'Wagon': {
+                'Poor': '10 Suns', 'Common': '20 Suns', 'Good': '40 Suns', 'Fine': '80 Suns', 'Superior': '150 Suns'
+            },
+            'Wheel (replacement)': {
+                'Poor': '2 Suns', 'Common': '4 Suns', 'Good': '8 Suns', 'Fine': '15 Suns', 'Superior': '30 Suns'
+            },
+            'Axle (replacement)': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns'
+            },
+            'Harness': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
+            },
+            'Canvas Cover': {
+                'Poor': '2 Suns', 'Common': '4 Suns', 'Good': '8 Suns', 'Fine': '15 Suns', 'Superior': '30 Suns'
+            },
+        },
+        'B. Trade Goods (per pound unless noted)': {
+            'Cotton (raw)': {
+                'Poor': '2 Terras', 'Common': '4 Terras', 'Good': '8 Terras', 'Fine': '2 Moons', 'Superior': '4 Moons'
+            },
+            'Linen (raw)': {
+                'Poor': '3 Terras', 'Common': '6 Terras', 'Good': '1 Moon', 'Fine': '2 Moons', 'Superior': '4 Moons', 'Luxury': '8 Moons'
+            },
+            'Copper (raw)': {
+                'Poor': '3 Moons', 'Common': '6 Moons', 'Good': '1 Sun', 'Fine': '2 Suns'
+            },
+            'Dyes (per ounce)': {
+                'Poor': '2 Moons', 'Common': '4 Moons', 'Good': '8 Moons', 'Fine': '1 Sun', 'Superior': '2 Suns', 'Luxury': '4 Suns'
+            },
+            'Ivory': {
+                'Common': '5 Suns', 'Good': '10 Suns', 'Fine': '20 Suns', 'Superior': '40 Suns', 'Luxury': '80 Suns'
+            },
+            'Jade': {
+                'Common': '8 Suns', 'Good': '15 Suns', 'Fine': '30 Suns', 'Superior': '60 Suns', 'Luxury': '120 Suns'
+            },
+            'Pearls (each)': {
+                'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
+            },
+        },
+        'A. Professional Services (per day unless noted)': {
+            'Messenger (per mile)': {
+                'Poor': '1 Terra', 'Common': '2 Terras', 'Good': '4 Terras', 'Fine': '8 Terras', 'Superior': '2 Moons', 'Luxury': '4 Moons'
+            },
+            'Courier (per mile)': {
+                'Poor': '2 Terras', 'Common': '4 Terras', 'Good': '8 Terras', 'Fine': '2 Moons', 'Superior': '4 Moons', 'Luxury': '8 Moons'
+            },
+            'City Guide': {
+                'Poor': '4 Terras', 'Common': '8 Terras', 'Good': '2 Moons', 'Fine': '4 Moons', 'Superior': '8 Moons', 'Luxury': '1 Sun'
+            },
+            'Wilderness Guide': {
+                'Poor': '1 Moon', 'Common': '2 Moons', 'Good': '4 Moons', 'Fine': '8 Moons', 'Superior': '1 Sun', 'Luxury': '2 Suns'
+            },
+            'Porter/Bearer': {
+                'Poor': '2 Terras', 'Common': '4 Terras', 'Good': '8 Terras', 'Fine': '2 Moons'
+            },
+            'Ship Passage (per mile)': {
+                'Poor': '1 Terra', 'Common': '3 Terras', 'Good': '6 Terras', 'Fine': '1 Moon', 'Superior': '3 Moons', 'Luxury': '1 Sun'
+            },
+            'Caravan Guard': {
+                'Poor': '6 Terras', 'Common': '1 Moon', 'Good': '2 Moons', 'Fine': '4 Moons', 'Superior': '8 Moons'
+            },
+            'Scribe': {
+                'Poor': '1 Moon', 'Common': '2 Moons', 'Good': '4 Moons', 'Fine': '8 Moons', 'Superior': '1 Sun', 'Luxury': '2 Suns'
+            },
+            'Translator': {
+                'Poor': '2 Moons', 'Common': '4 Moons', 'Good': '8 Moons', 'Fine': '1 Sun', 'Superior': '2 Suns', 'Luxury': '4 Suns'
+            },
+            'Legal Counsel': {
+                'Common': '1 Sun', 'Good': '2 Suns', 'Fine': '4 Suns', 'Superior': '8 Suns', 'Luxury': '15 Suns'
+            },
+            'Apothecary (consultation)': {
+                'Poor': '2 Moons', 'Common': '4 Moons', 'Good': '8 Moons', 'Fine': '1 Sun', 'Superior': '2 Suns', 'Luxury': '4 Suns'
+            },
+            'Physician': {
+                'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
+            },
+            'Barber-Surgeon': {
+                'Poor': '1 Moon', 'Common': '2 Moons', 'Good': '4 Moons', 'Fine': '8 Moons', 'Superior': '1 Sun'
+            },
+            'Midwife': {
+                'Poor': '2 Moons', 'Common': '4 Moons', 'Good': '8 Moons', 'Fine': '1 Sun', 'Superior': '2 Suns'
+            },
+            'Blacksmith (commission)': {
+                'Poor': '1 Moon', 'Common': '2 Moons', 'Good': '4 Moons', 'Fine': '8 Moons', 'Superior': '1 Sun', 'Luxury': '2 Suns'
+            },
+            'Carpenter (commission)': {
+                'Poor': '1 Moon', 'Common': '2 Moons', 'Good': '4 Moons', 'Fine': '8 Moons', 'Superior': '1 Sun', 'Luxury': '2 Suns'
+            },
+            'Mason (commission)': {
+                'Poor': '2 Moons', 'Common': '4 Moons', 'Good': '8 Moons', 'Fine': '1 Sun', 'Superior': '2 Suns', 'Luxury': '4 Suns'
+            },
+            'Tailor (commission)': {
+                'Poor': '1 Moon', 'Common': '2 Moons', 'Good': '4 Moons', 'Fine': '8 Moons', 'Superior': '1 Sun', 'Luxury': '2 Suns'
+            },
+            'Cobbler (commission)': {
+                'Poor': '1 Moon', 'Common': '2 Moons', 'Good': '4 Moons', 'Fine': '8 Moons', 'Superior': '1 Sun', 'Luxury': '2 Suns'
+            },
+            'Cartographer': {
+                'Common': '1 Sun', 'Good': '2 Suns', 'Fine': '4 Suns', 'Superior': '8 Suns', 'Luxury': '15 Suns'
+            },
+            'Herald': {
+                'Poor': '2 Moons', 'Common': '4 Moons', 'Good': '8 Moons', 'Fine': '1 Sun', 'Superior': '2 Suns', 'Luxury': '4 Suns'
+            },
+            'Stablemaster': {
+                'Poor': '4 Terras', 'Common': '8 Terras', 'Good': '2 Moons', 'Fine': '4 Moons', 'Superior': '8 Moons', 'Luxury': '1 Sun'
+            },
+            'Artist/Painter': {
+                'Poor': '2 Moons', 'Common': '4 Moons', 'Good': '8 Moons', 'Fine': '1 Sun', 'Superior': '2 Suns', 'Luxury': '4 Suns'
+            },
+            'Alchemist': {
+                'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
+            },
+            'Teacher/Tutor': {
+                'Poor': '1 Moon', 'Common': '2 Moons', 'Good': '4 Moons', 'Fine': '8 Moons', 'Superior': '1 Sun', 'Luxury': '2 Suns'
+            },
+            'Entertainer': {
+                'Poor': '4 Terras', 'Common': '8 Terras', 'Good': '2 Moons', 'Fine': '4 Moons', 'Superior': '8 Moons', 'Luxury': '1 Sun'
+            },
+            'Gravedigger': {
+                'Poor': '3 Terras', 'Common': '6 Terras', 'Good': '1 Moon', 'Fine': '2 Moons'
+            },
+            'Ratcatcher': {
+                'Poor': '2 Terras', 'Common': '4 Terras', 'Good': '8 Terras'
             },
         },
     },

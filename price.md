@@ -14,34 +14,37 @@
 # Section 1: Weapons & Military Equipment
 
 ## A. Melee Weapons
-| Weapon Type | Poor | Common | Good | Fine | Superior | Luxury | Notes |
-|------------|------|---------|------|------|----------|---------|-------|
-| Arming Sword | 1 SM | 3 SM | 8 SM | 2 GS | 5 GS | 12 GS | Standard military sword |
-| Bastard Sword | 2 SM | 5 SM | 1 GS | 3 GS | 8 GS | 20 GS | Hand-and-a-half sword |
-| Battle Axe | 8 BT | 2 SM | 5 SM | 1 GS | 3 GS | 8 GS | Standard military axe |
-| Claymore | 3 SM | 8 SM | 2 GS | 5 GS | 12 GS | 30 GS | Large two-handed sword |
-| Dagger (Basic) | 3 BT | 6 BT | 1 SM | 3 SM | 8 SM | 2 GS | Utility knife |
-| Dagger (Fighting) | 6 BT | 1 SM | 3 SM | 8 SM | 2 GS | 5 GS | Military grade |
-| Falchion | 1 SM | 3 SM | 6 SM | 1 GS | 3 GS | 8 GS | Curved single-edge sword |
-| Flail | 1 SM | 2 SM | 5 SM | 1 GS | 3 GS | 8 GS | Chain weapon |
-| Glaive | 1 SM | 3 SM | 6 SM | 1 GS | 3 GS | 8 GS | Polearm |
-| Great Axe | 2 SM | 4 SM | 1 GS | 2 GS | 5 GS | 12 GS | Two-handed axe |
-| Halberd | 2 SM | 5 SM | 1 GS | 2 GS | 5 GS | 12 GS | Complex polearm |
-| Hand Axe | 4 BT | 8 BT | 2 SM | 5 SM | 1 GS | 3 GS | One-handed axe |
-| Knife (Kitchen) | 2 BT | 4 BT | 8 BT | 2 SM | 5 SM | 1 GS | Utility blade |
-| Lance | 1 SM | 3 SM | 6 SM | 1 GS | 3 GS | 8 GS | Cavalry weapon |
-| Long Sword | 2 SM | 5 SM | 1 GS | 3 GS | 8 GS | 20 GS | Quality war sword |
-| Mace | 8 BT | 2 SM | 4 SM | 1 GS | 2 GS | 5 GS | Blunt weapon |
-| Morning Star | 1 SM | 3 SM | 6 SM | 1 GS | 3 GS | 8 GS | Spiked mace |
-| Pike | 8 BT | 2 SM | 4 SM | 1 GS | 2 GS | 5 GS | Long spear |
-| Poleaxe | 2 SM | 4 SM | 8 SM | 2 GS | 5 GS | 12 GS | Military polearm |
-| Quarterstaff | 2 BT | 4 BT | 8 BT | 2 SM | 5 SM | 1 GS | Wooden staff |
-| Rapier | 2 SM | 5 SM | 1 GS | 3 GS | 8 GS | 20 GS | Thrusting sword |
-| Scimitar | 2 SM | 5 SM | 1 GS | 3 GS | 8 GS | 20 GS | Curved sword |
-| Short Sword | 8 BT | 2 SM | 5 SM | 1 GS | 3 GS | 8 GS | Secondary sword |
-| Spear | 4 BT | 8 BT | 2 SM | 5 SM | 1 GS | 3 GS | Basic polearm |
-| War Hammer | 1 SM | 2 SM | 5 SM | 1 GS | 3 GS | 8 GS | Military hammer |
-| War Pick | 1 SM | 2 SM | 5 SM | 1 GS | 3 GS | 8 GS | Piercing weapon |
+| Weapon Type       | Poor | Common | Good | Fine | Superior | Luxury | Notes                    |
+| ----------------- | ---- | ------ | ---- | ---- | -------- | ------ | ------------------------ |
+| Arming Sword      | 1 SM | 3 SM   | 8 SM | 2 GS | 5 GS     | 12 GS  | Standard military sword  |
+| Bastard Sword     | 2 SM | 5 SM   | 1 GS | 3 GS | 8 GS     | 20 GS  | Hand-and-a-half sword    |
+| Battle Axe        | 8 BT | 2 SM   | 5 SM | 1 GS | 3 GS     | 8 GS   | Standard military axe    |
+| Claymore          | 3 SM | 8 SM   | 2 GS | 5 GS | 12 GS    | 30 GS  | Large two-handed sword   |
+| Dagger (Basic)    | 3 BT | 6 BT   | 1 SM | 3 SM | 8 SM     | 2 GS   | Utility knife            |
+| Dagger (Fighting) | 6 BT | 1 SM   | 3 SM | 8 SM | 2 GS     | 5 GS   | Military grade           |
+| Falchion          | 1 SM | 3 SM   | 6 SM | 1 GS | 3 GS     | 8 GS   | Curved single-edge sword |
+| Flail             | 1 SM | 2 SM   | 5 SM | 1 GS | 3 GS     | 8 GS   | Chain weapon             |
+| Glaive            | 1 SM | 3 SM   | 6 SM | 1 GS | 3 GS     | 8 GS   | Polearm                  |
+| Great Axe         | 2 SM | 4 SM   | 1 GS | 2 GS | 5 GS     | 12 GS  | Two-handed axe           |
+| Halberd           | 2 SM | 5 SM   | 1 GS | 2 GS | 5 GS     | 12 GS  | Complex polearm          |
+| Hand Axe          | 4 BT | 8 BT   | 2 SM | 5 SM | 1 GS     | 3 GS   | One-handed axe           |
+| Knife (Kitchen)   | 2 BT | 4 BT   | 8 BT | 2 SM | 5 SM     | 1 GS   | Utility blade            |
+| Lance             | 1 SM | 3 SM   | 6 SM | 1 GS | 3 GS     | 8 GS   | Cavalry weapon           |
+| Long Sword        | 2 SM | 5 SM   | 1 GS | 3 GS | 8 GS     | 20 GS  | Quality war sword        |
+| Mace              | 8 BT | 2 SM   | 4 SM | 1 GS | 2 GS     | 5 GS   | Blunt weapon             |
+| Morning Star      | 1 SM | 3 SM   | 6 SM | 1 GS | 3 GS     | 8 GS   | Spiked mace              |
+| Pike              | 8 BT | 2 SM   | 4 SM | 1 GS | 2 GS     | 5 GS   | Long spear               |
+| Poleaxe           | 2 SM | 4 SM   | 8 SM | 2 GS | 5 GS     | 12 GS  | Military polearm         |
+| Quarterstaff      | 2 BT | 4 BT   | 8 BT | 2 SM | 5 SM     | 1 GS   | Wooden staff             |
+| Rapier            | 2 SM | 5 SM   | 1 GS | 3 GS | 8 GS     | 20 GS  | Thrusting sword          |
+| Scimitar          | 2 SM | 5 SM   | 1 GS | 3 GS | 8 GS     | 20 GS  | Curved sword             |
+| Short Sword       | 8 BT | 2 SM   | 5 SM | 1 GS | 3 GS     | 8 GS   | Secondary sword          |
+| Spear             | 4 BT | 8 BT   | 2 SM | 5 SM | 1 GS     | 3 GS   | Basic polearm            |
+| War Hammer        | 1 SM | 2 SM   | 5 SM | 1 GS | 3 GS     | 8 GS   | Military hammer          |
+| War Pick          | 1 SM | 2 SM   | 5 SM | 1 GS | 3 GS     | 8 GS   | Piercing weapon          |
+| Club              | 1 BT | 2 BT   | 4 BT | N/A  | N/A      | N/A    | Historical: 1d           |
+| Great Club        | 2 BT | 4 BT   | 8 BT | N/A  | N/A      | N/A    | Historical: 2d           |
+| Great Sword       | 8 SM | 1 GS   | 2 GS | 4 GS | 8 GS     | 15 GS  | Historical: 8-10s        |
 
 ## B. Ranged Weapons
 | Weapon Type | Poor | Common | Good | Fine | Superior | Luxury | Notes |
@@ -354,18 +357,19 @@
 # Section 7: Food and Consumables
 
 ## A. Basic Foodstuffs (per pound unless noted)
-| Item Type | Poor | Common | Good | Fine | Superior | Luxury | Notes |
-|-----------|------|---------|------|------|----------|---------|-------|
-| Barley | 1 BT | 2 BT | N/A | N/A | N/A | N/A | Basic grain |
-| Beans | 1 BT | 2 BT | 4 BT | N/A | N/A | N/A | Dried |
-| Bread | 1 BT | 2 BT | 4 BT | 8 BT | 2 SM | N/A | Daily staple |
-| Cheese | 2 BT | 4 BT | 8 BT | 2 SM | 4 SM | 1 GS | Historical base |
-| Eggs (dozen) | 2 BT | 3 BT | 6 BT | 1 SM | N/A | N/A | Historical: 1d/2 dozen |
-| Flour | 2 BT | 3 BT | 6 BT | 1 SM | N/A | N/A | Ground grain |
-| Oats | 1 BT | 2 BT | N/A | N/A | N/A | N/A | Animal feed/porridge |
-| Peas (dried) | 1 BT | 2 BT | 4 BT | N/A | N/A | N/A | Storage food |
-| Salt | 5 BT | 1 SM | 2 SM | 4 SM | 8 SM | N/A | Preservative |
-| Wheat | 1 BT | 2 BT | 4 BT | N/A | N/A | N/A | Basic grain |
+| Item Type    | Poor | Common | Good | Fine | Superior | Luxury | Notes                  |
+| ------------ | ---- | ------ | ---- | ---- | -------- | ------ | ---------------------- |
+| Barley       | 1 BT | 2 BT   | N/A  | N/A  | N/A      | N/A    | Basic grain            |
+| Beans        | 1 BT | 2 BT   | 4 BT | N/A  | N/A      | N/A    | Dried                  |
+| Bread        | 1 BT | 2 BT   | 4 BT | 8 BT | 2 SM     | N/A    | Daily staple           |
+| Cheese       | 2 BT | 4 BT   | 8 BT | 2 SM | 4 SM     | 1 GS   | Historical base        |
+| Eggs (dozen) | 2 BT | 3 BT   | 6 BT | 1 SM | N/A      | N/A    | Historical: 1d/2 dozen |
+| Flour        | 2 BT | 3 BT   | 6 BT | 1 SM | N/A      | N/A    | Ground grain           |
+| Oats         | 1 BT | 2 BT   | N/A  | N/A  | N/A      | N/A    | Animal feed/porridge   |
+| Peas (dried) | 1 BT | 2 BT   | 4 BT | N/A  | N/A      | N/A    | Storage food           |
+| Salt         | 5 BT | 1 SM   | 2 SM | 4 SM | 8 SM     | N/A    | Preservative           |
+| Wheat        | 1 BT | 2 BT   | 4 BT | N/A  | N/A      | N/A    | Basic grain            |
+| Sweet spine  | N/A  | 1 SM   | 1 GS | 2 GS | N/A      | N/A    | Red Desert Sweet Spine |
 
 ## B. Meats (per pound)
 | Item Type | Poor | Common | Good | Fine | Superior | Luxury | Notes |
@@ -392,34 +396,37 @@
 | Wine (Good)   | N/A  | 2 SM   | 4 SM | 8 SM | 2 GS     | 5 GS   | Historical: 8d-10d    |
 
 ## D. Spices and Seasonings (per ounce)
-| Item Type | Poor | Common | Good | Fine | Superior | Luxury | Notes |
-|-----------|------|---------|------|------|----------|---------|-------|
-| Black Pepper | N/A | 2 SM | 4 SM | 8 SM | 1 GS | 2 GS | Historical: 4s/lb |
-| Cinnamon | N/A | 3 SM | 6 SM | 1 GS | 2 GS | 4 GS | Imported |
-| Cloves | N/A | 4 SM | 8 SM | 2 GS | 4 GS | 8 GS | Very rare |
-| Garlic (lb) | 2 BT | 4 BT | 8 BT | N/A | N/A | N/A | Common seasoning |
-| Ginger | N/A | 2 SM | 4 SM | 8 SM | 1 GS | 2 GS | Historical: 1-3s/lb |
-| Mace | N/A | 3 SM | 6 SM | 1 GS | 2 GS | 4 GS | Nutmeg covering |
-| Mustard (lb) | 4 BT | 8 BT | 2 SM | 4 SM | 8 SM | N/A | Local spice |
-| Nutmeg | N/A | 4 SM | 8 SM | 2 GS | 4 GS | 8 GS | Rare import |
-| Saffron | N/A | 8 SM | 2 GS | 4 GS | 8 GS | 15 GS | Historical: 12-15s/lb |
-| Salt (lb) | 5 BT | 1 SM | 2 SM | 4 SM | 8 SM | N/A | Essential preservative |
+| Item Type           | Poor | Common | Good | Fine | Superior | Luxury | Notes                  |
+| ------------------- | ---- | ------ | ---- | ---- | -------- | ------ | ---------------------- |
+| Black Pepper        | N/A  | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Historical: 4s/lb      |
+| Cinnamon            | N/A  | 3 SM   | 6 SM | 1 GS | 2 GS     | 4 GS   | Imported               |
+| Cloves              | N/A  | 4 SM   | 8 SM | 2 GS | 4 GS     | 8 GS   | Very rare              |
+| Garlic (lb)         | 2 BT | 4 BT   | 8 BT | N/A  | N/A      | N/A    | Common seasoning       |
+| Ginger              | N/A  | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Historical: 1-3s/lb    |
+| Mace                | N/A  | 3 SM   | 6 SM | 1 GS | 2 GS     | 4 GS   | Nutmeg covering        |
+| Mustard (lb)        | 4 BT | 8 BT   | 2 SM | 4 SM | 8 SM     | N/A    | Local spice            |
+| Nutmeg              | N/A  | 4 SM   | 8 SM | 2 GS | 4 GS     | 8 GS   | Rare import            |
+| Salt (lb)           | 5 BT | 1 SM   | 2 SM | 4 SM | 8 SM     | N/A    | Essential preservative |
+| Saffron (per ounce) | N/A  | 8 SM   | 2 GS | 4 GS | 8 GS     | 15 GS  | Historical spice       |
+| Coffee Beans        | N/A  | 3 SM   | 6 SM | 1 GS | 2 GS     | 4 GS   | Imported drink         |
+| Tea Leaves          | N/A  | 4 SM   | 8 SM | 2 GS | 4 GS     | 8 GS   | Luxury drink           |
 
 ## E. Preserved Foods (per pound)
-| Item Type | Poor | Common | Good | Fine | Superior | Luxury | Notes |
-|-----------|------|---------|------|------|----------|---------|-------|
-| Almonds | N/A | 2 SM | 4 SM | 8 SM | 1 GS | 2 GS | Imported nut |
-| Dates | N/A | 2 SM | 4 SM | 8 SM | 1 GS | 2 GS | Dried fruit |
-| Dried Fish | 2 BT | 4 BT | 8 BT | 2 SM | 4 SM | N/A | Stockfish |
-| Dried Fruit | 1 SM | 2 SM | 4 SM | 8 SM | 1 GS | 2 GS | Historical: 1-4d/lb |
-| Figs | N/A | 2 SM | 4 SM | 8 SM | 1 GS | 2 GS | Imported |
-| Honey | 2 BT | 4 BT | 8 BT | 2 SM | 4 SM | 8 SM | Preservative/sweetener |
-| Pickled Fish | 3 BT | 6 BT | 1 SM | 2 SM | 4 SM | N/A | In brine |
-| Prunes | N/A | 1 SM | 2 SM | 4 SM | 8 SM | 1 GS | Dried plums |
-| Raisins | N/A | 2 SM | 4 SM | 8 SM | 1 GS | 2 GS | Dried grapes |
-| Salted Beef | 3 BT | 6 BT | 1 SM | 2 SM | 4 SM | N/A | Long-term storage |
-| Salted Herring | 2 BT | 4 BT | 8 BT | 2 SM | N/A | N/A | Historical: 5-10/1d |
-| Salted Pork | 3 BT | 6 BT | 1 SM | 2 SM | 4 SM | N/A | Preserved meat |
+| Item Type             | Poor | Common | Good | Fine | Superior | Luxury | Notes                  |
+| --------------------- | ---- | ------ | ---- | ---- | -------- | ------ | ---------------------- |
+| Almonds               | N/A  | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Imported nut           |
+| Dates                 | N/A  | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Dried fruit            |
+| Dried Fish            | 2 BT | 4 BT   | 8 BT | 2 SM | 4 SM     | N/A    | Stockfish              |
+| Dried Fruit           | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Historical: 1-4d/lb    |
+| Figs                  | N/A  | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Imported               |
+| Honey                 | 2 BT | 4 BT   | 8 BT | 2 SM | 4 SM     | 8 SM   | Preservative/sweetener |
+| Pickled Fish          | 3 BT | 6 BT   | 1 SM | 2 SM | 4 SM     | N/A    | In brine               |
+| Prunes                | N/A  | 1 SM   | 2 SM | 4 SM | 8 SM     | 1 GS   | Dried plums            |
+| Raisins               | N/A  | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Dried grapes           |
+| Salted Beef           | 3 BT | 6 BT   | 1 SM | 2 SM | 4 SM     | N/A    | Long-term storage      |
+| Salted Herring        | 2 BT | 4 BT   | 8 BT | 2 SM | N/A      | N/A    | Historical: 5-10/1d    |
+| Salted Pork           | 3 BT | 6 BT   | 1 SM | 2 SM | 4 SM     | N/A    | Preserved meat         |
+| Trail Rations (1 day) | 2 BT | 4 BT   | 8 BT | N/A  | N/A      | N/A    | Historical: 2d         |
 
 ## F. Sweets and Luxuries (per pound)
 | Item Type | Poor | Common | Good | Fine | Superior | Luxury | Notes |
@@ -632,21 +639,72 @@ Notes on Land Prices:
 # Section 10: Additional Fantasy Equipment and Items
 
 ## A. Adventuring Gear
-| Item | Poor | Common | Good | Fine | Superior | Luxury | Notes |
-|------|------|---------|------|------|----------|---------|-------|
-| Abacus | 1 GS | 2 GS | 4 GS | 8 GS | 15 GS | 30 GS | Calculation tool |
-| Alchemist's Fire (flask) | N/A | 2 GS | 4 GS | 8 GS | 15 GS | 30 GS | Volatile substance |
-| Antitoxin (vial) | N/A | 2 GS | 4 GS | 8 GS | 15 GS | 30 GS | Poison treatment |
-| Ball Bearings (bag of 1000) | 5 SM | 1 GS | 2 GS | N/A | N/A | N/A | Metal spheres |
-| Block and Tackle | 5 SM | 1 GS | 2 GS | 4 GS | 8 GS | N/A | Lifting device |
-| Climber's Kit | 1 GS | 2 GS | 4 GS | 8 GS | 15 GS | N/A | Climbing gear |
-| Component Pouch | 1 GS | 2 GS | 4 GS | 8 GS | 15 GS | 30 GS | Magical materials |
-| Healer's Kit | 2 GS | 4 GS | 8 GS | 15 GS | 30 GS | 60 GS | Medical supplies |
-| Holy Water (flask) | N/A | 1 GS | 2 GS | 4 GS | 8 GS | 15 GS | Blessed water |
-| Hourglass | 1 GS | 2 GS | 4 GS | 8 GS | 15 GS | 30 GS | Time measurement |
-| Hunting Trap | 1 GS | 2 GS | 4 GS | 8 GS | 15 GS | N/A | Mechanical trap |
-| Magnifying Glass | N/A | 5 GS | 10 GS | 20 GS | 40 GS | 80 GS | Precision lens |
-| Portable Ram | 2 GS | 4 GS | 8 GS | 15 GS | N/A | N/A | Breaching tool |
+| Item                        | Poor | Common | Good  | Fine  | Superior | Luxury | Notes                  |
+| --------------------------- | ---- | ------ | ----- | ----- | -------- | ------ | ---------------------- |
+| Abacus                      | 1 GS | 2 GS   | 4 GS  | 8 GS  | 15 GS    | 30 GS  | Calculation tool       |
+| Alchemist's Fire (flask)    | N/A  | 2 GS   | 4 GS  | 8 GS  | 15 GS    | 30 GS  | Volatile substance     |
+| Antitoxin (vial)            | N/A  | 2 GS   | 4 GS  | 8 GS  | 15 GS    | 30 GS  | Poison treatment       |
+| Ball Bearings (bag of 1000) | 5 SM | 1 GS   | 2 GS  | N/A   | N/A      | N/A    | Metal spheres          |
+| Block and Tackle            | 5 SM | 1 GS   | 2 GS  | 4 GS  | 8 GS     | N/A    | Lifting device         |
+| Climber's Kit               | 1 GS | 2 GS   | 4 GS  | 8 GS  | 15 GS    | N/A    | Climbing gear          |
+| Component Pouch             | 1 GS | 2 GS   | 4 GS  | 8 GS  | 15 GS    | 30 GS  | Magical materials      |
+| Healer's Kit                | 2 GS | 4 GS   | 8 GS  | 15 GS | 30 GS    | 60 GS  | Medical supplies       |
+| Holy Water (flask)          | N/A  | 1 GS   | 2 GS  | 4 GS  | 8 GS     | 15 GS  | Blessed water          |
+| Hourglass                   | 1 GS | 2 GS   | 4 GS  | 8 GS  | 15 GS    | 30 GS  | Time measurement       |
+| Hunting Trap                | 1 GS | 2 GS   | 4 GS  | 8 GS  | 15 GS    | N/A    | Mechanical trap        |
+| Magnifying Glass            | N/A  | 5 GS   | 10 GS | 20 GS | 40 GS    | 80 GS  | Precision lens         |
+| Portable Ram                | 2 GS | 4 GS   | 8 GS  | 15 GS | N/A      | N/A    | Breaching tool         |
+| Item Type                   | Poor | Common | Good  | Fine  | Superior | Luxury | Notes                  |
+| Chalk (10 pieces)           | 1 BT | 2 BT   | 4 BT  | 8 BT  | N/A      | N/A    | Marking                |
+| String (50 feet)            | 1 BT | 2 BT   | 4 BT  | 8 BT  | 2 SM     | N/A    | Utility cord           |
+| Twine (100 feet)            | 2 BT | 4 BT   | 8 BT  | 2 SM  | 4 SM     | N/A    | Thin binding           |
+| Small Bells (3)             | 2 BT | 4 BT   | 8 BT  | 2 SM  | 4 SM     | 1 GS   | Warning system         |
+| Flint and Steel             | 3 BT | 6 BT   | 1 SM  | 2 SM  | 4 SM     | N/A    | Fire starting          |
+| Manacles                    | 1 GS | 2 GS   | 4 GS  | 8 GS  | 15 GS    | 30 GS  | Restraints             |
+| Paint (pot)                 | 3 BT | 6 BT   | 1 SM  | 2 SM  | 4 SM     | 8 SM   | Marking                |
+| Wax (block)                 | 2 BT | 4 BT   | 8 BT  | 2 SM  | 4 SM     | 8 SM   | Various uses           |
+| Chain (10 feet)             | 1 GS | 2 GS   | 4 GS  | 8 GS  | 15 GS    | 30 GS  | Metal links            |
+| Manacle Lock Pick           | N/A  | 5 SM   | 1 GS  | 2 GS  | 4 GS     | 8 GS   | Specialized tool       |
+| Grease/Oil (flask)          | 2 BT | 4 BT   | 8 BT  | 2 SM  | 4 SM     | N/A    | Maintenance            |
+| Marking Stones              | 1 BT | 2 BT   | 4 BT  | 8 BT  | N/A      | N/A    | Trail marking          |
+| Metal File                  | 4 BT | 8 BT   | 2 SM  | 4 SM  | 8 SM     | 2 GS   | Tool maintenance       |
+| Signal Mirror               | 4 BT | 8 BT   | 2 SM  | 4 SM  | 8 SM     | 2 GS   | Communication          |
+| Chest                       | 1 SM | 2 SM   | 4 SM  | 8 SM  | 2 GS     | 4 GS   | Storage box            |
+| Crowbar                     | 6 BT | 1 SM   | 2 SM  | 4 SM  | 8 SM     | N/A    | Leverage tool          |
+| Iron Spikes (10)            | 4 BT | 8 BT   | 2 SM  | 4 SM  | N/A      | N/A    | Metal stakes           |
+| Lock                        | 2 SM | 4 SM   | 8 SM  | 1 GS  | 2 GS     | 4 GS   | Security device        |
+| Merchant's Scale            | 1 SM | 2 SM   | 4 SM  | 8 SM  | 1 GS     | 2 GS   | Weighing tool          |
+| Mirror (steel)              | 1 SM | 2 SM   | 4 SM  | 8 SM  | 1 GS     | 2 GS   | Historical: 1s         |
+| Soap                        | 1 BT | 2 BT   | 4 BT  | 8 BT  | 2 SM     | 4 SM   | Cleaning item          |
+| Bedroll                     | 4 BT | 8 BT   | 2 SM  | 4 SM  | 8 SM     | N/A    | Sleeping gear          |
+| Fishing Tackle              | 5 BT | 1 SM   | 2 SM  | 4 SM  | 8 SM     | 2 GS   | Historical: 5-6d       |
+| Grappling Hook              | 5 BT | 1 SM   | 2 SM  | 4 SM  | 8 SM     | N/A    | Climbing tool          |
+| Hammer                      | 3 BT | 6 BT   | 1 SM  | 2 SM  | 4 SM     | 8 SM   | Historical: 3d         |
+| Mess Kit                    | 3 BT | 6 BT   | 1 SM  | 2 SM  | 4 SM     | 8 SM   | Eating tools           |
+| Piton (each)                | 1 BT | 2 BT   | 4 BT  | 8 BT  | N/A      | N/A    | Climbing spike         |
+| Pole (10-foot)              | 2 BT | 4 BT   | 8 BT  | 2 SM  | N/A      | N/A    | Utility pole           |
+| Shovel                      | 6 BT | 1 SM   | 2 SM  | 4 SM  | 8 SM     | N/A    | Historical: 6d         |
+| Signal Whistle              | 2 BT | 4 BT   | 8 BT  | 2 SM  | 4 SM     | 8 SM   | Communication          |
+| Tent (two person)           | 1 GS | 2 GS   | 4 GS  | 8 GS  | 15 GS    | 30 GS  | Historical basis       |
+| Whetstone                   | 1 BT | 2 BT   | 4 BT  | 8 BT  | 2 SM     | N/A    | Blade sharpening       |
+| Bullseye Lantern            | 2 SM | 4 SM   | 8 SM  | 1 GS  | 2 GS     | 4 GS   | Focused light          |
+| Hooded Lantern              | 1 SM | 2 SM   | 4 SM  | 8 SM  | 1 GS     | 2 GS   | Adjustable light       |
+| Lamp                        | 3 BT | 6 BT   | 1 SM  | 2 SM  | 4 SM     | 8 SM   | Historical: 3d         |
+| Backpack                    | 8 BT | 2 SM   | 4 SM  | 8 SM  | 2 GS     | 4 GS   | Load carrying          |
+| Barrel                      | 6 BT | 1 SM   | 2 SM  | 4 SM  | 8 SM     | N/A    | 40-gallon capacity     |
+| Basket                      | 2 BT | 4 BT   | 8 BT  | 2 SM  | N/A      | N/A    | Historical: 2d         |
+| Bucket                      | 2 BT | 4 BT   | 8 BT  | 2 SM  | N/A      | N/A    | Wood/metal             |
+| Case (map/scroll)           | 4 BT | 8 BT   | 2 SM  | 4 SM  | 8 SM     | 2 GS   | Document protection    |
+| Flask/Tankard               | 1 BT | 2 BT   | 4 BT  | 1 SM  | 2 SM     | 5 SM   | Historical: 1-2d       |
+| Glass Bottle                | 4 BT | 8 BT   | 2 SM  | 4 SM  | 8 SM     | 2 GS   | Historical: 4d         |
+| Jug/Pitcher                 | 1 BT | 2 BT   | 4 BT  | 1 SM  | 2 SM     | 5 SM   | Historical: 1-2d       |
+| Sack                        | 1 BT | 2 BT   | 4 BT  | 8 BT  | N/A      | N/A    | Basic storage          |
+| Vial                        | 2 BT | 4 BT   | 8 BT  | 2 SM  | 4 SM     | 1 GS   | Small container        |
+| Waterskin                   | 3 BT | 6 BT   | 1 SM  | 2 SM  | 4 SM     | 8 SM   | Historical: 3d         |
+| Rope (50 ft, hemp)          | 3 BT | 6 BT   | 1 SM  | 2 SM  | N/A      | N/A    | Historical: 3-4d       |
+| Rope (50 ft, silk)          | N/A  | 2 SM   | 4 SM  | 8 SM  | 1 GS     | 2 GS   | Luxury import          |
+| Torch                       | 2 CB | 4 CB   | 8 CB  | N/A   | N/A      | N/A    | Historical: ¼d         |
+| Candle                      | 1 CB | 2 CB   | 4 CB  | 8 CB  | N/A      | N/A    | Historical: 1 farthing |
 
 ## B. Magical Components and Supplies
 | Item | Poor | Common | Good | Fine | Superior | Luxury | Notes |
@@ -682,7 +740,156 @@ Notes on Land Prices:
 | Gambit Set      | 5 SM | 1 GS   | 2 GS | 4 GS | 8 GS     | 20 GS  | Strategy game |
 ## F. Slave Costs
 
-|Type|Poor|Common|Good|Fine|Superior|Luxury|Notes|
-|---|---|---|---|---|---|---|---|
-|Hokori Laborer|1 GS|5 GS|15 GS|N/A|20 GS|N/A|Basic worker|
-|Hokori Warrior|10 GS|30 GS|80 GS|N/A|300 GS|500 GS|Armed fighter|
+| Type           | Poor  | Common | Good  | Fine   | Superior | Luxury | Notes         |
+| -------------- | ----- | ------ | ----- | ------ | -------- | ------ | ------------- |
+| Hokori Laborer | 1 GS  | 5 GS   | 15 GS | 20 GS  | 30 GS    | N/A    | Basic worker  |
+| Hokori Warrior | 10 GS | 30 GS  | 80 GS | 130 GS | 300 GS   | 500 GS | Armed fighter |
+|                |       |        |       |        |          |        |               |
+## A. Basic Equipment
+| Item Type          | Poor | Common | Good | Fine | Superior | Luxury | Notes                  |
+| ------------------ | ---- | ------ | ---- | ---- | -------- | ------ | ---------------------- |
+| Rope (50 ft, hemp) | 3 BT | 6 BT   | 1 SM | 2 SM | N/A      | N/A    | Historical: 3-4d       |
+| Rope (50 ft, silk) | N/A  | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Luxury import          |
+| Torch              | 2 CB | 4 CB   | 8 CB | N/A  | N/A      | N/A    | Historical: ¼d         |
+| Candle             | 1 CB | 2 CB   | 4 CB | 8 CB | N/A      | N/A    | Historical: 1 farthing |
+
+## B. Vehicles and Transportation
+| Item Type           | Poor   | Common | Good   | Fine    | Superior | Luxury  | Notes              |
+| ------------------- | ------ | ------ | ------ | ------- | -------- | ------- | ------------------ |
+| Cart                | 2 GS   | 4 GS   | 8 GS   | 15 GS   | N/A      | N/A     | Historical: 40s    |
+| Boat (Row)          | 5 GS   | 10 GS  | 20 GS  | 40 GS   | 80 GS    | N/A     | Historical: £5     |
+| Ship (Sailing)      | 200 GS | 400 GS | 800 GS | 1500 GS | 3000 GS  | 6000 GS | Historical: £200+  |
+| Item Type           | Poor   | Common | Good   | Fine    | Superior | Luxury  | Notes              |
+| Sled                | 1 GS   | 2 GS   | 4 GS   | 8 GS    | 15 GS    | N/A     | Snow transport     |
+| Carriage            | N/A    | 25 GS  | 50 GS  | 100 GS  | 200 GS   | 400 GS  | Passenger vehicle  |
+| Chariot             | 15 GS  | 30 GS  | 60 GS  | 120 GS  | 240 GS   | 500 GS  | War vehicle        |
+| Wagon               | 10 GS  | 20 GS  | 40 GS  | 80 GS   | 150 GS   | N/A     | Heavy transport    |
+| Wheel (replacement) | 2 GS   | 4 GS   | 8 GS   | 15 GS   | 30 GS    | N/A     | Vehicle repair     |
+| Axle (replacement)  | 1 GS   | 2 GS   | 4 GS   | 8 GS    | 15 GS    | N/A     | Vehicle repair     |
+| Harness             | 1 GS   | 2 GS   | 4 GS   | 8 GS    | 15 GS    | 30 GS   | Animal control     |
+| Canvas Cover        | 2 GS   | 4 GS   | 8 GS   | 15 GS   | 30 GS    | N/A     | Weather protection |
+
+## C. Professional Tools
+| Item Type | Poor | Common | Good | Fine | Superior | Luxury | Notes |
+|-----------|------|---------|------|------|----------|---------|-------|
+| Cook's Tools | 3 SM | 6 SM | 1 GS | 2 GS | 4 GS | 8 GS | Historical basis |
+| Thieves' Tools | 2 SM | 4 SM | 8 SM | 1 GS | 2 GS | N/A | Lock picks etc. |
+| Tinker's Tools | 5 SM | 1 GS | 2 GS | 4 GS | 8 GS | N/A | Historical basis |
+
+## D. Writing Supplies
+| Item Type               | Poor | Common | Good  | Fine  | Superior | Luxury | Notes              |
+| ----------------------- | ---- | ------ | ----- | ----- | -------- | ------ | ------------------ |
+| Ink (1 oz. bottle)      | N/A  | 3 BT   | 6 BT  | 1 SM  | 2 SM     | 4 SM   | Historical: 3d     |
+| Quill                   | 1 BT | 2 BT   | 4 BT  | 8 BT  | N/A      | N/A    | Historical: 1d     |
+| Parchment (sheet)       | N/A  | 10 BT  | 1 SM  | 2 SM  | 4 SM     | 8 SM   | Historical: 10-12d |
+| Sealing Wax             | 2 BT | 4 BT   | 8 BT  | 2 SM  | 4 SM     | 8 SM   | Historical basis   |
+| Blank Book (25 sheets)  | N/A  | 3 GS   | 6 GS  | 12 GS | 25 GS    | 50 GS  | With binding       |
+| Blank Book (50 sheets)  | N/A  | 6 GS   | 12 GS | 25 GS | 50 GS    | 100 GS | Larger volume      |
+| Blank Book (100 sheets) | N/A  | 12 GS  | 25 GS | 50 GS | 100 GS   | 200 GS | Full volume        |
+## E. Metals and Materials (per pound)
+| Material Type    | Poor  | Common | Good   | Fine   | Superior | Luxury | Notes             |
+| ---------------- | ----- | ------ | ------ | ------ | -------- | ------ | ----------------- |
+| Iron             | 2 BT  | 4 BT   | 8 BT   | N/A    | N/A      | N/A    | Historical: 2d    |
+| Steel            | 8 BT  | 2 SM   | 4 SM   | 8 SM   | N/A      | N/A    | Historical: 8d-1s |
+| Lead             | 15 GS | 30 GS  | 60 GS  | 120 GS | N/A      | N/A    |                   |
+| Silver           | N/A   | 1 GS   | 2 GS   | 4 GS   | 8 GS     | N/A    | Historical rate   |
+| Gold             | N/A   | 15 GS  | 30 GS  | 60 GS  | 120 GS   | N/A    | Historical rate   |
+| Argentum         | N/A   | N/A    | 60 GS  | 120 GS | 200 GS   | 300 GS |                   |
+| Weapon Silvering | N/A   | 2 GS   | 4 GS   | 8 GS   | 15 GS    | 30 GS  | Special process   |
+| Weapon Argented  | N/A   | N/A    | 120 GS | 250 GS | 450 GS   | 600 GS |                   |
+|                  |       |        |        |        |          |        |                   |
+
+## F. Drugs and Medicine
+
+| Item Type                 | Poor | Common | Good | Fine | Superior | Luxury | Notes                           |
+| ------------------------- | ---- | ------ | ---- | ---- | -------- | ------ | ------------------------------- |
+| Pipe                      | 2 BT | 4 BT   | 8 BT | 2 SM | 4 SM     | 1 GS   | Historical basis                |
+| Tobacco (oz)              | N/A  | 2 BT   | 4 BT | 8 BT | 2 SM     | 4 SM   | New World import                |
+| Opium (oz)                | N/A  | 3 SM   | 6 SM | 1 GS | 2 GS     | 4 GS   | Historical medicinal/trade good |
+| Milk of Poppy (vial)      | N/A  | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Medieval pain medicine          |
+| Hemlock (oz)              | N/A  | 1 SM   | 2 SM | 4 SM | 8 SM     | N/A    | Medicinal in small doses        |
+| Nightshade Extract (vial) | N/A  | 3 SM   | 6 SM | 1 GS | 2 GS     | N/A    | Used by healers                 |
+| Willow Bark (oz)          | 2 BT | 4 BT   | 8 BT | 2 SM | 4 SM     | 8 SM   | Pain/fever treatment            |
+| Mandrake Root (oz)        | N/A  | 4 SM   | 8 SM | 1 GS | 2 GS     | 4 GS   | Sleep/pain treatment            |
+| Hemp Oil (vial)           | 2 SM | 4 SM   | 8 SM | 1 GS | 2 GS     | 4 GS   | Pain/anxiety treatment          |
+## G. Fresh Produce (per pound)
+| Item Type | Poor | Common | Good | Fine | Superior | Luxury | Notes |
+|-----------|------|---------|------|------|----------|---------|-------|
+| Common Vegetables | 1 BT | 2 BT | 4 BT | N/A | N/A | N/A | Historical: 1d |
+| Local Fruits | 2 BT | 4 BT | 8 BT | N/A | N/A | N/A | Historical: 2d |
+
+## H. Lodging/Inn (per night)
+| Accommodation Type | Poor | Common | Good | Fine | Superior | Luxury | Notes |
+|-------------------|------|---------|------|------|----------|---------|-------|
+| Floor Space | 1 CB | 2 CB | N/A | N/A | N/A | N/A | Historical: ¼d or less |
+| Shared Room | 2 BT | 4 BT | N/A | N/A | N/A | N/A | Historical: 2d |
+| Private Room | 4 BT | 8 BT | 2 SM | 4 SM | 8 SM | N/A | Historical: 4-6d |
+| Suite | N/A | 2 SM | 4 SM | 8 SM | 1 GS | 2 GS | Noble lodging |
+
+
+## E. Musical Instruments
+| Item Type | Poor | Common | Good | Fine  | Superior | Luxury | Notes               |
+| --------- | ---- | ------ | ---- | ----- | -------- | ------ | ------------------- |
+| Drum      | 3 SM | 6 SM   | 1 GS | 2 GS  | 4 GS     | 8 GS   | Percussion          |
+| Flute     | 2 SM | 4 SM   | 8 SM | 1 GS  | 2 GS     | 4 GS   | Wind instrument     |
+| Horn      | 5 SM | 1 GS   | 2 GS | 4 GS  | 8 GS     | 15 GS  | Brass instrument    |
+| Lute      | 1 GS | 2 GS   | 4 GS | 8 GS  | 15 GS    | 30 GS  | Stringed instrument |
+| Lyre      | 1 GS | 2 GS   | 4 GS | 8 GS  | 15 GS    | 30 GS  | Historical: 20s+    |
+| Pan Flute | 3 SM | 6 SM   | 1 GS | 2 GS  | 4 GS     | 8 GS   | Multiple pipes      |
+| Shawm     | 4 SM | 8 SM   | 1 GS | 2 GS  | 4 GS     | 8 GS   | Double reed         |
+| Viol      | 2 GS | 4 GS   | 8 GS | 15 GS | 30 GS    | 60 GS  | Bowed strings       |
+|           |      |        |      |       |          |        |                     |
+## A. Vehicles and Components
+| Item Type           | Poor  | Common | Good  | Fine   | Superior | Luxury | Notes              |
+| ------------------- | ----- | ------ | ----- | ------ | -------- | ------ | ------------------ |
+| Sled                | 1 GS  | 2 GS   | 4 GS  | 8 GS   | 15 GS    | N/A    | Snow transport     |
+| Carriage            | N/A   | 25 GS  | 50 GS | 100 GS | 200 GS   | 400 GS | Passenger vehicle  |
+| Chariot             | 15 GS | 30 GS  | 60 GS | 120 GS | 240 GS   | 500 GS | War vehicle        |
+| Wagon               | 10 GS | 20 GS  | 40 GS | 80 GS  | 150 GS   | N/A    | Heavy transport    |
+| Wheel (replacement) | 2 GS  | 4 GS   | 8 GS  | 15 GS  | 30 GS    | N/A    | Vehicle repair     |
+| Axle (replacement)  | 1 GS  | 2 GS   | 4 GS  | 8 GS   | 15 GS    | N/A    | Vehicle repair     |
+| Harness             | 1 GS  | 2 GS   | 4 GS  | 8 GS   | 15 GS    | 30 GS  | Animal control     |
+| Canvas Cover        | 2 GS  | 4 GS   | 8 GS  | 15 GS  | 30 GS    | N/A    | Weather protection |
+
+## B. Trade Goods (per pound unless noted)
+| Item Type           | Poor | Common | Good  | Fine  | Superior | Luxury | Notes            |
+| ------------------- | ---- | ------ | ----- | ----- | -------- | ------ | ---------------- |
+| Cotton (raw)        | 2 BT | 4 BT   | 8 BT  | 2 SM  | 4 SM     | N/A    | Basic textile    |
+| Linen (raw)         | 3 BT | 6 BT   | 1 SM  | 2 SM  | 4 SM     | 8 SM   | Quality textile  |
+| Copper (raw)        | 3 SM | 6 SM   | 1 GS  | 2 GS  | N/A      | N/A    | Base metal       |
+| Dyes (per ounce)    | 2 SM | 4 SM   | 8 SM  | 1 GS  | 2 GS     | 4 GS   | Cloth coloring   |
+| Ivory               | N/A  | 5 GS   | 10 GS | 20 GS | 40 GS    | 80 GS  | Rare material    |
+| Jade                | N/A  | 8 GS   | 15 GS | 30 GS | 60 GS    | 120 GS | Precious stone   |
+| Pearls (each)       | N/A  | 2 GS   | 4 GS  | 8 GS  | 15 GS    | 30 GS  | Gem quality      |
+|                     |      |        |       |       |          |        |                  |
+## A. Professional Services (per day unless noted)
+| Service Type              | Poor | Common | Good | Fine | Superior | Luxury | Notes             |
+| ------------------------- | ---- | ------ | ---- | ---- | -------- | ------ | ----------------- |
+| Messenger (per mile)      | 1 BT | 2 BT   | 4 BT | 8 BT | 2 SM     | 4 SM   | Local delivery    |
+| Courier (per mile)        | 2 BT | 4 BT   | 8 BT | 2 SM | 4 SM     | 8 SM   | Secure delivery   |
+| City Guide                | 4 BT | 8 BT   | 2 SM | 4 SM | 8 SM     | 1 GS   | Local knowledge   |
+| Wilderness Guide          | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Exploration       |
+| Porter/Bearer             | 2 BT | 4 BT   | 8 BT | 2 SM | N/A      | N/A    | Load carrying     |
+| Ship Passage (per mile)   | 1 BT | 3 BT   | 6 BT | 1 SM | 3 SM     | 1 GS   | Water travel      |
+| Caravan Guard             | 6 BT | 1 SM   | 2 SM | 4 SM | 8 SM     | N/A    | Protection        |
+| Scribe                    | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Writing service   |
+| Translator                | 2 SM | 4 SM   | 8 SM | 1 GS | 2 GS     | 4 GS   | Language help     |
+| Legal Counsel             | N/A  | 1 GS   | 2 GS | 4 GS | 8 GS     | 15 GS  | Legal advice      |
+| Apothecary (consultation) | 2 SM | 4 SM   | 8 SM | 1 GS | 2 GS     | 4 GS   | Medicine mixing   |
+| Physician                 | N/A  | 2 GS   | 4 GS | 8 GS | 15 GS    | 30 GS  | Medical care      |
+| Barber-Surgeon            | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | N/A    | Basic medical     |
+| Midwife                   | 2 SM | 4 SM   | 8 SM | 1 GS | 2 GS     | N/A    | Childbirth aid    |
+| Blacksmith (commission)   | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Metal work        |
+| Carpenter (commission)    | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Wood work         |
+| Mason (commission)        | 2 SM | 4 SM   | 8 SM | 1 GS | 2 GS     | 4 GS   | Stone work        |
+| Tailor (commission)       | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Clothing work     |
+| Cobbler (commission)      | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Shoe repair       |
+| Cartographer              | N/A  | 1 GS   | 2 GS | 4 GS | 8 GS     | 15 GS  | Map making        |
+| Herald                    | 2 SM | 4 SM   | 8 SM | 1 GS | 2 GS     | 4 GS   | Announcements     |
+| Stablemaster              | 4 BT | 8 BT   | 2 SM | 4 SM | 8 SM     | 1 GS   | Animal care       |
+| Artist/Painter            | 2 SM | 4 SM   | 8 SM | 1 GS | 2 GS     | 4 GS   | Artwork           |
+| Alchemist                 | N/A  | 2 GS   | 4 GS | 8 GS | 15 GS    | 30 GS  | Potion brewing    |
+| Teacher/Tutor             | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Education         |
+| Entertainer               | 4 BT | 8 BT   | 2 SM | 4 SM | 8 SM     | 1 GS   | Performance       |
+| Gravedigger               | 3 BT | 6 BT   | 1 SM | 2 SM | N/A      | N/A    | Burial service    |
+| Ratcatcher                | 2 BT | 4 BT   | 8 BT | N/A  | N/A      | N/A    | Pest control      |
