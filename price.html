@@ -6,11 +6,13 @@
     <title>Norte Reia Price Calculator</title>
     <style>
         :root {
-            --primary: #2c3e50;
-            --secondary: #34495e;
-            --accent: #3498db;
-            --background: #ecf0f1;
-            --text: #2c3e50;
+            --primary: #592c1c;
+            --secondary: #8c4f2e;
+            --accent: #daa520;
+            --background: #f8f3e6;
+            --text: #2a1609;
+            --border: #704829;
+            --parchment: #f2e8c9;
         }
 
         * {
@@ -20,30 +22,54 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
             line-height: 1.6;
             background-color: var(--background);
             color: var(--text);
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23704829' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
             padding: 20px;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: var(--parchment);
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            border: 2px solid var(--border);
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23704829' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 1.4l2.83 2.83 1.41-1.41L1.41 0H0v1.41zM38.59 40l-2.83-2.83 1.41-1.41L40 38.59V40h-1.41zM40 1.41l-2.83 2.83-1.41-1.41L38.59 0H40v1.41zM20 18.6l2.83-2.83 1.41 1.41L21.41 20l2.83 2.83-1.41 1.41L20 21.41l-2.83 2.83-1.41-1.41L18.59 20l-2.83-2.83 1.41-1.41L20 18.59z'/%3E%3C/g%3E%3C/svg%3E");
         }
 
         h1 {
             color: var(--primary);
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            font-family: 'Blackletter', 'Old English Text MT', 'Goudy Old Style', serif;
+            letter-spacing: 1px;
+            font-size: 2.5rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        h1::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
         }
 
         .search-section {
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 5px;
         }
 
         .controls {
@@ -55,15 +81,28 @@
 
         select, input {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background-color: white;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 0;
+            background-color: rgba(255, 255, 255, 0.5);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1rem;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg fill='%23592c1c' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
         }
 
         .modifier-container {
             display: flex;
-            gap: 10px;
+            gap: 20px;
             flex-wrap: wrap;
             margin-bottom: 20px;
         }
@@ -71,42 +110,94 @@
         .modifier {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
+        }
+
+        .modifier input[type="checkbox"] {
+            width: auto;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+
+        .modifier label {
+            font-weight: bold;
+            color: var(--secondary);
+            cursor: pointer;
         }
 
         .results {
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
             padding: 20px;
             margin-top: 20px;
+            background-color: rgba(255, 255, 255, 0.3);
         }
 
         .result-item {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 10px;
-            padding: 10px;
-            border-bottom: 1px solid #eee;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 15px;
+            padding: 15px;
+            border-bottom: 1px solid rgba(112, 72, 41, 0.3);
+            position: relative;
         }
 
         .result-item:last-child {
             border-bottom: none;
         }
 
+        .result-item:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
         .price {
             font-weight: bold;
             color: var(--accent);
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
         }
 
         .category-label {
             color: var(--secondary);
             font-size: 0.9em;
+            font-style: italic;
         }
 
         .modified-quality {
             font-style: italic;
             color: var(--secondary);
             font-size: 0.9em;
+        }
+
+        .currency-info {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.3);
+            font-style: italic;
+            text-align: center;
+            font-size: 0.9em;
+            color: var(--secondary);
+        }
+
+        /* Scrolls at either end of the title */
+        .scroll-decoration {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            opacity: 0.5;
+        }
+
+        .scroll-left {
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .scroll-right {
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%) scaleX(-1);
         }
 
         @media (max-width: 768px) {
@@ -130,7 +221,7 @@
         <h1>Norte Reia Price Calculator</h1>
         <div class="search-section">
             <div class="controls">
-                <input type="text" id="search" placeholder="Search for any item...">
+                <input type="text" id="search" placeholder="Search for weapons, armor, provisions...">
                 
                 <select id="quality">
                     <option value="Poor">Poor</option>
@@ -153,7 +244,7 @@
                 </div>
                 <div class="modifier">
                     <input type="checkbox" id="wartime">
-                    <label for="wartime">Wartime </label>
+                    <label for="wartime">Wartime Prices</label>
                 </div>
                 <div class="modifier">
                     <input type="checkbox" id="shortage">
@@ -164,14 +255,16 @@
 
         <div class="results" id="results">
             <div class="result-item">
-                <div>Start typing to search for items</div>
+                <div>Begin thy search to reveal the prices of the realm's wares...</div>
             </div>
         </div>
+
+        <div class="currency-info">
+            <p>1 Gold Sun (GS) = 20 Silver Moons (SM)</p>
+            <p>1 Silver Moon = 12 Bronze Terras (BT)</p>
+            <p>1 Bronze Terra = 4 Copper Bits (CB)</p>
+        </div>
     </div>
-    <div>1 Gold Sun (GS) = 20 Silver Moons (SM)
-        1 Silver Moon = 12 Bronze Terras (BT)
-        1 Bronze Terra = 4 Copper Bits (CB)</div>
-    <div>1 5e Gold Piece = 2.5 Silver</div>
 
     <script>
         // Quality levels for progression
@@ -2135,7 +2228,6 @@
             Terra: { value: 4, name: "Bronze Terra", plural: "Bronze Terras" },
             Bit: { value: 1, name: "Copper Bit", plural: "Copper Bits" }
         };
-        
 
         // Calculate modified quality level based on modifiers
         function calculateModifiedQuality(baseQuality) {
@@ -2195,14 +2287,14 @@
             resultsDiv.innerHTML = '';
 
             if (search.length < 2) {
-                resultsDiv.innerHTML = '<div class="result-item"><div>Type at least 2 characters to search</div></div>';
+                resultsDiv.innerHTML = '<div class="result-item"><div>Type at least 2 characters to reveal the prices...</div></div>';
                 return;
             }
 
             const results = searchItems(search);
             
             if (results.length === 0) {
-                resultsDiv.innerHTML = '<div class="result-item"><div>No items found</div></div>';
+                resultsDiv.innerHTML = '<div class="result-item"><div>Alas, no such items exist in our records</div></div>';
                 return;
             }
 
@@ -2219,9 +2311,9 @@
                             ${item}
                             <div class="category-label">${category} > ${subcategory}</div>
                         </div>
-                        <div>Base Price (${baseQuality}): ${basePrice}</div>
+                        <div>Base Worth (${baseQuality}): ${basePrice}</div>
                         <div class="price">
-                            Modified Price: ${modifiedPrice || 'N/A'}
+                            Market Price: ${modifiedPrice || 'Not Available'}
                             <div class="modified-quality">Quality: ${modifiedQuality}</div>
                         </div>
                     `;
