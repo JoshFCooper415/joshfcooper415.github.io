@@ -129,6 +129,12 @@ const priceData = {
             'Sling Bullets (20)': {
                 'Poor': '1 Terra', 'Common': '2 Terras', 'Good': '4 Terras', 'Fine': '8 Terras', 'Superior': '2 Moons', 'Luxury': '5 Moons'
             },
+            'Blowgun Needles (20)': {
+                'Poor': '4 Terras', 'Common': '8 Terras', 'Good': '2 Moons', 'Fine': '4 Moons', 'Superior': '8 Moons', 'Luxury': '2 Suns'
+            },
+            'Crossbow Bolt Case': {
+                'Poor': '5 Terras', 'Common': '1 Moon', 'Good': '2 Moons', 'Fine': '5 Moons', 'Superior': '1 Sun', 'Luxury': '3 Suns'
+            },
         },
         'C. Siege Weapons and Equipment': {
             'Ballista': {
@@ -496,34 +502,32 @@ const priceData = {
             'Weaver\'s Tools': {
                 'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
             },
-        },
-        'G. Navigation & Scientific Equipment': {
-            'Astrolabe': {
-                'Common': '5 Suns', 'Good': '10 Suns', 'Fine': '20 Suns', 'Superior': '40 Suns', 'Luxury': '80 Suns'
+            'Alchemist\'s supplies': {
+                'Poor': '2 Suns', 'Common': '4 Suns', 'Good': '8 Suns', 'Fine': '15 Suns', 'Superior': '30 Suns', 'Luxury': '60 Suns'
             },
-            'Compass': {
-                'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
-            },
-            'Hour Glass': {
+            'Brewer\'s supplies': {
                 'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
             },
-            'Maps (Local)': {
+            'Calligrapher\'s supplies': {
                 'Poor': '5 Moons', 'Common': '1 Sun', 'Good': '2 Suns', 'Fine': '4 Suns', 'Superior': '8 Suns', 'Luxury': '15 Suns'
             },
-            'Navigation Charts': {
+            'Cartographer\'s tools': {
                 'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
             },
-            'Quadrant': {
-                'Common': '3 Suns', 'Good': '6 Suns', 'Fine': '12 Suns', 'Superior': '25 Suns', 'Luxury': '50 Suns'
+            'Glassblower\'s tools': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
             },
-            'Sextant': {
-                'Common': '8 Suns', 'Good': '15 Suns', 'Fine': '30 Suns', 'Superior': '60 Suns', 'Luxury': '120 Suns'
+            'Herbalism kit': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
             },
-            'Spyglass': {
-                'Common': '25 Suns', 'Good': '50 Suns', 'Fine': '100 Suns', 'Superior': '200 Suns', 'Luxury': '400 Suns'
+            'Navigator\'s tools': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
             },
-            'Water Clock': {
-                'Common': '10 Suns', 'Good': '20 Suns', 'Fine': '40 Suns', 'Superior': '80 Suns', 'Luxury': '160 Suns'
+            'Poisoner\'s kit': {
+                'Poor': '2 Suns', 'Common': '4 Suns', 'Good': '8 Suns', 'Fine': '15 Suns', 'Superior': '30 Suns', 'Luxury': '60 Suns'
+            },
+            'Woodcarver\'s tools': {
+                'Poor': '5 Moons', 'Common': '1 Sun', 'Good': '2 Suns', 'Fine': '4 Suns', 'Superior': '8 Suns', 'Luxury': '15 Suns'
             },
         },
     },
@@ -740,45 +744,6 @@ const priceData = {
             },
         },
     },
-    'Religious Items': {
-        'A. Church Equipment': {
-            'Altar Cloth': {
-                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '5 Suns', 'Fine': '12 Suns', 'Superior': '25 Suns', 'Luxury': '50 Suns'
-            },
-            'Censer': {
-                'Poor': '2 Moons', 'Common': '5 Moons', 'Good': '1 Sun', 'Fine': '3 Suns', 'Superior': '8 Suns', 'Luxury': '20 Suns'
-            },
-            'Chalice': {
-                'Poor': '1 Sun', 'Common': '3 Suns', 'Good': '8 Suns', 'Fine': '20 Suns', 'Superior': '50 Suns', 'Luxury': '120 Suns'
-            },
-            'Holy Water Font': {
-                'Poor': '5 Moons', 'Common': '1 Sun', 'Good': '3 Suns', 'Fine': '8 Suns', 'Superior': '20 Suns', 'Luxury': '50 Suns'
-            },
-            'Paten': {
-                'Poor': '5 Moons', 'Common': '1 Sun', 'Good': '3 Suns', 'Fine': '8 Suns', 'Superior': '20 Suns', 'Luxury': '50 Suns'
-            },
-            'Reliquary': {
-                'Common': '5 Suns', 'Good': '15 Suns', 'Fine': '40 Suns', 'Superior': '100 Suns', 'Luxury': '300 Suns'
-            },
-            'Thurible': {
-                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '5 Suns', 'Fine': '12 Suns', 'Superior': '30 Suns', 'Luxury': '80 Suns'
-            },
-        },
-        'B. Personal Religious Items': {
-            'Amulet': {
-                'Poor': '2 Terras', 'Common': '5 Terras', 'Good': '1 Moon', 'Fine': '3 Moons', 'Superior': '1 Sun', 'Luxury': '3 Suns'
-            },
-            'Holy Symbol': {
-                'Poor': '5 Terras', 'Common': '1 Moon', 'Good': '3 Moons', 'Fine': '8 Moons', 'Superior': '2 Suns', 'Luxury': '5 Suns'
-            },
-            'Prayer Book': {
-                'Poor': '1 Sun', 'Common': '3 Suns', 'Good': '8 Suns', 'Fine': '20 Suns', 'Superior': '50 Suns', 'Luxury': '120 Suns'
-            },
-            'Religious Icon': {
-                'Poor': '1 Moon', 'Common': '3 Moons', 'Good': '8 Moons', 'Fine': '2 Suns', 'Superior': '5 Suns', 'Luxury': '15 Suns'
-            },
-        },
-    },
     'Food and Consumables': {
         'A. Basic Foodstuffs (per pound unless noted)': {
             'Barley': {
@@ -981,236 +946,6 @@ const priceData = {
             },
             'Wine Vinegar': {
                 'Poor': '2 Terras', 'Common': '4 Terras', 'Good': '8 Terras', 'Fine': '2 Moons', 'Superior': '4 Moons', 'Luxury': '8 Moons'
-            },
-        },
-    },
-    'Buildings and Construction': {
-        'A. Complete Buildings': {
-            'Barn (Large)': {
-                'Poor': '40 Suns', 'Common': '80 Suns', 'Good': '160 Suns'
-            },
-            'Cottage (1 bay)': {
-                'Poor': '40 Moons', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns'
-            },
-            'Craftsman\'s House': {
-                'Poor': '10 Suns', 'Common': '15 Suns', 'Good': '25 Suns', 'Fine': '40 Suns', 'Superior': '60 Suns'
-            },
-            'Gatehouse (Wood)': {
-                'Poor': '5 Suns', 'Common': '10 Suns', 'Good': '16 Suns'
-            },
-            'Gatehouse (Stone)': {
-                'Poor': '20 Suns', 'Common': '30 Suns', 'Good': '40 Suns', 'Fine': '60 Suns'
-            },
-            'Great Hall': {
-                'Poor': '100 Suns', 'Common': '200 Suns', 'Good': '400 Suns', 'Fine': '800 Suns', 'Superior': '1500 Suns', 'Luxury': '3000 Suns'
-            },
-            'Manor House': {
-                'Poor': '100 Suns', 'Common': '200 Suns', 'Good': '400 Suns', 'Fine': '800 Suns', 'Superior': '1500 Suns', 'Luxury': '3000 Suns'
-            },
-            'Merchant\'s House': {
-                'Poor': '30 Suns', 'Common': '50 Suns', 'Good': '80 Suns', 'Fine': '120 Suns', 'Superior': '200 Suns', 'Luxury': '400 Suns'
-            },
-            'Row House': {
-                'Poor': '3 Suns', 'Common': '5 Suns', 'Good': '8 Suns', 'Fine': '12 Suns'
-            },
-            'Shop': {
-                'Poor': '5 Suns', 'Common': '10 Suns', 'Good': '20 Suns', 'Fine': '40 Suns', 'Superior': '80 Suns'
-            },
-            'Stone Church': {
-                'Poor': '100 Suns', 'Common': '200 Suns', 'Good': '400 Suns', 'Fine': '800 Suns', 'Superior': '1500 Suns', 'Luxury': '3000 Suns'
-            },
-            'Tower (Castle)': {
-                'Poor': '300 Suns', 'Common': '400 Suns', 'Good': '600 Suns', 'Fine': '800 Suns', 'Superior': '1200 Suns', 'Luxury': '2000 Suns'
-            },
-            'Warehouse': {
-                'Poor': '20 Suns', 'Common': '40 Suns', 'Good': '80 Suns', 'Fine': '150 Suns', 'Superior': '300 Suns'
-            },
-        },
-        'B. Construction Materials': {
-            'Bricks (1000)': {
-                'Poor': '2 Suns', 'Common': '4 Suns', 'Good': '8 Suns', 'Fine': '15 Suns', 'Superior': '30 Suns'
-            },
-            'Glass (per window)': {
-                'Poor': '5 Moons', 'Common': '1 Sun', 'Good': '2 Suns', 'Fine': '4 Suns', 'Superior': '8 Suns', 'Luxury': '20 Suns'
-            },
-            'Iron Nails (100)': {
-                'Poor': '2 Moons', 'Common': '4 Moons', 'Good': '8 Moons'
-            },
-            'Lime (barrel)': {
-                'Poor': '3 Moons', 'Common': '6 Moons', 'Good': '1 Sun'
-            },
-            'Lumber (per beam)': {
-                'Poor': '1 Moon', 'Common': '2 Moons', 'Good': '4 Moons', 'Fine': '8 Moons', 'Superior': '2 Suns', 'Luxury': '4 Suns'
-            },
-            'Plaster (barrel)': {
-                'Poor': '2 Moons', 'Common': '4 Moons', 'Good': '8 Moons'
-            },
-            'Roof Tiles (100)': {
-                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns'
-            },
-            'Stone (cart load)': {
-                'Poor': '5 Moons', 'Common': '1 Sun', 'Good': '2 Suns', 'Fine': '4 Suns', 'Superior': '8 Suns'
-            },
-            'Straw (thatch load)': {
-                'Poor': '2 Moons', 'Common': '4 Moons'
-            },
-            'Timber (per tree)': {
-                'Poor': '3 Moons', 'Common': '6 Moons', 'Good': '1 Sun', 'Fine': '2 Suns', 'Superior': '4 Suns', 'Luxury': '8 Suns'
-            },
-        },
-        'C. Building Components': {
-            'Door (Simple)': {
-                'Poor': '5 Moons', 'Common': '1 Sun', 'Good': '2 Suns', 'Fine': '4 Suns', 'Superior': '8 Suns', 'Luxury': '15 Suns'
-            },
-            'Door (Reinforced)': {
-                'Poor': '2 Suns', 'Common': '4 Suns', 'Good': '8 Suns', 'Fine': '15 Suns', 'Superior': '30 Suns', 'Luxury': '60 Suns'
-            },
-            'Fireplace': {
-                'Poor': '2 Suns', 'Common': '4 Suns', 'Good': '8 Suns', 'Fine': '15 Suns', 'Superior': '30 Suns', 'Luxury': '60 Suns'
-            },
-            'Floor (per 100 sq ft)': {
-                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
-            },
-            'Shutters (pair)': {
-                'Poor': '3 Moons', 'Common': '6 Moons', 'Good': '1 Sun', 'Fine': '2 Suns', 'Superior': '4 Suns', 'Luxury': '8 Suns'
-            },
-            'Stairs (wooden)': {
-                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
-            },
-            'Stone Steps': {
-                'Poor': '2 Suns', 'Common': '4 Suns', 'Good': '8 Suns', 'Fine': '15 Suns', 'Superior': '30 Suns', 'Luxury': '60 Suns'
-            },
-            'Window Frame': {
-                'Poor': '4 Moons', 'Common': '8 Moons', 'Good': '2 Suns', 'Fine': '4 Suns', 'Superior': '8 Suns', 'Luxury': '15 Suns'
-            },
-        },
-        'D. Annual Rents': {
-            'Cottage': {
-                'Poor': '5 Moons', 'Common': '8 Moons', 'Good': '12 Moons'
-            },
-            'Craftsman\'s House': {
-                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '3 Suns', 'Fine': '4 Suns'
-            },
-            'Market Stall': {
-                'Poor': '5 Moons', 'Common': '1 Sun', 'Good': '2 Suns', 'Fine': '4 Suns'
-            },
-            'Merchant\'s House': {
-                'Poor': '2 Suns', 'Common': '3 Suns', 'Good': '5 Suns', 'Fine': '8 Suns', 'Superior': '12 Suns', 'Luxury': '20 Suns'
-            },
-            'Shop': {
-                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns'
-            },
-            'Warehouse': {
-                'Poor': '3 Suns', 'Common': '6 Suns', 'Good': '12 Suns', 'Fine': '24 Suns', 'Superior': '48 Suns'
-            },
-        },
-        'E. Labor Costs (per day)': {
-            'Apprentice': {
-                'Poor': '2 Terras', 'Common': '3 Terras'
-            },
-            'Carpenter': {
-                'Poor': '3 Terras', 'Common': '4 Terras', 'Good': '6 Terras', 'Fine': '8 Terras'
-            },
-            'Laborer': {
-                'Poor': '2 Terras', 'Common': '3 Terras', 'Good': '4 Terras'
-            },
-            'Mason': {
-                'Poor': '4 Terras', 'Common': '6 Terras', 'Good': '8 Terras', 'Fine': '1 Moon'
-            },
-            'Master Builder': {
-                'Poor': '1 Moon', 'Common': '2 Moons', 'Good': '3 Moons', 'Fine': '4 Moons', 'Superior': '5 Moons'
-            },
-            'Thatcher': {
-                'Poor': '4 Terras', 'Common': '6 Terras', 'Good': '8 Terras', 'Fine': '1 Moon'
-            },
-        },
-        'F. Land Costs': {
-            'City Center': {
-                'Poor': '100 Suns', 'Common': '200 Suns', 'Good': '400 Suns', 'Fine': '800 Suns', 'Superior': '1500 Suns', 'Luxury': '3000 Suns'
-            },
-            'City Wall Adjacent': {
-                'Poor': '50 Suns', 'Common': '100 Suns', 'Good': '200 Suns', 'Fine': '400 Suns', 'Superior': '800 Suns', 'Luxury': '1500 Suns'
-            },
-            'Commercial District': {
-                'Poor': '80 Suns', 'Common': '150 Suns', 'Good': '300 Suns', 'Fine': '600 Suns', 'Superior': '1200 Suns', 'Luxury': '2400 Suns'
-            },
-            'Craft District': {
-                'Poor': '40 Suns', 'Common': '80 Suns', 'Good': '160 Suns', 'Fine': '320 Suns', 'Superior': '600 Suns', 'Luxury': '1200 Suns'
-            },
-            'Outer City': {
-                'Poor': '20 Suns', 'Common': '40 Suns', 'Good': '80 Suns', 'Fine': '160 Suns', 'Superior': '320 Suns', 'Luxury': '600 Suns'
-            },
-            'Slums': {
-                'Poor': '5 Suns', 'Common': '10 Suns', 'Good': '20 Suns'
-            },
-            'Waterfront': {
-                'Poor': '60 Suns', 'Common': '120 Suns', 'Good': '240 Suns', 'Fine': '480 Suns', 'Superior': '960 Suns', 'Luxury': '2000 Suns'
-            },
-            'Arable Land': {
-                'Poor': '2 Suns', 'Common': '4 Suns', 'Good': '8 Suns', 'Fine': '15 Suns', 'Superior': '30 Suns'
-            },
-            'Forest': {
-                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
-            },
-            'Grazing Land': {
-                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns'
-            },
-            'Manor Estate': {
-                'Common': '10 Suns', 'Good': '20 Suns', 'Fine': '40 Suns', 'Superior': '80 Suns', 'Luxury': '160 Suns'
-            },
-            'Marsh/Wetland': {
-                'Poor': '5 Moons', 'Common': '1 Sun', 'Good': '2 Suns'
-            },
-            'Orchard': {
-                'Poor': '5 Suns', 'Common': '10 Suns', 'Good': '20 Suns', 'Fine': '40 Suns', 'Superior': '80 Suns', 'Luxury': '160 Suns'
-            },
-            'Vineyard': {
-                'Poor': '8 Suns', 'Common': '15 Suns', 'Good': '30 Suns', 'Fine': '60 Suns', 'Superior': '120 Suns', 'Luxury': '240 Suns'
-            },
-            'Wasteland': {
-                'Poor': '2 Moons', 'Common': '4 Moons', 'Good': '8 Moons'
-            },
-            'Fishing Rights': {
-                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
-            },
-            'Grazing Rights': {
-                'Poor': '5 Moons', 'Common': '1 Sun', 'Good': '2 Suns', 'Fine': '4 Suns', 'Superior': '8 Suns'
-            },
-            'Hunting Rights': {
-                'Common': '5 Suns', 'Good': '10 Suns', 'Fine': '20 Suns', 'Superior': '40 Suns', 'Luxury': '80 Suns'
-            },
-            'Market Rights': {
-                'Common': '10 Suns', 'Good': '20 Suns', 'Fine': '40 Suns', 'Superior': '80 Suns', 'Luxury': '160 Suns'
-            },
-            'Mill Rights': {
-                'Common': '8 Suns', 'Good': '15 Suns', 'Fine': '30 Suns', 'Superior': '60 Suns', 'Luxury': '120 Suns'
-            },
-            'Mining Rights': {
-                'Common': '5 Suns', 'Good': '10 Suns', 'Fine': '20 Suns', 'Superior': '40 Suns', 'Luxury': '80 Suns'
-            },
-            'Tithe Rights': {
-                'Common': '15 Suns', 'Good': '30 Suns', 'Fine': '60 Suns', 'Superior': '120 Suns', 'Luxury': '240 Suns'
-            },
-            'Toll Rights': {
-                'Common': '12 Suns', 'Good': '25 Suns', 'Fine': '50 Suns', 'Superior': '100 Suns', 'Luxury': '200 Suns'
-            },
-            'Castle Guard': {
-                'Poor': '2 Suns', 'Common': '4 Suns', 'Good': '8 Suns', 'Fine': '15 Suns', 'Superior': '30 Suns'
-            },
-            'Corvée Labor': {
-                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns'
-            },
-            'Knight\'s Fee': {
-                'Common': '20 Suns', 'Good': '40 Suns', 'Fine': '80 Suns', 'Superior': '160 Suns', 'Luxury': '320 Suns'
-            },
-            'Manor Service': {
-                'Poor': '2 Suns', 'Common': '4 Suns', 'Good': '8 Suns', 'Fine': '15 Suns', 'Superior': '30 Suns'
-            },
-            'Market Tax': {
-                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
-            },
-            'Scutage': {
-                'Common': '10 Suns', 'Good': '20 Suns', 'Fine': '40 Suns', 'Superior': '80 Suns', 'Luxury': '160 Suns'
             },
         },
     },
@@ -1940,6 +1675,275 @@ const priceData = {
             },
             'Ratcatcher': {
                 'Poor': '2 Terras', 'Common': '4 Terras', 'Good': '8 Terras'
+            },
+        },
+    },
+    'Religious Items': {
+        'A. Church Equipment': {
+            'Altar Cloth': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '5 Suns', 'Fine': '12 Suns', 'Superior': '25 Suns', 'Luxury': '50 Suns'
+            },
+            'Censer': {
+                'Poor': '2 Moons', 'Common': '5 Moons', 'Good': '1 Sun', 'Fine': '3 Suns', 'Superior': '8 Suns', 'Luxury': '20 Suns'
+            },
+            'Chalice': {
+                'Poor': '1 Sun', 'Common': '3 Suns', 'Good': '8 Suns', 'Fine': '20 Suns', 'Superior': '50 Suns', 'Luxury': '120 Suns'
+            },
+            'Holy Water Font': {
+                'Poor': '5 Moons', 'Common': '1 Sun', 'Good': '3 Suns', 'Fine': '8 Suns', 'Superior': '20 Suns', 'Luxury': '50 Suns'
+            },
+            'Paten': {
+                'Poor': '5 Moons', 'Common': '1 Sun', 'Good': '3 Suns', 'Fine': '8 Suns', 'Superior': '20 Suns', 'Luxury': '50 Suns'
+            },
+            'Reliquary': {
+                'Common': '5 Suns', 'Good': '15 Suns', 'Fine': '40 Suns', 'Superior': '100 Suns', 'Luxury': '300 Suns'
+            },
+            'Thurible': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '5 Suns', 'Fine': '12 Suns', 'Superior': '30 Suns', 'Luxury': '80 Suns'
+            },
+        },
+        'B. Personal Religious Items': {
+            'Amulet': {
+                'Poor': '2 Terras', 'Common': '5 Terras', 'Good': '1 Moon', 'Fine': '3 Moons', 'Superior': '1 Sun', 'Luxury': '3 Suns'
+            },
+            'Holy Symbol': {
+                'Poor': '5 Terras', 'Common': '1 Moon', 'Good': '3 Moons', 'Fine': '8 Moons', 'Superior': '2 Suns', 'Luxury': '5 Suns'
+            },
+            'Prayer Book': {
+                'Poor': '1 Sun', 'Common': '3 Suns', 'Good': '8 Suns', 'Fine': '20 Suns', 'Superior': '50 Suns', 'Luxury': '120 Suns'
+            },
+            'Religious Icon': {
+                'Poor': '1 Moon', 'Common': '3 Moons', 'Good': '8 Moons', 'Fine': '2 Suns', 'Superior': '5 Suns', 'Luxury': '15 Suns'
+            },
+        },
+    },
+    'Buildings and Construction': {
+        'A. Complete Buildings': {
+            'Barn (Large)': {
+                'Poor': '40 Suns', 'Common': '80 Suns', 'Good': '160 Suns'
+            },
+            'Cottage (1 bay)': {
+                'Poor': '40 Moons', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns'
+            },
+            'Craftsman\'s House': {
+                'Poor': '10 Suns', 'Common': '15 Suns', 'Good': '25 Suns', 'Fine': '40 Suns', 'Superior': '60 Suns'
+            },
+            'Gatehouse (Wood)': {
+                'Poor': '5 Suns', 'Common': '10 Suns', 'Good': '16 Suns'
+            },
+            'Gatehouse (Stone)': {
+                'Poor': '20 Suns', 'Common': '30 Suns', 'Good': '40 Suns', 'Fine': '60 Suns'
+            },
+            'Great Hall': {
+                'Poor': '100 Suns', 'Common': '200 Suns', 'Good': '400 Suns', 'Fine': '800 Suns', 'Superior': '1500 Suns', 'Luxury': '3000 Suns'
+            },
+            'Manor House': {
+                'Poor': '100 Suns', 'Common': '200 Suns', 'Good': '400 Suns', 'Fine': '800 Suns', 'Superior': '1500 Suns', 'Luxury': '3000 Suns'
+            },
+            'Merchant\'s House': {
+                'Poor': '30 Suns', 'Common': '50 Suns', 'Good': '80 Suns', 'Fine': '120 Suns', 'Superior': '200 Suns', 'Luxury': '400 Suns'
+            },
+            'Row House': {
+                'Poor': '3 Suns', 'Common': '5 Suns', 'Good': '8 Suns', 'Fine': '12 Suns'
+            },
+            'Shop': {
+                'Poor': '5 Suns', 'Common': '10 Suns', 'Good': '20 Suns', 'Fine': '40 Suns', 'Superior': '80 Suns'
+            },
+            'Stone Church': {
+                'Poor': '100 Suns', 'Common': '200 Suns', 'Good': '400 Suns', 'Fine': '800 Suns', 'Superior': '1500 Suns', 'Luxury': '3000 Suns'
+            },
+            'Tower (Castle)': {
+                'Poor': '300 Suns', 'Common': '400 Suns', 'Good': '600 Suns', 'Fine': '800 Suns', 'Superior': '1200 Suns', 'Luxury': '2000 Suns'
+            },
+            'Warehouse': {
+                'Poor': '20 Suns', 'Common': '40 Suns', 'Good': '80 Suns', 'Fine': '150 Suns', 'Superior': '300 Suns'
+            },
+        },
+        'B. Construction Materials': {
+            'Bricks (1000)': {
+                'Poor': '2 Suns', 'Common': '4 Suns', 'Good': '8 Suns', 'Fine': '15 Suns', 'Superior': '30 Suns'
+            },
+            'Glass (per window)': {
+                'Poor': '5 Moons', 'Common': '1 Sun', 'Good': '2 Suns', 'Fine': '4 Suns', 'Superior': '8 Suns', 'Luxury': '20 Suns'
+            },
+            'Iron Nails (100)': {
+                'Poor': '2 Moons', 'Common': '4 Moons', 'Good': '8 Moons'
+            },
+            'Lime (barrel)': {
+                'Poor': '3 Moons', 'Common': '6 Moons', 'Good': '1 Sun'
+            },
+            'Lumber (per beam)': {
+                'Poor': '1 Moon', 'Common': '2 Moons', 'Good': '4 Moons', 'Fine': '8 Moons', 'Superior': '2 Suns', 'Luxury': '4 Suns'
+            },
+            'Plaster (barrel)': {
+                'Poor': '2 Moons', 'Common': '4 Moons', 'Good': '8 Moons'
+            },
+            'Roof Tiles (100)': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns'
+            },
+            'Stone (cart load)': {
+                'Poor': '5 Moons', 'Common': '1 Sun', 'Good': '2 Suns', 'Fine': '4 Suns', 'Superior': '8 Suns'
+            },
+            'Straw (thatch load)': {
+                'Poor': '2 Moons', 'Common': '4 Moons'
+            },
+            'Timber (per tree)': {
+                'Poor': '3 Moons', 'Common': '6 Moons', 'Good': '1 Sun', 'Fine': '2 Suns', 'Superior': '4 Suns', 'Luxury': '8 Suns'
+            },
+        },
+        'C. Building Components': {
+            'Door (Simple)': {
+                'Poor': '5 Moons', 'Common': '1 Sun', 'Good': '2 Suns', 'Fine': '4 Suns', 'Superior': '8 Suns', 'Luxury': '15 Suns'
+            },
+            'Door (Reinforced)': {
+                'Poor': '2 Suns', 'Common': '4 Suns', 'Good': '8 Suns', 'Fine': '15 Suns', 'Superior': '30 Suns', 'Luxury': '60 Suns'
+            },
+            'Fireplace': {
+                'Poor': '2 Suns', 'Common': '4 Suns', 'Good': '8 Suns', 'Fine': '15 Suns', 'Superior': '30 Suns', 'Luxury': '60 Suns'
+            },
+            'Floor (per 100 sq ft)': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
+            },
+            'Shutters (pair)': {
+                'Poor': '3 Moons', 'Common': '6 Moons', 'Good': '1 Sun', 'Fine': '2 Suns', 'Superior': '4 Suns', 'Luxury': '8 Suns'
+            },
+            'Stairs (wooden)': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
+            },
+            'Stone Steps': {
+                'Poor': '2 Suns', 'Common': '4 Suns', 'Good': '8 Suns', 'Fine': '15 Suns', 'Superior': '30 Suns', 'Luxury': '60 Suns'
+            },
+            'Window Frame': {
+                'Poor': '4 Moons', 'Common': '8 Moons', 'Good': '2 Suns', 'Fine': '4 Suns', 'Superior': '8 Suns', 'Luxury': '15 Suns'
+            },
+        },
+        'D. Annual Rents': {
+            'Cottage': {
+                'Poor': '5 Moons', 'Common': '8 Moons', 'Good': '12 Moons'
+            },
+            'Craftsman\'s House': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '3 Suns', 'Fine': '4 Suns'
+            },
+            'Market Stall': {
+                'Poor': '5 Moons', 'Common': '1 Sun', 'Good': '2 Suns', 'Fine': '4 Suns'
+            },
+            'Merchant\'s House': {
+                'Poor': '2 Suns', 'Common': '3 Suns', 'Good': '5 Suns', 'Fine': '8 Suns', 'Superior': '12 Suns', 'Luxury': '20 Suns'
+            },
+            'Shop': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns'
+            },
+            'Warehouse': {
+                'Poor': '3 Suns', 'Common': '6 Suns', 'Good': '12 Suns', 'Fine': '24 Suns', 'Superior': '48 Suns'
+            },
+        },
+        'E. Labor Costs (per day)': {
+            'Apprentice': {
+                'Poor': '2 Terras', 'Common': '3 Terras'
+            },
+            'Carpenter': {
+                'Poor': '3 Terras', 'Common': '4 Terras', 'Good': '6 Terras', 'Fine': '8 Terras'
+            },
+            'Laborer': {
+                'Poor': '2 Terras', 'Common': '3 Terras', 'Good': '4 Terras'
+            },
+            'Mason': {
+                'Poor': '4 Terras', 'Common': '6 Terras', 'Good': '8 Terras', 'Fine': '1 Moon'
+            },
+            'Master Builder': {
+                'Poor': '1 Moon', 'Common': '2 Moons', 'Good': '3 Moons', 'Fine': '4 Moons', 'Superior': '5 Moons'
+            },
+            'Thatcher': {
+                'Poor': '4 Terras', 'Common': '6 Terras', 'Good': '8 Terras', 'Fine': '1 Moon'
+            },
+        },
+        'F. Land Costs': {
+            'City Center': {
+                'Poor': '100 Suns', 'Common': '200 Suns', 'Good': '400 Suns', 'Fine': '800 Suns', 'Superior': '1500 Suns', 'Luxury': '3000 Suns'
+            },
+            'City Wall Adjacent': {
+                'Poor': '50 Suns', 'Common': '100 Suns', 'Good': '200 Suns', 'Fine': '400 Suns', 'Superior': '800 Suns', 'Luxury': '1500 Suns'
+            },
+            'Commercial District': {
+                'Poor': '80 Suns', 'Common': '150 Suns', 'Good': '300 Suns', 'Fine': '600 Suns', 'Superior': '1200 Suns', 'Luxury': '2400 Suns'
+            },
+            'Craft District': {
+                'Poor': '40 Suns', 'Common': '80 Suns', 'Good': '160 Suns', 'Fine': '320 Suns', 'Superior': '600 Suns', 'Luxury': '1200 Suns'
+            },
+            'Outer City': {
+                'Poor': '20 Suns', 'Common': '40 Suns', 'Good': '80 Suns', 'Fine': '160 Suns', 'Superior': '320 Suns', 'Luxury': '600 Suns'
+            },
+            'Slums': {
+                'Poor': '5 Suns', 'Common': '10 Suns', 'Good': '20 Suns'
+            },
+            'Waterfront': {
+                'Poor': '60 Suns', 'Common': '120 Suns', 'Good': '240 Suns', 'Fine': '480 Suns', 'Superior': '960 Suns', 'Luxury': '2000 Suns'
+            },
+            'Arable Land': {
+                'Poor': '2 Suns', 'Common': '4 Suns', 'Good': '8 Suns', 'Fine': '15 Suns', 'Superior': '30 Suns'
+            },
+            'Forest': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
+            },
+            'Grazing Land': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns'
+            },
+            'Manor Estate': {
+                'Common': '10 Suns', 'Good': '20 Suns', 'Fine': '40 Suns', 'Superior': '80 Suns', 'Luxury': '160 Suns'
+            },
+            'Marsh/Wetland': {
+                'Poor': '5 Moons', 'Common': '1 Sun', 'Good': '2 Suns'
+            },
+            'Orchard': {
+                'Poor': '5 Suns', 'Common': '10 Suns', 'Good': '20 Suns', 'Fine': '40 Suns', 'Superior': '80 Suns', 'Luxury': '160 Suns'
+            },
+            'Vineyard': {
+                'Poor': '8 Suns', 'Common': '15 Suns', 'Good': '30 Suns', 'Fine': '60 Suns', 'Superior': '120 Suns', 'Luxury': '240 Suns'
+            },
+            'Wasteland': {
+                'Poor': '2 Moons', 'Common': '4 Moons', 'Good': '8 Moons'
+            },
+            'Fishing Rights': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
+            },
+            'Grazing Rights': {
+                'Poor': '5 Moons', 'Common': '1 Sun', 'Good': '2 Suns', 'Fine': '4 Suns', 'Superior': '8 Suns'
+            },
+            'Hunting Rights': {
+                'Common': '5 Suns', 'Good': '10 Suns', 'Fine': '20 Suns', 'Superior': '40 Suns', 'Luxury': '80 Suns'
+            },
+            'Market Rights': {
+                'Common': '10 Suns', 'Good': '20 Suns', 'Fine': '40 Suns', 'Superior': '80 Suns', 'Luxury': '160 Suns'
+            },
+            'Mill Rights': {
+                'Common': '8 Suns', 'Good': '15 Suns', 'Fine': '30 Suns', 'Superior': '60 Suns', 'Luxury': '120 Suns'
+            },
+            'Mining Rights': {
+                'Common': '5 Suns', 'Good': '10 Suns', 'Fine': '20 Suns', 'Superior': '40 Suns', 'Luxury': '80 Suns'
+            },
+            'Tithe Rights': {
+                'Common': '15 Suns', 'Good': '30 Suns', 'Fine': '60 Suns', 'Superior': '120 Suns', 'Luxury': '240 Suns'
+            },
+            'Toll Rights': {
+                'Common': '12 Suns', 'Good': '25 Suns', 'Fine': '50 Suns', 'Superior': '100 Suns', 'Luxury': '200 Suns'
+            },
+            'Castle Guard': {
+                'Poor': '2 Suns', 'Common': '4 Suns', 'Good': '8 Suns', 'Fine': '15 Suns', 'Superior': '30 Suns'
+            },
+            'Corvée Labor': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns'
+            },
+            'Knight\'s Fee': {
+                'Common': '20 Suns', 'Good': '40 Suns', 'Fine': '80 Suns', 'Superior': '160 Suns', 'Luxury': '320 Suns'
+            },
+            'Manor Service': {
+                'Poor': '2 Suns', 'Common': '4 Suns', 'Good': '8 Suns', 'Fine': '15 Suns', 'Superior': '30 Suns'
+            },
+            'Market Tax': {
+                'Poor': '1 Sun', 'Common': '2 Suns', 'Good': '4 Suns', 'Fine': '8 Suns', 'Superior': '15 Suns', 'Luxury': '30 Suns'
+            },
+            'Scutage': {
+                'Common': '10 Suns', 'Good': '20 Suns', 'Fine': '40 Suns', 'Superior': '80 Suns', 'Luxury': '160 Suns'
             },
         },
     },

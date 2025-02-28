@@ -47,21 +47,25 @@
 | Great Sword       | 8 SM | 1 GS   | 2 GS | 4 GS | 8 GS     | 15 GS  | Historical: 8-10s        |
 
 ## B. Ranged Weapons
-| Weapon Type | Poor | Common | Good | Fine | Superior | Luxury | Notes |
-|------------|------|---------|------|------|----------|---------|-------|
-| Arbalest | N/A | 3 GS | 6 GS | 12 GS | 25 GS | 60 GS | Heavy crossbow |
-| Arrows (20) | 3 BT | 6 BT | 1 SM | 2 SM | 4 SM | 1 GS | Standard arrows |
-| Bodkin Arrows (20) | 4 BT | 8 BT | 2 SM | 4 SM | 8 SM | 2 GS | Armor-piercing |
-| Broadhead Arrows (20) | 4 BT | 8 BT | 2 SM | 4 SM | 8 SM | 2 GS | Hunting arrows |
-| Crossbow (Hand) | 2 GS | 4 GS | 8 GS | 15 GS | 30 GS | 60 GS | Small crossbow |
-| Crossbow (Light) | 1 GS | 2 GS | 4 GS | 8 GS | 15 GS | 30 GS | Standard crossbow |
-| Crossbow Bolts (20) | 4 BT | 8 BT | 2 SM | 4 SM | 8 SM | 2 GS | Standard bolts |
-| Hunting Bow | 8 BT | 2 SM | 5 SM | 1 GS | 3 GS | 8 GS | Basic bow |
-| Longbow | 2 SM | 5 SM | 1 GS | 3 GS | 8 GS | 20 GS | Military bow |
-| Quiver | 3 BT | 6 BT | 1 SM | 3 SM | 8 SM | 2 GS | Arrow container |
-| Short Bow | 1 SM | 2 SM | 5 SM | 1 GS | 3 GS | 8 GS | Small bow |
-| Sling | 1 BT | 2 BT | 4 BT | 1 SM | 2 SM | 5 SM | Simple projectile |
-| Sling Bullets (20) | 1 BT | 2 BT | 4 BT | 8 BT | 2 SM | 5 SM | Lead bullets |
+| Weapon Type           | Poor | Common | Good | Fine  | Superior | Luxury | Notes                       |
+| --------------------- | ---- | ------ | ---- | ----- | -------- | ------ | --------------------------- |
+| Arbalest              | N/A  | 3 GS   | 6 GS | 12 GS | 25 GS    | 60 GS  | Heavy crossbow              |
+| Arrows (20)           | 3 BT | 6 BT   | 1 SM | 2 SM  | 4 SM     | 1 GS   | Standard arrows             |
+| Bodkin Arrows (20)    | 4 BT | 8 BT   | 2 SM | 4 SM  | 8 SM     | 2 GS   | Armor-piercing              |
+| Broadhead Arrows (20) | 4 BT | 8 BT   | 2 SM | 4 SM  | 8 SM     | 2 GS   | Hunting arrows              |
+| Crossbow (Hand)       | 2 GS | 4 GS   | 8 GS | 15 GS | 30 GS    | 60 GS  | Small crossbow              |
+| Crossbow (Light)      | 1 GS | 2 GS   | 4 GS | 8 GS  | 15 GS    | 30 GS  | Standard crossbow           |
+| Crossbow Bolts (20)   | 4 BT | 8 BT   | 2 SM | 4 SM  | 8 SM     | 2 GS   | Standard bolts              |
+| Hunting Bow           | 8 BT | 2 SM   | 5 SM | 1 GS  | 3 GS     | 8 GS   | Basic bow                   |
+| Longbow               | 2 SM | 5 SM   | 1 GS | 3 GS  | 8 GS     | 20 GS  | Military bow                |
+| Quiver                | 3 BT | 6 BT   | 1 SM | 3 SM  | 8 SM     | 2 GS   | Arrow container             |
+| Short Bow             | 1 SM | 2 SM   | 5 SM | 1 GS  | 3 GS     | 8 GS   | Small bow                   |
+| Sling                 | 1 BT | 2 BT   | 4 BT | 1 SM  | 2 SM     | 5 SM   | Simple projectile           |
+| Sling Bullets (20)    | 1 BT | 2 BT   | 4 BT | 8 BT  | 2 SM     | 5 SM   | Lead bullets                |
+| Blowgun Needles (20)  | 4 BT | 8 BT   | 2 SM | 4 SM  | 8 SM     | 2 GS   | Small darts, often poisoned |
+| Crossbow Bolt Case    | 5 BT | 1 SM   | 2 SM | 5 SM  | 1 GS     | 3 GS   | Specialized bolt storage    |
+|                       |      |        |      |       |          |        |                             |
+|                       |      |        |      |       |          |        |                             |
 
 ## C. Siege Weapons and Equipment
 | Item Type | Poor | Common | Good | Fine | Superior | Luxury | Notes |
@@ -213,31 +217,192 @@
 | Mortar & Pestle | 8 BT | 2 SM | 4 SM | 1 GS | 2 GS | 5 GS | Preparation |
 | Surgical Kit | 1 GS | 2 GS | 4 GS | 8 GS | 15 GS | 30 GS | Complete set |
 ## F. Artisan's Tools
-| Item Type | Poor | Common | Good | Fine | Superior | Luxury | Notes |
-|-----------|------|---------|------|------|----------|---------|-------|
-| Brewing Vat | 1 GS | 2 GS | 4 GS | 8 GS | 15 GS | 30 GS | Beer making |
-| Glass Blower's Tools | 2 GS | 4 GS | 8 GS | 15 GS | 30 GS | 60 GS | Complete set |
-| Jeweler's Tools | 3 GS | 6 GS | 12 GS | 25 GS | 50 GS | 100 GS | Precision set |
-| Leather Working Set | 1 GS | 2 GS | 4 GS | 8 GS | 15 GS | 30 GS | Complete set |
-| Loom | 2 GS | 4 GS | 8 GS | 15 GS | 30 GS | 60 GS | Cloth making |
-| Potter's Wheel | 1 GS | 2 GS | 4 GS | 8 GS | 15 GS | 30 GS | Clay working |
-| Spinning Wheel | 10 BT | 2 SM | 4 SM | 1 GS | 2 GS | 5 GS | Historical: 10d |
-| Tanning Tools | 1 GS | 2 GS | 4 GS | 8 GS | 15 GS | 30 GS | Leather making |
-| Weaver's Tools | 1 GS | 2 GS | 4 GS | 8 GS | 15 GS | 30 GS | Basic set |
+| Item Type               | Poor  | Common | Good  | Fine  | Superior | Luxury | Notes                          |
+| ----------------------- | ----- | ------ | ----- | ----- | -------- | ------ | ------------------------------ |
+| Brewing Vat             | 1 GS  | 2 GS   | 4 GS  | 8 GS  | 15 GS    | 30 GS  | Beer making                    |
+| Glass Blower's Tools    | 2 GS  | 4 GS   | 8 GS  | 15 GS | 30 GS    | 60 GS  | Complete set                   |
+| Jeweler's Tools         | 3 GS  | 6 GS   | 12 GS | 25 GS | 50 GS    | 100 GS | Precision set                  |
+| Leather Working Set     | 1 GS  | 2 GS   | 4 GS  | 8 GS  | 15 GS    | 30 GS  | Complete set                   |
+| Loom                    | 2 GS  | 4 GS   | 8 GS  | 15 GS | 30 GS    | 60 GS  | Cloth making                   |
+| Potter's Wheel          | 1 GS  | 2 GS   | 4 GS  | 8 GS  | 15 GS    | 30 GS  | Clay working                   |
+| Spinning Wheel          | 10 BT | 2 SM   | 4 SM  | 1 GS  | 2 GS     | 5 GS   | Historical: 10d                |
+| Tanning Tools           | 1 GS  | 2 GS   | 4 GS  | 8 GS  | 15 GS    | 30 GS  | Leather making                 |
+| Weaver's Tools          | 1 GS  | 2 GS   | 4 GS  | 8 GS  | 15 GS    | 30 GS  | Basic set                      |
+| Alchemist's supplies    | 2 GS  | 4 GS   | 8 GS  | 15 GS | 30 GS    | 60 GS  | Complete set for potion making |
+| Brewer's supplies       | 1 GS  | 2 GS   | 4 GS  | 8 GS  | 15 GS    | 30 GS  | Complete brewing equipment     |
+| Calligrapher's supplies | 5 SM  | 1 GS   | 2 GS  | 4 GS  | 8 GS     | 15 GS  | For artistic writing           |
+| Cartographer's tools    | 1 GS  | 2 GS   | 4 GS  | 8 GS  | 15 GS    | 30 GS  | Map creation tools             |
+| Glassblower's tools     | 1 GS  | 2 GS   | 4 GS  | 8 GS  | 15 GS    | 30 GS  | Complete glass crafting set    |
+| Herbalism kit           | 1 GS  | 2 GS   | 4 GS  | 8 GS  | 15 GS    | 30 GS  | For herb preparation           |
+| Navigator's tools       | 1 GS  | 2 GS   | 4 GS  | 8 GS  | 15 GS    | 30 GS  | Includes basic navigation      |
+| Poisoner's kit          | 2 GS  | 4 GS   | 8 GS  | 15 GS | 30 GS    | 60 GS  | For toxin crafting             |
+| Woodcarver's tools      | 5 SM  | 1 GS   | 2 GS  | 4 GS  | 8 GS     | 15 GS  | Complete wood carving set      |
 
+
+
+
+# Section 4: Clothing & Textiles
+
+## A. Basic Clothing (Additions)
+
+|Item Type|Poor|Common|Good|Fine|Superior|Luxury|Notes|
+|---|---|---|---|---|---|---|---|
+|Robes|5 SM|1 GS|2 GS|5 GS|12 GS|30 GS|Ceremonial or academic|
+
+# Section 5: Household Items
+
+## C. Religious and Scholarly Items
+
+|Item Type|Poor|Common|Good|Fine|Superior|Luxury|Notes|
+|---|---|---|---|---|---|---|---|
+|Book|2 GS|5 GS|12 GS|25 GS|50 GS|100 GS|Historical basis (~£1-5)|
+|Spellbook|5 GS|12 GS|25 GS|50 GS|100 GS|200 GS|Specialized magical tome|
+|Holy Symbol (Amulet)|1 SM|3 SM|8 SM|2 GS|5 GS|12 GS|Religious pendant|
+|Holy Symbol (Emblem)|2 SM|5 SM|1 GS|3 GS|8 GS|20 GS|Religious emblem|
+|Holy Symbol (Reliquary)|5 SM|1 GS|3 GS|8 GS|20 GS|50 GS|Contains sacred relic|
+|Paper (one sheet)|3 BT|6 BT|1 SM|2 SM|4 SM|8 SM|Writing material|
+
+## D. Druidic and Natural Items
+
+|Item Type|Poor|Common|Good|Fine|Superior|Luxury|Notes|
+|---|---|---|---|---|---|---|---|
+|Sprig of Mistletoe|3 BT|6 BT|1 SM|3 SM|8 SM|2 GS|Druidic focus|
+|Druidic Totem|5 SM|1 GS|2 GS|5 GS|12 GS|30 GS|Natural materials|
+|Wooden Staff (Druidic)|3 SM|6 SM|1 GS|3 GS|8 GS|20 GS|From living tree|
+|Yew Wand|1 SM|3 SM|8 SM|2 GS|5 GS|12 GS|Special wood focus|
+
+# Section 7: Food and Consumables
+
+## A. Basic Foodstuffs (Additions)
+
+|Item Type|Poor|Common|Good|Fine|Superior|Luxury|Notes|
+|---|---|---|---|---|---|---|---|
+|Rations (1/day)|2 BT|4 BT|8 BT|2 SM|4 SM|N/A|Travel food|
+|Feed (animal, daily)|1 BT|2 BT|4 BT|8 BT|N/A|N/A|For domestic animals|
+
+## H. Luxury Items
+
+|Item Type|Poor|Common|Good|Fine|Superior|Luxury|Notes|
+|---|---|---|---|---|---|---|---|
+|Perfume (vial)|N/A|2 SM|5 SM|1 GS|3 GS|8 GS|Scented oil or water|
+
+# Section 9: Animals and Livestock
+
+## C. Working Animals (Additions)
+
+|Item Type|Poor|Common|Good|Fine|Superior|Luxury|Notes|
+|---|---|---|---|---|---|---|---|
+|Mastiff|1 SM|3 SM|8 SM|2 GS|5 GS|12 GS|Large working dog|
+
+## E. Animal Care (Additions)
+
+|Item Type|Poor|Common|Good|Fine|Superior|Luxury|Notes|
+|---|---|---|---|---|---|---|---|
+|Bit and bridle|8 BT|2 SM|4 SM|8 SM|2 GS|5 GS|Horse control gear|
+|Saddle (Exotic)|3 GS|6 GS|12 GS|25 GS|50 GS|100 GS|For unusual mounts|
+|Saddle (Military)|1 GS|2 GS|4 GS|8 GS|15 GS|30 GS|For battle mounts|
+|Saddle (Pack)|3 SM|6 SM|1 GS|2 GS|4 GS|8 GS|For cargo animals|
+|Saddle (Riding)|5 SM|1 GS|2 GS|4 GS|8 GS|15 GS|Standard riding|
+|Saddlebags|2 SM|4 SM|8 SM|2 GS|4 GS|8 GS|Storage on mount|
+|Stabling (daily)|1 BT|3 BT|6 BT|1 SM|2 SM|5 SM|Animal housing|
+
+# Section 10: Additional Fantasy Equipment and Items
+
+## A. Adventuring Gear (Additions)
+
+|Item Type|Poor|Common|Good|Fine|Superior|Luxury|Notes|
+|---|---|---|---|---|---|---|---|
+|Arcane Focus (Crystal)|5 SM|1 GS|2 GS|4 GS|8 GS|15 GS|Magic channeling item|
+|Arcane Focus (Orb)|1 GS|2 GS|4 GS|8 GS|15 GS|30 GS|Spherical magic focus|
+|Arcane Focus (Rod)|5 SM|1 GS|2 GS|4 GS|8 GS|15 GS|Rod-shaped magic focus|
+|Arcane Focus (Staff)|5 SM|1 GS|2 GS|4 GS|8 GS|15 GS|Staff-shaped magic focus|
+|Arcane Focus (Wand)|3 SM|6 SM|1 GS|2 GS|4 GS|8 GS|Wand-shaped magic focus|
+|Component Pouch|1 GS|2 GS|4 GS|8 GS|15 GS|30 GS|Magic component storage|
+|Tinderbox|2 BT|5 BT|1 SM|2 SM|4 SM|8 SM|Fire starting kit|
+|Miner's Pick|1 SM|2 SM|4 SM|8 SM|2 GS|4 GS|Mining and tunneling tool|
+|Pot, Iron|4 BT|8 BT|2 SM|4 SM|8 SM|2 GS|Cooking vessel|
+
+## B. Magical Components and Supplies (Additions)
+
+|Item Type|Poor|Common|Good|Fine|Superior|Luxury|Notes|
+|---|---|---|---|---|---|---|---|
+|Potion of Healing|N/A|2 GS|5 GS|10 GS|20 GS|40 GS|Magical healing liquid|
+
+## I. Waterborne Vehicles
+
+|Item Type|Poor|Common|Good|Fine|Superior|Luxury|Notes|
+|---|---|---|---|---|---|---|---|
+|Galley|300 GS|600 GS|1200 GS|2400 GS|4800 GS|10000 GS|Large warship with oars|
+|Keelboat|30 GS|60 GS|120 GS|240 GS|480 GS|1000 GS|River vessel|
+|Longship|100 GS|200 GS|400 GS|800 GS|1600 GS|3200 GS|Viking-style vessel|
+|Warship|250 GS|500 GS|1000 GS|2000 GS|4000 GS|8000 GS|Military naval vessel|
+
+## J. Services
+
+|Service Type|Poor|Common|Good|Fine|Superior|Luxury|Notes|
+|---|---|---|---|---|---|---|---|
+|Road or Gate Toll|1 CB|2 CB|4 CB|1 BT|2 BT|4 BT|Per person|
+|Coach cab (per mile)|2 CB|4 CB|1 BT|2 BT|4 BT|1 SM|Land transport|
+|Coach cab (city ride)|4 CB|1 BT|2 BT|4 BT|1 SM|2 SM|Urban transport|
+|Hireling (Skilled)|8 BT|2 SM|4 SM|8 SM|1 GS|2 GS|Per day, trained worker|
+|Hireling (Untrained)|2 BT|4 BT|8 BT|2 SM|N/A|N/A|Per day, common labor|
+
+## K. Lifestyle Expenses (Daily)
+
+|Lifestyle Type|Cost|Notes|
+|---|---|---|
+|Wretched|0|Living in inhumane conditions|
+|Squalid|4 CB|Vermin-infested lodging, poor food|
+|Poor|8 CB|Simple food and lodging, threadbare clothing|
+|Modest|4 BT|Clean living conditions, simple but complete meals|
+|Comfortable|8 BT|Good food, good clothes, good lodging|
+|Wealthy|2 SM|Very comfortable lodging, fine foods and clothes|
+|Aristocratic|5 SM+|Luxurious conditions, excellent food, finest clothes|
+
+## L. Spellcasting Services
+
+|Service Type|Poor|Common|Good|Fine|Superior|Luxury|Notes|
+|---|---|---|---|---|---|---|---|
+|Minor Spell (1st)|N/A|1 GS|2 GS|4 GS|8 GS|15 GS|Simple magical service|
+|Lesser Spell (2nd)|N/A|3 GS|6 GS|12 GS|25 GS|50 GS|Moderate magical service|
+|Moderate Spell (3rd)|N/A|8 GS|15 GS|30 GS|60 GS|120 GS|Significant magical service|
+|Greater Spell (4th+)|N/A|20 GS+|40 GS+|80 GS+|160 GS+|320 GS+|Powerful magical service|
+
+---
+
+Note: For the currency conversion, I've used historical price ratios and the D20 SRD pricing as guidelines, and adjusted to match your currency system. Where Document 1 had items that were functionally included in Document 2 but with different names or categories, I've added appropriate new entries to maintain consistency with your pricing structure.
+
+Last edited just now
 ## G. Navigation & Scientific Equipment
-| Item Type | Poor | Common | Good | Fine | Superior | Luxury | Notes |
-|-----------|------|---------|------|------|----------|---------|-------|
-| Astrolabe | N/A | 5 GS | 10 GS | 20 GS | 40 GS | 80 GS | Navigation |
-| Compass | N/A | 2 GS | 4 GS | 8 GS | 15 GS | 30 GS | Direction finding |
-| Hour Glass | 1 GS | 2 GS | 4 GS | 8 GS | 15 GS | 30 GS | Time keeping |
-| Maps (Local) | 5 SM | 1 GS | 2 GS | 4 GS | 8 GS | 15 GS | Per region |
-| Navigation Charts | 1 GS | 2 GS | 4 GS | 8 GS | 15 GS | 30 GS | Sea routes |
-| Quadrant | N/A | 3 GS | 6 GS | 12 GS | 25 GS | 50 GS | Angle measure |
-| Sextant | N/A | 8 GS | 15 GS | 30 GS | 60 GS | 120 GS | Navigation |
-| Spyglass | N/A | 25 GS | 50 GS | 100 GS | 200 GS | 400 GS | Historical basis |
-| Water Clock | N/A | 10 GS | 20 GS | 40 GS | 80 GS | 160 GS | Time keeping |
+| Item Type         | Poor | Common | Good  | Fine   | Superior | Luxury | Notes                       |
+| ----------------- | ---- | ------ | ----- | ------ | -------- | ------ | --------------------------- |
+| Astrolabe         | N/A  | 5 GS   | 10 GS | 20 GS  | 40 GS    | 80 GS  | Navigation                  |
+| Compass           | N/A  | 2 GS   | 4 GS  | 8 GS   | 15 GS    | 30 GS  | Direction finding           |
+| Hour Glass        | 1 GS | 2 GS   | 4 GS  | 8 GS   | 15 GS    | 30 GS  | Time keeping                |
+| Maps (Local)      | 5 SM | 1 GS   | 2 GS  | 4 GS   | 8 GS     | 15 GS  | Per region                  |
+| Navigation Charts | 1 GS | 2 GS   | 4 GS  | 8 GS   | 15 GS    | 30 GS  | Sea routes                  |
+| Quadrant          | N/A  | 3 GS   | 6 GS  | 12 GS  | 25 GS    | 50 GS  | Angle measure               |
+| Sextant           | N/A  | 8 GS   | 15 GS | 30 GS  | 60 GS    | 120 GS | Navigation                  |
+| Spyglass          | N/A  | 25 GS  | 50 GS | 100 GS | 200 GS   | 400 GS | Historical basis            |
+| Water Clock       | N/A  | 10 GS  | 20 GS | 40 GS  | 80 GS    | 160 GS | Time keeping                |
+| Abacus            | 1 GS | 2 GS   | 4 GS  | 8 GS   | 15 GS    | 30 GS  | Calculation device          |
+| Bell              | 3 BT | 6 BT   | 1 SM  | 3 SM   | 8 SM     | 2 GS   | Signaling device            |
+| Signet Ring       | 5 SM | 1 GS   | 2 GS  | 5 GS   | 12 GS    | 30 GS  | Personal marking seal       |
+| Merchant's Scale  | 1 SM | 2 SM   | 4 SM  | 8 SM   | 2 GS     | 5 GS   | For weighing goods          |
+| Iron Spikes (10)  | 3 BT | 6 BT   | 1 SM  | 2 SM   | 4 SM     | N/A    | For climbing, securing      |
+| Ladder (10-foot)  | 3 BT | 6 BT   | 1 SM  | 2 SM   | 4 SM     | N/A    | Based on historical pricing |
 
+
+| Item Type        | Poor | Common | Good | Fine | Superior | Luxury | Notes                       |
+| ---------------- | ---- | ------ | ---- | ---- | -------- | ------ | --------------------------- |
+| Abacus           | 1 GS | 2 GS   | 4 GS | 8 GS | 15 GS    | 30 GS  | Calculation device          |
+| Bell             | 3 BT | 6 BT   | 1 SM | 3 SM | 8 SM     | 2 GS   | Signaling device            |
+| Signet Ring      | 5 SM | 1 GS   | 2 GS | 5 GS | 12 GS    | 30 GS  | Personal marking seal       |
+| Merchant's Scale | 1 SM | 2 SM   | 4 SM | 8 SM | 2 GS     | 5 GS   | For weighing goods          |
+| Iron Spikes (10) | 3 BT | 6 BT   | 1 SM | 2 SM | 4 SM     | N/A    | For climbing, securing      |
+| Ladder (10-foot) | 3 BT | 6 BT   | 1 SM | 2 SM | 4 SM     | N/A    | Based on historical pricing |
+
+# Section 4: Clothing & Textiles
 # Section 4: Clothing & Textiles
 
 ## A. Basic Clothing
@@ -863,33 +1028,33 @@ Notes on Land Prices:
 | Pearls (each)       | N/A  | 2 GS   | 4 GS  | 8 GS  | 15 GS    | 30 GS  | Gem quality      |
 |                     |      |        |       |       |          |        |                  |
 ## A. Professional Services (per day unless noted)
-| Service Type              | Poor | Common | Good | Fine | Superior | Luxury | Notes             |
-| ------------------------- | ---- | ------ | ---- | ---- | -------- | ------ | ----------------- |
-| Messenger (per mile)      | 1 BT | 2 BT   | 4 BT | 8 BT | 2 SM     | 4 SM   | Local delivery    |
-| Courier (per mile)        | 2 BT | 4 BT   | 8 BT | 2 SM | 4 SM     | 8 SM   | Secure delivery   |
-| City Guide                | 4 BT | 8 BT   | 2 SM | 4 SM | 8 SM     | 1 GS   | Local knowledge   |
-| Wilderness Guide          | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Exploration       |
-| Porter/Bearer             | 2 BT | 4 BT   | 8 BT | 2 SM | N/A      | N/A    | Load carrying     |
-| Ship Passage (per mile)   | 1 BT | 3 BT   | 6 BT | 1 SM | 3 SM     | 1 GS   | Water travel      |
-| Caravan Guard             | 6 BT | 1 SM   | 2 SM | 4 SM | 8 SM     | N/A    | Protection        |
-| Scribe                    | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Writing service   |
-| Translator                | 2 SM | 4 SM   | 8 SM | 1 GS | 2 GS     | 4 GS   | Language help     |
-| Legal Counsel             | N/A  | 1 GS   | 2 GS | 4 GS | 8 GS     | 15 GS  | Legal advice      |
-| Apothecary (consultation) | 2 SM | 4 SM   | 8 SM | 1 GS | 2 GS     | 4 GS   | Medicine mixing   |
-| Physician                 | N/A  | 2 GS   | 4 GS | 8 GS | 15 GS    | 30 GS  | Medical care      |
-| Barber-Surgeon            | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | N/A    | Basic medical     |
-| Midwife                   | 2 SM | 4 SM   | 8 SM | 1 GS | 2 GS     | N/A    | Childbirth aid    |
-| Blacksmith (commission)   | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Metal work        |
-| Carpenter (commission)    | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Wood work         |
-| Mason (commission)        | 2 SM | 4 SM   | 8 SM | 1 GS | 2 GS     | 4 GS   | Stone work        |
-| Tailor (commission)       | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Clothing work     |
-| Cobbler (commission)      | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Shoe repair       |
-| Cartographer              | N/A  | 1 GS   | 2 GS | 4 GS | 8 GS     | 15 GS  | Map making        |
-| Herald                    | 2 SM | 4 SM   | 8 SM | 1 GS | 2 GS     | 4 GS   | Announcements     |
-| Stablemaster              | 4 BT | 8 BT   | 2 SM | 4 SM | 8 SM     | 1 GS   | Animal care       |
-| Artist/Painter            | 2 SM | 4 SM   | 8 SM | 1 GS | 2 GS     | 4 GS   | Artwork           |
-| Alchemist                 | N/A  | 2 GS   | 4 GS | 8 GS | 15 GS    | 30 GS  | Potion brewing    |
-| Teacher/Tutor             | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Education         |
-| Entertainer               | 4 BT | 8 BT   | 2 SM | 4 SM | 8 SM     | 1 GS   | Performance       |
-| Gravedigger               | 3 BT | 6 BT   | 1 SM | 2 SM | N/A      | N/A    | Burial service    |
-| Ratcatcher                | 2 BT | 4 BT   | 8 BT | N/A  | N/A      | N/A    | Pest control      |
+| Service Type              | Poor | Common | Good | Fine | Superior | Luxury | Notes           |
+| ------------------------- | ---- | ------ | ---- | ---- | -------- | ------ | --------------- |
+| Messenger (per mile)      | 1 BT | 2 BT   | 4 BT | 8 BT | 2 SM     | 4 SM   | Local delivery  |
+| Courier (per mile)        | 2 BT | 4 BT   | 8 BT | 2 SM | 4 SM     | 8 SM   | Secure delivery |
+| City Guide                | 4 BT | 8 BT   | 2 SM | 4 SM | 8 SM     | 1 GS   | Local knowledge |
+| Wilderness Guide          | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Exploration     |
+| Porter/Bearer             | 2 BT | 4 BT   | 8 BT | 2 SM | N/A      | N/A    | Load carrying   |
+| Ship Passage (per mile)   | 1 BT | 3 BT   | 6 BT | 1 SM | 3 SM     | 1 GS   | Water travel    |
+| Caravan Guard             | 6 BT | 1 SM   | 2 SM | 4 SM | 8 SM     | N/A    | Protection      |
+| Scribe                    | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Writing service |
+| Translator                | 2 SM | 4 SM   | 8 SM | 1 GS | 2 GS     | 4 GS   | Language help   |
+| Legal Counsel             | N/A  | 1 GS   | 2 GS | 4 GS | 8 GS     | 15 GS  | Legal advice    |
+| Apothecary (consultation) | 2 SM | 4 SM   | 8 SM | 1 GS | 2 GS     | 4 GS   | Medicine mixing |
+| Physician                 | N/A  | 2 GS   | 4 GS | 8 GS | 15 GS    | 30 GS  | Medical care    |
+| Barber-Surgeon            | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | N/A    | Basic medical   |
+| Midwife                   | 2 SM | 4 SM   | 8 SM | 1 GS | 2 GS     | N/A    | Childbirth aid  |
+| Blacksmith (commission)   | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Metal work      |
+| Carpenter (commission)    | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Wood work       |
+| Mason (commission)        | 2 SM | 4 SM   | 8 SM | 1 GS | 2 GS     | 4 GS   | Stone work      |
+| Tailor (commission)       | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Clothing work   |
+| Cobbler (commission)      | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Shoe repair     |
+| Cartographer              | N/A  | 1 GS   | 2 GS | 4 GS | 8 GS     | 15 GS  | Map making      |
+| Herald                    | 2 SM | 4 SM   | 8 SM | 1 GS | 2 GS     | 4 GS   | Announcements   |
+| Stablemaster              | 4 BT | 8 BT   | 2 SM | 4 SM | 8 SM     | 1 GS   | Animal care     |
+| Artist/Painter            | 2 SM | 4 SM   | 8 SM | 1 GS | 2 GS     | 4 GS   | Artwork         |
+| Alchemist                 | N/A  | 2 GS   | 4 GS | 8 GS | 15 GS    | 30 GS  | Potion brewing  |
+| Teacher/Tutor             | 1 SM | 2 SM   | 4 SM | 8 SM | 1 GS     | 2 GS   | Education       |
+| Entertainer               | 4 BT | 8 BT   | 2 SM | 4 SM | 8 SM     | 1 GS   | Performance     |
+| Gravedigger               | 3 BT | 6 BT   | 1 SM | 2 SM | N/A      | N/A    | Burial service  |
+| Ratcatcher                | 2 BT | 4 BT   | 8 BT | N/A  | N/A      | N/A    | Pest control    |
