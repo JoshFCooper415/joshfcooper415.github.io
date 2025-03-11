@@ -1,0 +1,2253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spell "Slot" Machine</title>
+    <style>
+        body {
+            font-family: 'Trebuchet MS', Arial, sans-serif;
+            background-color: #1a1a2e;
+            color: #e6e6e6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: #16213e;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+        
+        h1, h2 {
+            text-align: center;
+            color: #00b4d8;
+            text-shadow: 0 0 5px rgba(0, 180, 216, 0.5);
+        }
+        
+        .machine {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .resources input {
+            width: 60px;
+            background-color: #0f3460;
+            border: 1px solid #00b4d8;
+            color: #e6e6e6;
+            padding: 4px;
+            border-radius: 4px;
+            text-align: center;
+            margin-top: 5px;
+        }
+        
+        .reel {
+            width: 80px;
+            height: 120px;
+            background: #0f3460;
+            border: 2px solid #00b4d8;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            font-weight: bold;
+            color: #ffd700;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+            flex-direction: column;
+        }
+        
+        .reel-value {
+            position: relative;
+            animation-timing-function: ease-out;
+            animation-fill-mode: forwards;
+            text-align: center;
+        }
+        
+        .reel-spell {
+            font-size: 12px;
+            margin-top: 5px;
+            color: #ff9e00;
+            text-align: center;
+            padding: 0 5px;
+            max-height: 60px;
+            overflow: hidden;
+        }
+        
+        @keyframes spin {
+            0% { transform: translateY(-100px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            background-color: #e94560;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:hover {
+            background-color: #ff647f;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        button.secondary {
+            background-color: #0077b6;
+            font-size: 14px;
+            padding: 8px 16px;
+        }
+        
+        button.secondary:hover {
+            background-color: #00b4d8;
+        }
+        
+        #spell-output {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #0f3460;
+            border-radius: 8px;
+            border-left: 4px solid #00b4d8;
+        }
+        
+        .probability-settings {
+            background-color: #0f3460;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .slider-container {
+            margin: 10px 0;
+        }
+        
+        label {
+            display: inline-block;
+            width: 120px;
+        }
+        
+        input[type="range"] {
+            width: 200px;
+        }
+        
+        .spell-slot {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00b4d8, #0077b6);
+            text-align: center;
+            line-height: 30px;
+            margin-right: 5px;
+            font-weight: bold;
+            position: relative;
+            margin-bottom: 8px;
+        }
+        
+        .history {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .history-item {
+            padding: 8px;
+            border-bottom: 1px solid #2a4365;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .multiplier-container {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            height: 30px;
+        }
+        
+        .jackpot {
+            color: gold;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            animation: pulse 1s infinite alternate;
+        }
+        
+        .super-jackpot {
+            color: #ff00ff;
+            text-shadow: 0 0 10px rgba(255, 0, 255, 0.7);
+            animation: rainbow 2s infinite alternate;
+        }
+        
+        .bust {
+            color: #ff0000;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+            animation: shake 0.5s infinite;
+        }
+        
+        .gold {
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            animation: sparkle 1s infinite alternate;
+        }
+        
+        .respin {
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+            animation: rotate 2s infinite linear;
+        }
+        
+        @keyframes pulse {
+            from { transform: scale(1); text-shadow: 0 0 10px rgba(255, 215, 0, 0.7); }
+            to { transform: scale(1.1); text-shadow: 0 0 20px rgba(255, 215, 0, 1); }
+        }
+        
+        @keyframes rainbow {
+            0% { color: #ff0000; text-shadow: 0 0 10px rgba(255, 0, 0, 0.7); }
+            25% { color: #ffff00; text-shadow: 0 0 10px rgba(255, 255, 0, 0.7); }
+            50% { color: #00ff00; text-shadow: 0 0 10px rgba(0, 255, 0, 0.7); }
+            75% { color: #00ffff; text-shadow: 0 0 10px rgba(0, 255, 255, 0.7); }
+            100% { color: #ff00ff; text-shadow: 0 0 10px rgba(255, 0, 255, 0.7); }
+        }
+        
+        @keyframes shake {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(-5px, 0); }
+            50% { transform: translate(0, 0); }
+            75% { transform: translate(5px, 0); }
+            100% { transform: translate(0, 0); }
+        }
+        
+        @keyframes sparkle {
+            0% { text-shadow: 0 0 10px rgba(255, 215, 0, 0.7); }
+            50% { text-shadow: 0 0 20px rgba(255, 215, 0, 1), 0 0 30px rgba(255, 255, 255, 0.7); }
+            100% { text-shadow: 0 0 10px rgba(255, 215, 0, 0.7); }
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .available-spells {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #0f3460;
+            border-radius: 8px;
+        }
+        
+        .spell-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .spell-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 14px;
+            background-color: #2a4365;
+            color: white;
+        }
+        
+        .resources {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #0f3460;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .resource {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .resource-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .gold-value {
+            color: #ffd700;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+        
+        .spins-value {
+            color: #00ffff;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+        }
+        
+        .level-5 { background: linear-gradient(135deg, #00b4d8, #06d6a0); }
+        .level-4 { background: linear-gradient(135deg, #06d6a0, #ffd166); }
+        .level-3 { background: linear-gradient(135deg, #ffd166, #ef476f); }
+        .level-2 { background: linear-gradient(135deg, #ef476f, #f15bb5); }
+        .level-1 { background: linear-gradient(135deg, #f15bb5, #ff9e00); }
+        .level-0 { background: linear-gradient(135deg, #ff9e00, #4cc9f0); }
+        .level-bust { background: #ff0000; }
+        
+        .special-reel {
+            border-color: #ff00ff;
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.7);
+        }
+        
+        .bust-reel {
+            border-color: #ff0000;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+        }
+        
+        .gold-reel {
+            border-color: #ffd700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+        }
+        
+        .respin-reel {
+            border-color: #00ffff;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+        }
+        
+        .spin-count {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #e94560;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        .gold-animation {
+            animation: goldBurst 1s forwards;
+        }
+        
+        @keyframes goldBurst {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        /* New CSS for gambling features */
+        
+        /* Punch Card Styling */
+        .punch-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #102344;
+            border-radius: 8px;
+            border: 1px solid #00b4d8;
+            position: relative;
+        }
+        
+        .punch-card-title {
+            margin-bottom: 5px;
+            color: #00b4d8;
+            font-weight: bold;
+        }
+        
+        .punch-slots {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+        
+        .punch-slot {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #0f3460;
+            border: 1px solid #00b4d8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .punch-slot.punched {
+            background: #ffd700;
+            color: black;
+            border-color: #ff9e00;
+            box-shadow: 0 0 5px #ffd700;
+        }
+        
+        /* Loyalty reward preview */
+        .loyalty-reward-preview {
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: #2a4365;
+            border-radius: 5px;
+            font-size: 14px;
+            border: 1px solid gold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: pulse 2s infinite alternate;
+        }
+        
+        .loyalty-spell-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .loyalty-spell-name {
+            flex-grow: 1;
+            text-align: left;
+        }
+        
+        .loyalty-spell-school {
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            color: white;
+        }
+        
+        /* Collection Book Styling */
+        .collection-book {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #0f3460;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .collection-book.hidden {
+            display: none;
+        }
+        
+        .collection-school {
+            margin-bottom: 15px;
+        }
+        
+        .collection-progress {
+            height: 10px;
+            background: #1a1a2e;
+            border-radius: 5px;
+            margin: 5px 0;
+            position: relative;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, #00b4d8, #ffd700);
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+        
+        .spell-collection-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        
+        /* Reward Notification */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 90;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .collection-reward, .spell-selection {
+            background: #16213e;
+            border: 2px solid #00b4d8;
+            border-radius: 10px;
+            padding: 20px;
+            z-index: 100;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .collection-reward button, .spell-selection button {
+            margin-top: 15px;
+        }
+        
+        /* School colors for spell badges */
+        .spell-badge.Abjuration, .loyalty-spell-school.Abjuration, .loyalty-spell-icon.Abjuration { background-color: #1E88E5; }
+        .spell-badge.Conjuration, .loyalty-spell-school.Conjuration, .loyalty-spell-icon.Conjuration { background-color: #7CB342; }
+        .spell-badge.Divination, .loyalty-spell-school.Divination, .loyalty-spell-icon.Divination { background-color: #9575CD; }
+        .spell-badge.Enchantment, .loyalty-spell-school.Enchantment, .loyalty-spell-icon.Enchantment { background-color: #EC407A; }
+        .spell-badge.Evocation, .loyalty-spell-school.Evocation, .loyalty-spell-icon.Evocation { background-color: #EF5350; }
+        .spell-badge.Illusion, .loyalty-spell-school.Illusion, .loyalty-spell-icon.Illusion { background-color: #29B6F6; }
+        .spell-badge.Necromancy, .loyalty-spell-school.Necromancy, .loyalty-spell-icon.Necromancy { background-color: #66BB6A; }
+        .spell-badge.Transmutation, .loyalty-spell-school.Transmutation, .loyalty-spell-icon.Transmutation { background-color: #FFA726; }
+        
+        /* Spell selection list */
+        .spell-selection-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #0f3460;
+            border-radius: 8px;
+        }
+        
+        .spell-selection-item {
+            padding: 8px 12px;
+            background-color: #2a4365;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .spell-selection-item:hover {
+            background-color: #3a5375;
+        }
+        
+        .spell-selection-item.selected {
+            background-color: #00b4d8;
+            color: white;
+        }
+        
+        .spell-school-tag {
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 10px;
+            font-size: 12px;
+            color: white;
+        }
+        
+        /* Combo display */
+        .combo-display {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #0f3460;
+            border-radius: 8px;
+            border-left: 4px solid #ffd700;
+            animation: fadeIn 0.5s;
+            display: none;
+        }
+        
+        .combo-display.active {
+            display: block;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-top: 20px;
+            border-bottom: 1px solid #2a4365;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #0f3460;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            border: 1px solid #2a4365;
+            border-bottom: none;
+            margin-right: 5px;
+            opacity: 0.7;
+        }
+        
+        .tab.active {
+            background-color: #16213e;
+            opacity: 1;
+            position: relative;
+        }
+        
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #16213e;
+        }
+        
+        .tab-content {
+            padding: 15px;
+            background-color: #16213e;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            border: 1px solid #2a4365;
+            border-top: none;
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        /* Stored spells section */
+        .stored-spells {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #0f3460;
+            border-radius: 8px;
+        }
+        
+        .stored-spell-badge {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 14px;
+            background-color: #2a4365;
+            color: white;
+            border: 1px solid gold;
+            box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+            margin: 5px;
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .stored-spell-badge:hover {
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .stored-spell-badge .cast-btn {
+            margin-left: 8px;
+            background-color: #e94560;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        /* Statistics display */
+        .stats {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #0f3460;
+            border-radius: 8px;
+            border-left: 4px solid #00b4d8;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #2a4365;
+            padding-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            color: #00b4d8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1> Spell "Slot" Machine</h1>
+        <p style="text-align: center;">Try your luck with the mystical powers of chance to determine your spell slots!</p>
+        
+        <div class="resources">
+            <div class="resource">
+                <div>Gold Coins</div>
+                <div class="resource-value gold-value" id="gold-value" contenteditable="true">100</div>
+            </div>
+            <div class="resource">
+                <div>Free Spins</div>
+                <div class="resource-value spins-value" id="spins-value">0</div>
+            </div>
+            <div class="resource">
+                <div>Spin Cost</div>
+                <div class="resource-value">5 <span style="font-size: 14px">gold</span></div>
+            </div>
+            
+            <!-- Loyalty Punch Card -->
+            <div class="punch-card">
+                <div class="punch-card-title">Loyalty Card</div>
+                <div class="punch-slots" id="punch-slots">
+                    <!-- Generated by JS -->
+                </div>
+                <!-- Loyalty Reward Preview -->
+                <div class="loyalty-reward-preview" id="loyalty-reward-preview">
+                    <div class="loyalty-spell-icon" id="loyalty-spell-icon">?</div>
+                    <div class="loyalty-spell-name" id="loyalty-spell-name">Spinning for reward...</div>
+                    <div class="loyalty-spell-school" id="loyalty-spell-school">?</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="machine">
+            <div class="reel" id="reel1">
+                <div class="reel-value">?</div>
+                <div class="reel-spell">?</div>
+            </div>
+            <div class="reel" id="reel2">
+                <div class="reel-value">?</div>
+                <div class="reel-spell">?</div>
+            </div>
+            <div class="reel" id="reel3">
+                <div class="reel-value">?</div>
+                <div class="reel-spell">?</div>
+            </div>
+        </div>
+        
+        <div class="multiplier-container" id="multiplier"></div>
+        
+        <!-- Combo Display -->
+        <div class="combo-display" id="combo-display">
+            <h3 id="combo-title">Combo Activated!</h3>
+            <p id="combo-description">You've activated a powerful spell combination.</p>
+        </div>
+        
+        <div class="controls">
+            <button id="spin-button">CAST FORTUNE</button>
+        </div>
+        
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <div class="tab active" data-tab="spell-output">Current Spells</div>
+            <div class="tab" data-tab="stored-spells">Stored Spells</div>
+            <div class="tab" data-tab="collection">Collection</div>
+            <div class="tab" data-tab="stats">Statistics</div>
+        </div>
+        
+        <!-- Tab Content -->
+        <div class="tab-content active" id="spell-output-tab">
+            <div id="spell-output">
+                <h3>Your Available Spell Slots:</h3>
+                <div id="slot-results"></div>
+            </div>
+            
+            <div class="available-spells">
+                <h3>Available Spells</h3>
+                <div id="spell-list" class="spell-list"></div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="stored-spells-tab">
+            <div class="stored-spells">
+                <h3>Your Stored Spells</h3>
+                <p>These are one-time use spells you've earned from loyalty rewards and collections.</p>
+                <div id="stored-spells-list"></div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="collection-tab">
+            <div class="collection-book">
+                <h3>Spell Collection</h3>
+                <p>Collect spells of each school to earn special rewards.</p>
+                <div id="collection-content"></div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="stats-tab">
+            <div class="stats">
+                <h3>Gambling Statistics</h3>
+                <div class="stat-row">
+                    <div class="stat-name">Total Spins:</div>
+                    <div class="stat-value" id="stat-total-spins">0</div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-name">Jackpots Won:</div>
+                    <div class="stat-value" id="stat-jackpots">0</div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-name">Gold Earned:</div>
+                    <div class="stat-value" id="stat-gold-earned">0</div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-name">Gold Spent:</div>
+                    <div class="stat-value" id="stat-gold-spent">0</div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-name">Free Spins Earned:</div>
+                    <div class="stat-value" id="stat-free-spins">0</div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-name">Combos Activated:</div>
+                    <div class="stat-value" id="stat-combos">0</div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-name">Collection Rewards:</div>
+                    <div class="stat-value" id="stat-collections">0</div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-name">Loyalty Rewards:</div>
+                    <div class="stat-value" id="stat-loyalty">0</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="history">
+            <h3>Spin History</h3>
+            <div id="history-list"></div>
+        </div>
+        
+        <div class="probability-settings">
+            <h3>Probability Settings</h3>
+            <p>Adjust the relative probability weights for each spell level:</p>
+            
+            <div class="slider-container">
+                <label for="level0">Cantrips:</label>
+                <input type="range" id="level0" min="1" max="100" value="120">
+                <span id="level0-value">120</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="level1">Level 1:</label>
+                <input type="range" id="level1" min="1" max="100" value="100">
+                <span id="level1-value">100</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="level2">Level 2:</label>
+                <input type="range" id="level2" min="1" max="100" value="70">
+                <span id="level2-value">70</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="level3">Level 3:</label>
+                <input type="range" id="level3" min="1" max="100" value="40">
+                <span id="level3-value">40</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="level4">Level 4:</label>
+                <input type="range" id="level4" min="1" max="100" value="20">
+                <span id="level4-value">20</span>
+            </div>
+            
+            <div class="slider-container">
+                <label for="special">Special Events:</label>
+                <input type="range" id="special" min="1" max="100" value="15">
+                <span id="special-value">15</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const spinButton = document.getElementById('spin-button');
+            const reels = [
+                document.getElementById('reel1'),
+                document.getElementById('reel2'),
+                document.getElementById('reel3')
+            ];
+            const slotResults = document.getElementById('slot-results');
+            const historyList = document.getElementById('history-list');
+            const multiplierDisplay = document.getElementById('multiplier');
+            const spellList = document.getElementById('spell-list');
+            const goldValue = document.getElementById('gold-value');
+            const spinsValue = document.getElementById('spins-value');
+            const comboDisplay = document.getElementById('combo-display');
+            const comboTitle = document.getElementById('combo-title');
+            const comboDescription = document.getElementById('combo-description');
+            const punchSlots = document.getElementById('punch-slots');
+            const loyaltySpellIcon = document.getElementById('loyalty-spell-icon');
+            const loyaltySpellName = document.getElementById('loyalty-spell-name');
+            const loyaltySpellSchool = document.getElementById('loyalty-spell-school');
+            const storedSpellsList = document.getElementById('stored-spells-list');
+            const collectionContent = document.getElementById('collection-content');
+            
+            // Tab navigation
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Update active content
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+            
+            // Statistics elements
+            const statTotalSpins = document.getElementById('stat-total-spins');
+            const statJackpots = document.getElementById('stat-jackpots');
+            const statGoldEarned = document.getElementById('stat-gold-earned');
+            const statGoldSpent = document.getElementById('stat-gold-spent');
+            const statFreeSpins = document.getElementById('stat-free-spins');
+            const statCombos = document.getElementById('stat-combos');
+            const statCollections = document.getElementById('stat-collections');
+            const statLoyalty = document.getElementById('stat-loyalty');
+            
+            // Player resources
+            let gold = 100;
+            let freeSpins = 0;
+            
+            // Special values
+            const LUCKY = "LUCKY";
+            const BUST = "BUST";
+            const GOLD = "GOLD";
+            const RESPIN = "RESPIN";
+            
+            // Loyalty Program
+            const punchCardMax = 10;
+            let punchCard = 0;
+            let totalSpins = 0;
+            
+            // Current loyalty reward preview (changes each spin)
+            let currentLoyaltyReward = null;
+            
+            // Stored spells from rewards (one-time use)
+            let storedSpells = [];
+            
+            // Statistics
+            let stats = {
+                totalSpins: 0,
+                jackpots: 0,
+                goldEarned: 0,
+                goldSpent: 0,
+                freeSpinsEarned: 0,
+                combosActivated: 0,
+                collectionsCompleted: 0,
+                loyaltyRewards: 0
+            };
+            
+            // Spells by level - Bard Spell List for 5e
+            const spellsByLevel = {
+                0: [ // Cantrips (0-level)
+                    "Dancing Lights", "Light", "Mage Hand", "Mending", "Message", 
+                    "Minor Illusion", "Prestidigitation", "True Strike", "Vicious Mockery",
+                    "Thunderclap", "Friends", "Blade Ward"
+                ],
+                1: [ // 1st Level
+                    "Animal Friendship", "Bane", "Charm Person", "Comprehend Languages", 
+                    "Cure Wounds", "Detect Magic", "Disguise Self", "Dissonant Whispers", 
+                    "Faerie Fire", "Feather Fall", "Healing Word", "Heroism", 
+                    "Identify", "Illusory Script", "Longstrider", "Silent Image", 
+                    "Sleep", "Speak with Animals", "Tasha's Hideous Laughter", "Thunderwave",
+                    "Unseen Servant", "Earth Tremor", "Color Spray", "Distort Value", "Silvery Barbs"
+                ],
+                2: [ // 2nd Level
+                    "Animal Messenger", "Blindness/Deafness", "Calm Emotions", "Cloud of Daggers", 
+                    "Crown of Madness", "Detect Thoughts", "Enhance Ability", "Enthrall", 
+                    "Heat Metal", "Hold Person", "Invisibility", "Knock", 
+                    "Lesser Restoration", "Locate Animals or Plants", "Locate Object", "Magic Mouth", 
+                    "Mirror Image", "Phantasmal Force", "See Invisibility", "Shatter", 
+                    "Silence", "Suggestion", "Zone of Truth", "Skywrite", "Pyrotechnics",
+                    "Borrowed Knowledge", "Gift of Gab", "Warding Wind"
+                ],
+                3: [ // 3rd Level
+                    "Bestow Curse", "Clairvoyance", "Dispel Magic", "Fear", 
+                    "Feign Death", "Glyph of Warding", "Hypnotic Pattern", "Leomund's Tiny Hut", 
+                    "Major Image", "Nondetection", "Plant Growth", "Sending", 
+                    "Speak with Dead", "Speak with Plants", "Stinking Cloud", "Tongues",
+                    "Enemies Abound", "Catnap", "Fast Friends", "Motivational Speech",
+                    "Intellect Fortress", "Slow"
+                ],
+                4: [ // 4th Level
+                    "Compulsion", "Confusion", "Dimension Door", "Freedom of Movement", 
+                    "Greater Invisibility", "Hallucinatory Terrain", "Locate Creature", "Polymorph", 
+                    "Stone Shape", "Charm Monster", "Greater Restoration", "Phantasmal Killer",
+                    "Raulothim's Psychic Lance", "Rime's Binding Ice"
+                ],
+                5: [ // 5th Level
+                    "Animate Objects", "Awaken", "Dominate Person", "Dream", 
+                    "Geas", "Greater Restoration", "Hold Monster", "Legend Lore", 
+                    "Mass Cure Wounds", "Mislead", "Modify Memory", "Planar Binding", 
+                    "Raise Dead", "Scrying", "Seeming", "Teleportation Circle",
+                    "Synaptic Static", "Skill Empowerment", "Far Step"
+                ]
+            };
+            
+            // Spell properties for combos and collections
+            const spellProperties = {
+                // Cantrips
+                "Dancing Lights": {school: "Evocation", damageType: null},
+                "Light": {school: "Evocation", damageType: null},
+                "Mage Hand": {school: "Conjuration", damageType: null},
+                "Mending": {school: "Transmutation", damageType: null},
+                "Message": {school: "Transmutation", damageType: null},
+                "Minor Illusion": {school: "Illusion", damageType: null},
+                "Prestidigitation": {school: "Transmutation", damageType: null},
+                "True Strike": {school: "Divination", damageType: null},
+                "Vicious Mockery": {school: "Enchantment", damageType: "Psychic"},
+                "Thunderclap": {school: "Evocation", damageType: "Thunder"},
+                "Friends": {school: "Enchantment", damageType: null},
+                "Blade Ward": {school: "Abjuration", damageType: null},
+                
+                // 1st Level
+                "Animal Friendship": {school: "Enchantment", damageType: null},
+                "Bane": {school: "Enchantment", damageType: null},
+                "Charm Person": {school: "Enchantment", damageType: null},
+                "Comprehend Languages": {school: "Divination", damageType: null},
+                "Cure Wounds": {school: "Evocation", damageType: "Healing"},
+                "Detect Magic": {school: "Divination", damageType: null},
+                "Disguise Self": {school: "Illusion", damageType: null},
+                "Dissonant Whispers": {school: "Enchantment", damageType: "Psychic"},
+                "Faerie Fire": {school: "Evocation", damageType: null},
+                "Feather Fall": {school: "Transmutation", damageType: null},
+                "Healing Word": {school: "Evocation", damageType: "Healing"},
+                "Heroism": {school: "Enchantment", damageType: null},
+                "Identify": {school: "Divination", damageType: null},
+                "Illusory Script": {school: "Illusion", damageType: null},
+                "Longstrider": {school: "Transmutation", damageType: null},
+                "Silent Image": {school: "Illusion", damageType: null},
+                "Sleep": {school: "Enchantment", damageType: null},
+                "Speak with Animals": {school: "Divination", damageType: null},
+                "Tasha's Hideous Laughter": {school: "Enchantment", damageType: null},
+                "Thunderwave": {school: "Evocation", damageType: "Thunder"},
+                "Unseen Servant": {school: "Conjuration", damageType: null},
+                "Earth Tremor": {school: "Evocation", damageType: "Bludgeoning"},
+                "Color Spray": {school: "Illusion", damageType: null},
+                "Distort Value": {school: "Illusion", damageType: null},
+                "Silvery Barbs": {school: "Enchantment", damageType: null},
+                
+                // 2nd Level
+                "Animal Messenger": {school: "Enchantment", damageType: null},
+                "Blindness/Deafness": {school: "Necromancy", damageType: null},
+                "Calm Emotions": {school: "Enchantment", damageType: null},
+                "Cloud of Daggers": {school: "Conjuration", damageType: "Slashing"},
+                "Crown of Madness": {school: "Enchantment", damageType: null},
+                "Detect Thoughts": {school: "Divination", damageType: null},
+                "Enhance Ability": {school: "Transmutation", damageType: null},
+                "Enthrall": {school: "Enchantment", damageType: null},
+                "Heat Metal": {school: "Transmutation", damageType: "Fire"},
+                "Hold Person": {school: "Enchantment", damageType: null},
+                "Invisibility": {school: "Illusion", damageType: null},
+                "Knock": {school: "Transmutation", damageType: null},
+                "Lesser Restoration": {school: "Abjuration", damageType: null},
+                "Locate Animals or Plants": {school: "Divination", damageType: null},
+                "Locate Object": {school: "Divination", damageType: null},
+                "Magic Mouth": {school: "Illusion", damageType: null},
+                "Mirror Image": {school: "Illusion", damageType: null},
+                "Phantasmal Force": {school: "Illusion", damageType: "Psychic"},
+                "See Invisibility": {school: "Divination", damageType: null},
+                "Shatter": {school: "Evocation", damageType: "Thunder"},
+                "Silence": {school: "Illusion", damageType: null},
+                "Suggestion": {school: "Enchantment", damageType: null},
+                "Zone of Truth": {school: "Enchantment", damageType: null},
+                "Skywrite": {school: "Transmutation", damageType: null},
+                "Pyrotechnics": {school: "Transmutation", damageType: null},
+                "Borrowed Knowledge": {school: "Divination", damageType: null},
+                "Gift of Gab": {school: "Enchantment", damageType: null},
+                "Warding Wind": {school: "Evocation", damageType: null},
+                
+                // 3rd Level
+                "Bestow Curse": {school: "Necromancy", damageType: null},
+                "Clairvoyance": {school: "Divination", damageType: null},
+                "Dispel Magic": {school: "Abjuration", damageType: null},
+                "Fear": {school: "Illusion", damageType: null},
+                "Feign Death": {school: "Necromancy", damageType: null},
+                "Glyph of Warding": {school: "Abjuration", damageType: "Various"},
+                "Hypnotic Pattern": {school: "Illusion", damageType: null},
+                "Leomund's Tiny Hut": {school: "Evocation", damageType: null},
+                "Major Image": {school: "Illusion", damageType: null},
+                "Nondetection": {school: "Abjuration", damageType: null},
+                "Plant Growth": {school: "Transmutation", damageType: null},
+                "Sending": {school: "Evocation", damageType: null},
+                "Speak with Dead": {school: "Necromancy", damageType: null},
+                "Speak with Plants": {school: "Transmutation", damageType: null},
+                "Stinking Cloud": {school: "Conjuration", damageType: null},
+                "Tongues": {school: "Divination", damageType: null},
+                "Enemies Abound": {school: "Enchantment", damageType: null},
+                "Catnap": {school: "Enchantment", damageType: null},
+                "Fast Friends": {school: "Enchantment", damageType: null},
+                "Motivational Speech": {school: "Enchantment", damageType: null},
+                "Intellect Fortress": {school: "Abjuration", damageType: null},
+                "Slow": {school: "Transmutation", damageType: null},
+                
+                // 4th Level
+                "Compulsion": {school: "Enchantment", damageType: null},
+                "Confusion": {school: "Enchantment", damageType: null},
+                "Dimension Door": {school: "Conjuration", damageType: null},
+                "Freedom of Movement": {school: "Abjuration", damageType: null},
+                "Greater Invisibility": {school: "Illusion", damageType: null},
+                "Hallucinatory Terrain": {school: "Illusion", damageType: null},
+                "Locate Creature": {school: "Divination", damageType: null},
+                "Polymorph": {school: "Transmutation", damageType: null},
+                "Stone Shape": {school: "Transmutation", damageType: null},
+                "Charm Monster": {school: "Enchantment", damageType: null},
+                "Greater Restoration": {school: "Abjuration", damageType: null},
+                "Phantasmal Killer": {school: "Illusion", damageType: "Psychic"},
+                "Raulothim's Psychic Lance": {school: "Enchantment", damageType: "Psychic"},
+                "Rime's Binding Ice": {school: "Evocation", damageType: "Cold"},
+                
+                // 5th Level
+                "Animate Objects": {school: "Transmutation", damageType: "Bludgeoning"},
+                "Awaken": {school: "Transmutation", damageType: null},
+                "Dominate Person": {school: "Enchantment", damageType: null},
+                "Dream": {school: "Illusion", damageType: "Psychic"},
+                "Geas": {school: "Enchantment", damageType: null},
+                "Hold Monster": {school: "Enchantment", damageType: null},
+                "Legend Lore": {school: "Divination", damageType: null},
+                "Mass Cure Wounds": {school: "Evocation", damageType: "Healing"},
+                "Mislead": {school: "Illusion", damageType: null},
+                "Modify Memory": {school: "Enchantment", damageType: null},
+                "Planar Binding": {school: "Abjuration", damageType: null},
+                "Raise Dead": {school: "Necromancy", damageType: null},
+                "Scrying": {school: "Divination", damageType: null},
+                "Seeming": {school: "Illusion", damageType: null},
+                "Teleportation Circle": {school: "Conjuration", damageType: null},
+                "Synaptic Static": {school: "Enchantment", damageType: "Psychic"},
+                "Skill Empowerment": {school: "Transmutation", damageType: null},
+                "Far Step": {school: "Conjuration", damageType: null}
+            };
+            
+            // Collection tracking
+            const spellCollection = {
+                // Track collected spells by school
+                "Abjuration": new Set(),
+                "Conjuration": new Set(),
+                "Divination": new Set(),
+                "Enchantment": new Set(),
+                "Evocation": new Set(),
+                "Illusion": new Set(),
+                "Necromancy": new Set(),
+                "Transmutation": new Set()
+            };
+            
+            // Collection thresholds and rewards
+            const collectionThresholds = {
+                "Abjuration": [3, 6, 9],
+                "Conjuration": [3, 6, 9],
+                "Divination": [3, 6, 9],
+                "Enchantment": [3, 6, 9],
+                "Evocation": [3, 6, 9],
+                "Illusion": [3, 6, 9],
+                "Necromancy": [3, 6, 9],
+                "Transmutation": [3, 6, 9]
+            };
+            
+            // Set up probability weight inputs
+            const probabilityInputs = [];
+            for (let i = 0; i <= 4; i++) {
+                const input = document.getElementById(`level${i}`);
+                const valueDisplay = document.getElementById(`level${i}-value`);
+                
+                input.addEventListener('input', function() {
+                    valueDisplay.textContent = this.value;
+                });
+                
+                probabilityInputs.push(input);
+            }
+            
+            // Special events probability
+            const specialInput = document.getElementById('special');
+            const specialValueDisplay = document.getElementById('special-value');
+            
+            specialInput.addEventListener('input', function() {
+                specialValueDisplay.textContent = this.value;
+            });
+            
+            // Initialize loyalty punch card and reward preview
+            updatePunchCardUI();
+            generateLoyaltyRewardPreview();
+            
+            // Initialize stored spells display
+            updateStoredSpellsUI();
+            
+            // Initialize collection display
+            updateCollectionUI();
+            
+            // Initialize statistics display
+            updateStatsUI();
+            
+            // Try to load data from localStorage
+            loadGameData();
+            
+            function getRandomSpellLevel() {
+                // Check for special events first
+                const specialWeight = parseInt(specialInput.value);
+                const totalWeight = 
+                    probabilityInputs.reduce((sum, input) => sum + parseInt(input.value), 0) + 
+                    specialWeight * 4; // Weight for all 4 special events (LUCKY, BUST, GOLD, RESPIN)
+                
+                const random = Math.random() * totalWeight;
+                
+                // First check if it's a special event
+                if (random < specialWeight) {
+                    return BUST;
+                } else if (random < specialWeight * 2) {
+                    return LUCKY;
+                } else if (random < specialWeight * 3) {
+                    return GOLD;
+                } else if (random < specialWeight * 4) {
+                    return RESPIN;
+                }
+                
+                // If not special, determine regular spell level
+                let cumulativeWeight = specialWeight * 4;
+                for (let i = 0; i < probabilityInputs.length; i++) {
+                    cumulativeWeight += parseInt(probabilityInputs[i].value);
+                    if (random < cumulativeWeight) {
+                        return i; // Levels are 0-indexed (for cantrips)
+                    }
+                }
+                
+                // Default fallback
+                return 0;
+            }
+            
+            function getRandomSpell(level) {
+                if (level === LUCKY) return "SUPER LUCKY";
+                if (level === BUST) return "ARCANE BURNOUT";
+                if (level === GOLD) return "GOLD COINS";
+                if (level === RESPIN) return "FREE SPIN";
+                
+                const spells = spellsByLevel[level];
+                return spells[Math.floor(Math.random() * spells.length)];
+            }
+            
+            function animateReel(reel, level, spell, delay, duration = 0.5) {
+                setTimeout(() => {
+                    // Reset reel styling
+                    reel.classList.remove('special-reel', 'bust-reel', 'gold-reel', 'respin-reel');
+                    
+                    // Apply special styling if needed
+                    if (level === LUCKY) {
+                        reel.classList.add('special-reel');
+                    } else if (level === BUST) {
+                        reel.classList.add('bust-reel');
+                    } else if (level === GOLD) {
+                        reel.classList.add('gold-reel');
+                    } else if (level === RESPIN) {
+                        reel.classList.add('respin-reel');
+                    }
+                    
+                    const reelValue = reel.querySelector('.reel-value');
+                    const reelSpell = reel.querySelector('.reel-spell');
+                    
+                    reelValue.style.animationName = 'none';
+                    reelValue.offsetHeight; // Trigger reflow
+                    reelValue.textContent = '?';
+                    reelSpell.textContent = '?';
+                    
+                    reelValue.style.animationName = 'spin';
+                    reelValue.style.animationDuration = `${duration}s`;
+                    
+                    // Change the value after animation
+                    setTimeout(() => {
+                        if (level === LUCKY) {
+                            reelValue.textContent = '✨';
+                        } else if (level === BUST) {
+                            reelValue.textContent = '💥';
+                        } else if (level === GOLD) {
+                            reelValue.textContent = '💰';
+                        } else if (level === RESPIN) {
+                            reelValue.textContent = '🔄';
+                        } else {
+                            reelValue.textContent = level;
+                        }
+                        reelSpell.textContent = spell;
+                    }, duration * 800);
+                }, delay);
+            }
+            
+            function updateResources() {
+                goldValue.textContent = gold;
+                spinsValue.textContent = freeSpins;
+                
+                // Apply animation if gold value changed
+                if (goldValue.classList.contains('gold-animation')) {
+                    goldValue.classList.remove('gold-animation');
+                    void goldValue.offsetWidth; // Force reflow
+                }
+                goldValue.classList.add('gold-animation');
+            }
+            
+            function spinReels(autoSpin = false) {
+                // Hide combo display
+                comboDisplay.classList.remove('active');
+                
+                // Check if there's enough gold to spin
+                if (freeSpins <= 0 && gold < 5 && !autoSpin) {
+                    alert("Not enough gold! You need 5 gold coins to spin.");
+                    return;
+                }
+                
+                spinButton.disabled = true;
+                multiplierDisplay.textContent = '';
+                multiplierDisplay.classList.remove('jackpot', 'super-jackpot', 'bust', 'gold', 'respin');
+                
+                // Update statistics
+                stats.totalSpins++;
+                totalSpins++;
+                
+                // Use a free spin if available, otherwise deduct gold
+                if (freeSpins > 0 && !autoSpin) {
+                    freeSpins--;
+                } else if (!autoSpin) {
+                    gold -= 5;
+                    stats.goldSpent += 5;
+                }
+                
+                // Update loyalty punch card
+                punchCard++;
+                updatePunchCardUI();
+                
+                // Generate a new loyalty reward preview if not at max punches
+                if (punchCard < punchCardMax) {
+                    generateLoyaltyRewardPreview();
+                }
+                
+                // Check if loyalty card is full
+                if (punchCard >= punchCardMax) {
+                    punchCard = 0;
+                    stats.loyaltyRewards++;
+                    
+                    // We'll award the current loyalty reward that was previewed
+                    awardLoyaltyReward();
+                    
+                    // Generate a new reward for the next card
+                    setTimeout(() => {
+                        generateLoyaltyRewardPreview();
+                        updatePunchCardUI();
+                    }, 1000);
+                }
+                
+                // Update resources display
+                updateResources();
+                
+                // Generate level for the first two reels (they'll be the same)
+                const firstLevel = getRandomSpellLevel();
+                
+                // Generate different spells for each reel
+                const firstSpell = getRandomSpell(firstLevel);
+                const secondSpell = getRandomSpell(firstLevel);
+                
+                // Third reel gets its own level
+                const thirdLevel = getRandomSpellLevel();
+                const thirdSpell = getRandomSpell(thirdLevel);
+                
+                // Animate the reels with different timing
+                animateReel(reels[0], firstLevel, firstSpell, 0);
+                animateReel(reels[1], firstLevel, secondSpell, 300);
+                // Third reel takes longer
+                animateReel(reels[2], thirdLevel, thirdSpell, 800, 1.2);
+                
+                // Process results after all animations complete
+                setTimeout(() => {
+                    // Always generate just 1 slot
+                    const numSlots = 1;
+                    let results = [];
+                    let historyText = "";
+                    let additionalSpins = 0;
+                    let goldEarned = 0;
+                    
+                    // Check for special combinations
+                    if (firstLevel === BUST || thirdLevel === BUST) {
+                        // Bust - no spell slots!
+                        multiplierDisplay.textContent = "ARCANE BURNOUT! NO MAGIC FOR YOU!";
+                        multiplierDisplay.classList.add('bust');
+                        results = [];
+                        historyText = "BUST - No spell slots";
+                    } else if (firstLevel === GOLD && thirdLevel === GOLD) {
+                        // Triple gold - big jackpot!
+                        const goldAmount = 1000;
+                        gold += goldAmount;
+                        goldEarned += goldAmount;
+                        stats.goldEarned += goldAmount;
+                        stats.jackpots++;
+                        
+                        multiplierDisplay.textContent = `GOLDEN JACKPOT! ${goldAmount} GOLD COINS!`;
+                        multiplierDisplay.classList.add('gold');
+                        historyText = `Jackpot! +${goldAmount} gold`;
+                    } else if (firstLevel === GOLD || thirdLevel === GOLD) {
+                        // Single gold - small reward
+                        const goldAmount = firstLevel === GOLD && thirdLevel === GOLD ? 500 : 100;
+                        gold += goldAmount;
+                        goldEarned += goldAmount;
+                        stats.goldEarned += goldAmount;
+                        
+                        multiplierDisplay.textContent = `GOLD FIND! +${goldAmount} GOLD COINS!`;
+                        multiplierDisplay.classList.add('gold');
+                        
+                        // Process the non-gold reel for spell slots
+                        const baseLevel = firstLevel === GOLD ? thirdLevel : firstLevel;
+                        if (typeof baseLevel === 'number') {
+                            for (let i = 0; i < numSlots; i++) {
+                                results.push({
+                                    level: baseLevel,
+                                    spell: getRandomSpell(baseLevel)
+                                });
+                            }
+                        }
+                        historyText = `+${goldAmount} gold, `;
+                    } else if (firstLevel === RESPIN && thirdLevel === RESPIN) {
+                        // Triple respin - big bonus!
+                        additionalSpins = 2;
+                        freeSpins += additionalSpins;
+                        stats.freeSpinsEarned += additionalSpins;
+                        
+                        multiplierDisplay.textContent = `BONUS SPINS! +${additionalSpins} FREE SPINS!`;
+                        multiplierDisplay.classList.add('respin');
+                        historyText = `+${additionalSpins} free spins`;
+                    } else if (firstLevel === RESPIN || thirdLevel === RESPIN) {
+                        // Single respin
+                        additionalSpins = 1;
+                        freeSpins += additionalSpins;
+                        stats.freeSpinsEarned += additionalSpins;
+                        
+                        multiplierDisplay.textContent = `BONUS SPIN! +${additionalSpins} FREE SPIN!`;
+                        multiplierDisplay.classList.add('respin');
+                        
+                        // Process the non-respin reel for spell slots
+                        const baseLevel = firstLevel === RESPIN ? thirdLevel : firstLevel;
+                        if (typeof baseLevel === 'number') {
+                            for (let i = 0; i < numSlots; i++) {
+                                results.push({
+                                    level: baseLevel,
+                                    spell: getRandomSpell(baseLevel)
+                                });
+                            }
+                        }
+                        historyText = `+${additionalSpins} spin, `;
+                    } else if (firstLevel === LUCKY && thirdLevel === LUCKY) {
+                        // Double lucky - level 5 spell!
+                        multiplierDisplay.textContent = "ULTIMATE ARCANE FORTUNE! LEVEL 5 SPELL!";
+                        multiplierDisplay.classList.add('super-jackpot');
+                        stats.jackpots++;
+                        
+                        for (let i = 0; i < numSlots; i++) {
+                            results.push({
+                                level: 5,
+                                spell: getRandomSpell(5)
+                            });
+                        }
+                        historyText = `${numSlots}x Level 5`;
+                    } else if (firstLevel === LUCKY || thirdLevel === LUCKY) {
+                        // Single lucky - level up non-lucky spell
+                        const baseLevel = firstLevel === LUCKY ? thirdLevel : firstLevel;
+                        
+                        if (typeof baseLevel === 'number') {
+                            // Handle cantrips specially - only upgrade to level 1
+                            let bonusLevel;
+                            if (baseLevel === 0) {
+                                bonusLevel = 1;
+                                multiplierDisplay.textContent = `ARCANE FORTUNE! CASTER is 17TH LEVEL!`;
+                            } else {
+                                bonusLevel = Math.min(baseLevel + 2, 4);
+                                multiplierDisplay.textContent = `ARCANE FORTUNE! LEVEL UP TO ${bonusLevel}!`;
+                            }
+                            
+                            multiplierDisplay.classList.add('jackpot');
+                            
+                            for (let i = 0; i < numSlots; i++) {
+                                results.push({
+                                    level: bonusLevel,
+                                    spell: getRandomSpell(bonusLevel)
+                                });
+                            }
+                            historyText = `${numSlots}x Level ${bonusLevel}`;
+                        }
+                    } else if (firstLevel === thirdLevel) {
+                        // Triple match - double the level (but handle cantrips specially)
+                        if (typeof firstLevel === 'number') {
+                            let bonusLevel;
+                            if (firstLevel === 0) {
+                                // Cantrips cast as if by a 17th level character
+                                bonusLevel = 1;
+                                multiplierDisplay.textContent = `TRIPLE MATCH! CASTER is 17TH LEVEL!`;
+                            }
+                            else {
+                                bonusLevel = Math.min(firstLevel * 2, 4);
+                                multiplierDisplay.textContent = `TRIPLE MATCH! LEVEL x2 = LEVEL ${bonusLevel}`;
+                            }
+                            
+                            multiplierDisplay.classList.add('jackpot');
+                            
+                            for (let i = 0; i < numSlots; i++) {
+                                results.push({
+                                    level: bonusLevel,
+                                    spell: getRandomSpell(bonusLevel)
+                                });
+                            }
+                            historyText = `${numSlots}x Level ${bonusLevel}`;
+                        }
+                    } else {
+                        // Normal result - use the level from the first two reels
+                        if (typeof firstLevel === 'number') {
+                            for (let i = 0; i < numSlots; i++) {
+                                results.push({
+                                    level: firstLevel,
+                                    spell: getRandomSpell(firstLevel)
+                                });
+                            }
+                            historyText = `${numSlots}x ${firstLevel === 0 ? 'Cantrips' : 'Level ' + firstLevel}`;
+                        }
+                    }
+                    
+                    // Update resources if changed
+                    if (additionalSpins > 0 || goldEarned > 0) {
+                        updateResources();
+                    }
+                    
+                    // Check for spell combos
+                    checkForCombos(results);
+                    
+                    // Update display
+                    displayResults(results);
+                    
+                    // Show available spells - make sure to include all reels' spells
+                    const displaySpells = [];
+                    if (typeof firstLevel === 'number') {
+                        displaySpells.push(firstSpell);
+                        displaySpells.push(secondSpell);
+                    }
+                    if (typeof thirdLevel === 'number') {
+                        displaySpells.push(thirdSpell);
+                    }
+                    
+                    displayAvailableSpells(displaySpells);
+                    
+                    // Update spell collection
+                    updateSpellCollection(results);
+                    
+                    // Add to history
+                    if (historyText) {
+                        const historyItem = document.createElement('div');
+                        historyItem.className = 'history-item fade-in';
+                        historyItem.textContent = historyText;
+                        
+                        if (historyList.firstChild) {
+                            historyList.insertBefore(historyItem, historyList.firstChild);
+                        } else {
+                            historyList.appendChild(historyItem);
+                        }
+                        
+                        // Limit history items
+                        if (historyList.children.length > 10) {
+                            historyList.removeChild(historyList.lastChild);
+                        }
+                    }
+                    
+                    // Update statistics
+                    updateStatsUI();
+                    
+                    // Save game data
+                    saveGameData();
+                    
+                    // Re-enable spin button
+                    spinButton.disabled = false;
+                    
+                    // Auto-spin if we have free spins
+                    if (additionalSpins > 0) {
+                        setTimeout(() => {
+                            if (freeSpins > 0) {
+                                spinReels(true);
+                            }
+                        }, 1500);
+                    }
+                }, 2200);
+            }
+            
+            function generateLoyaltyRewardPreview() {
+                // Determine max level based on total spins
+                let maxLevel = 1;
+                if (totalSpins > 50) maxLevel = 2;
+                if (totalSpins > 100) maxLevel = 3;
+                if (totalSpins > 200) maxLevel = 4;
+                if (totalSpins > 500) maxLevel = 5;
+                
+                // Random level up to the max
+                const level = Math.floor(Math.random() * (maxLevel + 1));
+                
+                // Random spell of that level
+                const spellName = getRandomSpell(level);
+                const spellSchool = spellProperties[spellName]?.school || "Unknown";
+                
+                // Store the reward for later
+                currentLoyaltyReward = {
+                    name: spellName,
+                    level: level,
+                    school: spellSchool,
+                };
+                
+                // Update the UI
+                loyaltySpellIcon.textContent = level;
+                loyaltySpellIcon.className = `loyalty-spell-icon level-${level} ${spellSchool}`;
+                
+                loyaltySpellName.textContent = spellName;
+                
+                loyaltySpellSchool.textContent = spellSchool;
+                loyaltySpellSchool.className = `loyalty-spell-school ${spellSchool}`;
+            }
+            
+            function awardLoyaltyReward() {
+                if (!currentLoyaltyReward) {
+                    generateLoyaltyRewardPreview(); // Fallback in case there's no current reward
+                }
+                
+                // Add the current loyalty reward to stored spells
+                storedSpells.push({
+                    id: Date.now().toString(), // Unique ID for this stored spell
+                    name: currentLoyaltyReward.name,
+                    level: currentLoyaltyReward.level,
+                    school: currentLoyaltyReward.school,
+                    source: "Loyalty Reward"
+                });
+                
+                // Update UI
+                updateStoredSpellsUI();
+                
+                // Add to history
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item fade-in jackpot';
+                historyItem.textContent = `Loyalty Reward: ${currentLoyaltyReward.name} (Level ${currentLoyaltyReward.level})`;
+                
+                if (historyList.firstChild) {
+                    historyList.insertBefore(historyItem, historyList.firstChild);
+                } else {
+                    historyList.appendChild(historyItem);
+                }
+                
+                // Create a notification overlay
+                const overlay = document.createElement('div');
+                overlay.className = 'modal-overlay';
+                
+                const modal = document.createElement('div');
+                modal.className = 'collection-reward';
+                modal.innerHTML = `
+                    <h3>Loyalty Reward!</h3>
+                    <p>You've completed your loyalty card!</p>
+                    <p>You've earned: <strong>${currentLoyaltyReward.name}</strong> (Level ${currentLoyaltyReward.level})</p>
+                    <p>This spell has been added to your stored spells and can be cast once at any time.</p>
+                    <button id="claim-loyalty-reward">Awesome!</button>
+                `;
+                
+                overlay.appendChild(modal);
+                document.body.appendChild(overlay);
+                
+                // Handle closing the notification
+                document.getElementById('claim-loyalty-reward').addEventListener('click', () => {
+                    overlay.remove();
+                    
+                    // Highlight the stored spells tab
+                    document.querySelector('.tab[data-tab="stored-spells"]').click();
+                });
+            }
+            
+            function checkForCombos(spellResults) {
+                if (spellResults.length < 1) return false;
+                
+                // Check if all spells from same school
+                let schools = new Set();
+                let damageTypes = new Set();
+                let comboFound = false;
+                
+                // Filter out spells without properties
+                const validSpells = spellResults.filter(result => spellProperties[result.spell]);
+                
+                if (validSpells.length < 1) return false;
+                
+                // Collect all unique schools and damage types
+                validSpells.forEach(result => {
+                    const props = spellProperties[result.spell];
+                    if (props) {
+                        schools.add(props.school);
+                        if (props.damageType) {
+                            damageTypes.add(props.damageType);
+                        }
+                    }
+                });
+                
+                // School combo - if all spells (only 1 in this case) are from the same school
+                if (schools.size === 1) {
+                    const school = Array.from(schools)[0];
+                    comboFound = true;
+                    stats.combosActivated++;
+                    
+                    // School combo bonus - can pick any spell from that school at the highest level found
+                    const maxLevel = Math.max(...validSpells.map(r => r.level));
+                    
+                    comboTitle.textContent = `${school} School Mastery!`;
+                    comboDescription.textContent = `Your spell is from the ${school} school. You may choose an additional ${school} spell of level ${maxLevel} or lower to cast once in the future.`;
+                    comboDisplay.classList.add('active');
+                    
+                    // Show spell selection UI after a delay
+                    setTimeout(() => {
+                        showSchoolSpellSelection(school, maxLevel);
+                    }, 1500);
+                }
+                
+                // Damage type combo - max damage on all spells if not already found a combo
+                else if (!comboFound && damageTypes.size === 1 && !damageTypes.has(null)) {
+                    const damageType = Array.from(damageTypes)[0];
+                    comboFound = true;
+                    stats.combosActivated++;
+                    
+                    comboTitle.textContent = `${damageType} Damage Synergy!`;
+                    comboDescription.textContent = `Your spell deals ${damageType} damage. It will deal maximum damage when cast!`;
+                    comboDisplay.classList.add('active');
+                    
+                    // Add an entry to history for the combo
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item fade-in jackpot';
+                    historyItem.textContent = `COMBO: ${damageType} Damage Synergy - Max Damage!`;
+                    
+                    if (historyList.firstChild) {
+                        historyList.insertBefore(historyItem, historyList.firstChild);
+                    } else {
+                        historyList.appendChild(historyItem);
+                    }
+                }
+                
+                return comboFound;
+            }
+            
+            function updateSpellCollection(spellResults) {
+                let collectiblesFound = false;
+                let collectionsCompleted = [];
+                
+                // Add collected spells to the collection
+                spellResults.forEach(result => {
+                    const spellName = result.spell;
+                    if (spellProperties[spellName]) {
+                        const school = spellProperties[spellName].school;
+                        
+                        // If this is a new spell for this school
+                        if (!spellCollection[school].has(spellName)) {
+                            spellCollection[school].add(spellName);
+                            collectiblesFound = true;
+                            
+                            // Add to history
+                            const historyItem = document.createElement('div');
+                            historyItem.className = 'history-item fade-in';
+                            historyItem.textContent = `Collected: ${spellName} (${school})`;
+                            
+                            if (historyList.firstChild) {
+                                historyList.insertBefore(historyItem, historyList.firstChild);
+                            } else {
+                                historyList.appendChild(historyItem);
+                            }
+                            
+                            // Check if we've hit a threshold
+                            const count = spellCollection[school].size;
+                            if (collectionThresholds[school].includes(count)) {
+                                collectionsCompleted.push({school, count});
+                                stats.collectionsCompleted++;
+                            }
+                        }
+                    }
+                });
+                
+                // Update collection UI
+                updateCollectionUI();
+                
+                // Handle completed collections
+                if (collectionsCompleted.length > 0) {
+                    // Schedule reward after any combo reward
+                    setTimeout(() => {
+                        collectionsCompleted.forEach(collection => {
+                            // Offer reward based on threshold
+                            offerCollectionReward(collection.school, collection.count);
+                        });
+                    }, 2000);
+                }
+                
+                return collectiblesFound;
+            }
+            
+            function displayResults(results) {
+                // Count slots by level
+                const slotsByLevel = {};
+                
+                results.forEach(result => {
+                    if (!slotsByLevel[result.level]) {
+                        slotsByLevel[result.level] = [];
+                    }
+                    slotsByLevel[result.level].push(result.spell);
+                });
+                
+                // Display the slots
+                slotResults.innerHTML = '';
+                let resultHtml = '';
+                
+                if (Object.keys(slotsByLevel).length === 0) {
+                    resultHtml = "<p><strong>No spell slots available!</strong> You've experienced arcane burnout.</p>";
+                } else {
+                    // Sort levels in descending order
+                    const sortedLevels = Object.keys(slotsByLevel).sort((a, b) => b - a);
+                    
+                    for (const level of sortedLevels) {
+                        resultHtml += `<div><strong>${level == 0 ? 'Cantrips' : 'Level ' + level}:</strong> `;
+                        slotsByLevel[level].forEach(spell => {
+                            resultHtml += `<span class="spell-slot level-${level}" title="${spell}">${level}</span>`;
+                        });
+                        resultHtml += '</div>';
+                    }
+                }
+                
+                slotResults.innerHTML = resultHtml;
+            }
+            
+            function displayAvailableSpells(spells) {
+                // Create a unique set of spells
+                const uniqueSpells = new Set(spells);
+                
+                // Display the available spells
+                spellList.innerHTML = '';
+                
+                uniqueSpells.forEach(spell => {
+                    if (spellProperties[spell]) {
+                        const badge = document.createElement('span');
+                        badge.className = `spell-badge ${spellProperties[spell].school}`;
+                        badge.textContent = spell;
+                        badge.title = `${spellProperties[spell].school} ${spellProperties[spell].damageType ? '- ' + spellProperties[spell].damageType + ' damage' : ''}`;
+                        spellList.appendChild(badge);
+                    } else {
+                        const badge = document.createElement('span');
+                        badge.className = 'spell-badge';
+                        badge.textContent = spell;
+                        spellList.appendChild(badge);
+                    }
+                });
+            }
+            
+            function updatePunchCardUI() {
+                // Create punch card display
+                punchSlots.innerHTML = '';
+                
+                for (let i = 0; i < punchCardMax; i++) {
+                    const slot = document.createElement('div');
+                    slot.className = `punch-slot ${i < punchCard ? 'punched' : ''}`;
+                    slot.textContent = i + 1;
+                    punchSlots.appendChild(slot);
+                }
+            }
+            
+            function updateCollectionUI() {
+                // Update collection content
+                let content = '';
+                
+                // Sort schools by completion percentage
+                const sortedSchools = Object.keys(spellCollection).sort((a, b) => {
+                    const aPerc = spellCollection[a].size / (collectionThresholds[a][collectionThresholds[a].length - 1] || 1);
+                    const bPerc = spellCollection[b].size / (collectionThresholds[b][collectionThresholds[b].length - 1] || 1);
+                    return bPerc - aPerc;
+                });
+                
+                for (const school of sortedSchools) {
+                    const count = spellCollection[school].size;
+                    const nextThresholdIndex = collectionThresholds[school].findIndex(t => t > count);
+                    const nextThreshold = nextThresholdIndex >= 0 ? collectionThresholds[school][nextThresholdIndex] : 'MAX';
+                    const percentage = nextThreshold === 'MAX' ? 100 : Math.floor((count / nextThreshold) * 100);
+                    
+                    content += `
+                        <div class="collection-school">
+                            <h4>${school} (${count}/${nextThreshold})</h4>
+                            <div class="collection-progress">
+                                <div class="progress-bar" style="width: ${percentage}%"></div>
+                            </div>
+                            <div class="spell-collection-list">
+                                ${Array.from(spellCollection[school]).map(spell => 
+                                    `<span class="spell-badge ${school}" title="${spell}">${spell}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                collectionContent.innerHTML = content;
+            }
+            
+            function updateStoredSpellsUI() {
+                storedSpellsList.innerHTML = '';
+                
+                if (storedSpells.length === 0) {
+                    storedSpellsList.innerHTML = '<p>You haven\'t stored any spells yet. Complete your loyalty card or spell collections to earn spells to cast later.</p>';
+                    return;
+                }
+                
+                // Sort stored spells by level and then alphabetically
+                const sortedSpells = storedSpells.sort((a, b) => {
+                    if (a.level !== b.level) {
+                        return a.level - b.level;
+                    }
+                    return a.name.localeCompare(b.name);
+                });
+                
+                // Group by level
+                const spellsByLevel = {};
+                sortedSpells.forEach(spell => {
+                    if (!spellsByLevel[spell.level]) {
+                        spellsByLevel[spell.level] = [];
+                    }
+                    spellsByLevel[spell.level].push(spell);
+                });
+                
+                // Generate HTML
+                let html = '';
+                Object.keys(spellsByLevel).sort((a, b) => a - b).forEach(level => {
+                    html += `<h4>${level == 0 ? 'Cantrips' : `Level ${level} Spells`}</h4>`;
+                    html += '<div>';
+                    spellsByLevel[level].forEach(spell => {
+                        let badgeClass = 'stored-spell-badge';
+                        if (spellProperties[spell.name] && spellProperties[spell.name].school) {
+                            badgeClass += ` ${spellProperties[spell.name].school}`;
+                        }
+                        html += `
+                            <span class="${badgeClass}" data-id="${spell.id}" title="From ${spell.source}">
+                                ${spell.name}
+                                <button class="cast-btn" data-id="${spell.id}">✓</button>
+                            </span>
+                        `;
+                    });
+                    html += '</div>';
+                });
+                
+                storedSpellsList.innerHTML = html;
+                
+                // Add event listeners for casting spells
+                document.querySelectorAll('.cast-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const spellId = btn.getAttribute('data-id');
+                        castStoredSpell(spellId);
+                    });
+                });
+            }
+            
+            function castStoredSpell(spellId) {
+                // Find the spell
+                const spellIndex = storedSpells.findIndex(s => s.id === spellId);
+                if (spellIndex === -1) return;
+                
+                const spell = storedSpells[spellIndex];
+                
+                // Remove spell from stored list
+                storedSpells.splice(spellIndex, 1);
+                
+                // Add to history
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item fade-in jackpot';
+                historyItem.textContent = `Cast: ${spell.name} (Level ${spell.level})`;
+                
+                if (historyList.firstChild) {
+                    historyList.insertBefore(historyItem, historyList.firstChild);
+                } else {
+                    historyList.appendChild(historyItem);
+                }
+                
+                // Update UI
+                updateStoredSpellsUI();
+                
+                // Save game data
+                saveGameData();
+            }
+            
+            function updateStatsUI() {
+                statTotalSpins.textContent = stats.totalSpins;
+                statJackpots.textContent = stats.jackpots;
+                statGoldEarned.textContent = stats.goldEarned;
+                statGoldSpent.textContent = stats.goldSpent;
+                statFreeSpins.textContent = stats.freeSpinsEarned;
+                statCombos.textContent = stats.combosActivated;
+                statCollections.textContent = stats.collectionsCompleted;
+                statLoyalty.textContent = stats.loyaltyRewards;
+            }
+            
+            function offerCollectionReward(school, count) {
+                // Determine reward level based on collection size
+                const index = collectionThresholds[school].indexOf(count);
+                const rewardLevel = index + 1; // Level 1-3 based on threshold
+                
+                // Create a random spell of the appropriate level
+                const spellLevel = Math.min(rewardLevel, 5);  // Cap at level 5
+                const spellName = getRandomSpell(spellLevel);
+                const spellSchool = school;
+                
+                // Add the spell to stored spells
+                const newSpell = {
+                    id: Date.now().toString(),
+                    name: spellName,
+                    level: spellLevel,
+                    school: spellSchool,
+                    source: `${school} Collection`
+                };
+                
+                storedSpells.push(newSpell);
+                
+                // Update UI
+                updateStoredSpellsUI();
+                
+                // Create modal
+                const overlay = document.createElement('div');
+                overlay.className = 'modal-overlay';
+                
+                const modal = document.createElement('div');
+                modal.className = 'collection-reward';
+                modal.innerHTML = `
+                    <h3>${school} Collection Milestone!</h3>
+                    <p>You've collected ${count} ${school} spells!</p>
+                    <p>You've earned: <strong>${spellName}</strong> (Level ${spellLevel})</p>
+                    <p>This spell has been added to your stored spells and can be cast once at any time.</p>
+                    <button id="collection-reward-button">Awesome!</button>
+                `;
+                
+                overlay.appendChild(modal);
+                document.body.appendChild(overlay);
+                
+                // Add to history
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item fade-in jackpot';
+                historyItem.textContent = `Collection Reward: ${spellName} (Level ${spellLevel}) from ${school} Collection`;
+                
+                if (historyList.firstChild) {
+                    historyList.insertBefore(historyItem, historyList.firstChild);
+                } else {
+                    historyList.appendChild(historyItem);
+                }
+                
+                // Close notification and switch to stored spells tab
+                document.getElementById('collection-reward-button').addEventListener('click', () => {
+                    overlay.remove();
+                    document.querySelector('.tab[data-tab="stored-spells"]').click();
+                });
+            }
+            
+            function showSchoolSpellSelection(school, maxLevel) {
+                // Create a list of all spells from this school up to the max level
+                const eligibleSpells = [];
+                
+                for (let level = 0; level <= maxLevel; level++) {
+                    spellsByLevel[level].forEach(spellName => {
+                        if (spellProperties[spellName] && spellProperties[spellName].school === school) {
+                            eligibleSpells.push({
+                                name: spellName,
+                                level: level,
+                                school: school
+                            });
+                        }
+                    });
+                }
+                
+                // Sort spells by level and name
+                eligibleSpells.sort((a, b) => {
+                    if (a.level !== b.level) {
+                        return a.level - b.level;
+                    }
+                    return a.name.localeCompare(b.name);
+                });
+                
+                // Pick a random spell from that list
+                const randomSpell = eligibleSpells[Math.floor(Math.random() * eligibleSpells.length)];
+                
+                // Add it to stored spells
+                const newSpell = {
+                    id: Date.now().toString(),
+                    name: randomSpell.name,
+                    level: randomSpell.level,
+                    school: randomSpell.school,
+                    source: `${school} Combo`
+                };
+                
+                storedSpells.push(newSpell);
+                
+                // Update UI
+                updateStoredSpellsUI();
+                
+                // Create notification
+                const overlay = document.createElement('div');
+                overlay.className = 'modal-overlay';
+                
+                const modal = document.createElement('div');
+                modal.className = 'collection-reward';
+                modal.innerHTML = `
+                    <h3>${school} School Combo!</h3>
+                    <p>Your spell combination earned you:</p>
+                    <p><strong>${randomSpell.name}</strong> (Level ${randomSpell.level})</p>
+                    <p>This spell has been added to your stored spells and can be cast once at any time.</p>
+                    <button id="combo-reward-button">Awesome!</button>
+                `;
+                
+                overlay.appendChild(modal);
+                document.body.appendChild(overlay);
+                
+                // Add to history
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item fade-in jackpot';
+                historyItem.textContent = `Combo Reward: ${randomSpell.name} (Level ${randomSpell.level}) from ${school} Combo`;
+                
+                if (historyList.firstChild) {
+                    historyList.insertBefore(historyItem, historyList.firstChild);
+                } else {
+                    historyList.appendChild(historyItem);
+                }
+                
+                // Close notification and switch to stored spells tab
+                document.getElementById('combo-reward-button').addEventListener('click', () => {
+                    overlay.remove();
+                    document.querySelector('.tab[data-tab="stored-spells"]').click();
+                });
+            }
+            
+            // Save and load functions
+            function saveGameData() {
+                const gameData = {
+                    gold,
+                    freeSpins,
+                    punchCard,
+                    totalSpins,
+                    storedSpells,
+                    currentLoyaltyReward,
+                    spellCollection: Object.fromEntries(
+                        Object.entries(spellCollection).map(([school, spells]) => 
+                            [school, Array.from(spells)]
+                        )
+                    ),
+                    stats
+                };
+                
+                localStorage.setItem('arcaneSlotMachine', JSON.stringify(gameData));
+            }
+            
+            function loadGameData() {
+                const savedData = localStorage.getItem('arcaneSlotMachine');
+                if (!savedData) return;
+                
+                try {
+                    const gameData = JSON.parse(savedData);
+                    
+                    // Load basic data
+                    gold = gameData.gold || 100;
+                    freeSpins = gameData.freeSpins || 0;
+                    punchCard = gameData.punchCard || 0;
+                    totalSpins = gameData.totalSpins || 0;
+                    storedSpells = gameData.storedSpells || [];
+                    currentLoyaltyReward = gameData.currentLoyaltyReward || null;
+                    
+                    // If no loyalty reward is loaded, generate a new one
+                    if (!currentLoyaltyReward) {
+                        generateLoyaltyRewardPreview();
+                    } else {
+                        // Update the loyalty reward display
+                        loyaltySpellIcon.textContent = currentLoyaltyReward.level;
+                        loyaltySpellIcon.className = `loyalty-spell-icon level-${currentLoyaltyReward.level} ${currentLoyaltyReward.school}`;
+                        loyaltySpellName.textContent = currentLoyaltyReward.name;
+                        loyaltySpellSchool.textContent = currentLoyaltyReward.school;
+                        loyaltySpellSchool.className = `loyalty-spell-school ${currentLoyaltyReward.school}`;
+                    }
+                    
+                    // Load collections
+                    if (gameData.spellCollection) {
+                        Object.entries(gameData.spellCollection).forEach(([school, spells]) => {
+                            spellCollection[school] = new Set(spells);
+                        });
+                    }
+                    
+                    // Load stats
+                    if (gameData.stats) {
+                        stats = gameData.stats;
+                    }
+                    
+                    // Update UI
+                    updateResources();
+                    updatePunchCardUI();
+                    updateStoredSpellsUI();
+                    updateCollectionUI();
+                    updateStatsUI();
+                } catch (e) {
+                    console.error('Error loading saved game:', e);
+                }
+            }
+            
+            // Initialize spin button
+            spinButton.addEventListener('click', function() {
+                if (!spinButton.disabled) {
+                    spinReels();
+                }
+            });
+            
+            // Initialize gold input
+            goldValue.addEventListener('blur', function() {
+                const newValue = parseInt(this.textContent);
+                if (!isNaN(newValue) && newValue >= 0) {
+                    gold = newValue;
+                } else {
+                    this.textContent = gold; // Reset to current value if invalid
+                }
+            });
+            
+            goldValue.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.blur();
+                }
+            });
+            
+            // Initialize empty spell list
+            displayAvailableSpells([]);
+        });
+    </script>
+</body>
+</html>
