@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Which Disney Princess Are You? (Absolutely Unhinged Edition)</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background-color: #ffe6f2;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    h1 {
+      color: #ff66b3;
+      text-align: center;
+      font-size: 2.5em;
+      text-shadow: 3px 3px 0px rgba(255, 102, 179, 0.3);
+    }
+    
+    h2 {
+      color: #9933ff;
+      border-bottom: 3px dotted #9933ff;
+      padding-bottom: 5px;
+      margin-top: 40px;
+    }
+    
+    .question-container {
+      background-color: white;
+      border-radius: 15px;
+      padding: 20px;
+      margin: 30px 0;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      border: 3px solid #66ccff;
+    }
+    
+    .answers {
+      margin-top: 15px;
+    }
+    
+    label {
+      display: block;
+      padding: 12px;
+      margin: 8px 0;
+      background-color: #e6f7ff;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border-left: 5px solid #66ccff;
+    }
+    
+    label:hover {
+      background-color: #ccf2ff;
+      transform: translateX(5px);
+    }
+    
+    input[type="radio"] {
+      margin-right: 10px;
+    }
+    
+    button {
+      display: block;
+      margin: 40px auto;
+      padding: 15px 30px;
+      background-color: #ff66b3;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      font-size: 1.2em;
+      cursor: pointer;
+      animation: pulse 2s infinite;
+      box-shadow: 0 5px 15px rgba(255, 102, 179, 0.4);
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    button:hover {
+      background-color: #ff3399;
+    }
+    
+    #result {
+      display: none;
+      background-color: white;
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      margin-top: 30px;
+      border: 5px solid gold;
+    }
+    
+    #result h2 {
+      color: #ff66b3;
+      font-size: 2em;
+      border-bottom: none;
+    }
+    
+    #result img {
+      max-width: 300px;
+      border-radius: 50%;
+      margin: 20px auto;
+      display: block;
+    }
+    
+    #result p {
+      font-size: 1.2em;
+      line-height: 1.5;
+    }
+    
+    .restart-btn {
+      background-color: #9933ff;
+    }
+    
+    .progress-container {
+      width: 100%;
+      background-color: #f1f1f1;
+      border-radius: 20px;
+      margin: 20px 0;
+    }
+    
+    .progress-bar {
+      width: 0%;
+      height: 20px;
+      background-color: #ff66b3;
+      border-radius: 20px;
+      transition: width 0.5s;
+      background-image: linear-gradient(45deg, rgba(255,255,255,.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.15) 50%, rgba(255,255,255,.15) 75%, transparent 75%, transparent);
+      background-size: 40px 40px;
+      animation: progress-bar-stripes 2s linear infinite;
+    }
+    
+    @keyframes progress-bar-stripes {
+      from { background-position: 40px 0; }
+      to { background-position: 0 0; }
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .visible {
+      display: block;
+    }
+    
+    .princess-name {
+      font-size: 2.5em;
+      color: #ff3399;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin: 20px 0;
+      text-shadow: 2px 2px 0px gold;
+    }
+    
+    .sparkle {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background-color: gold;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 100;
+    }
+    
+    header {
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    
+    .subtitle {
+      color: #9933ff;
+      font-style: italic;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Which Disney Princess Are You?</h1>
+    <div class="subtitle">The Absolutely Unhinged Edition That No One Asked For</div>
+  </header>
+  
+  <div class="progress-container">
+    <div class="progress-bar" id="progress"></div>
+  </div>
+  
+  <div id="quiz-container">
+    <!-- Questions will go here -->
+    <div class="question-container" id="q1">
+      <h2>Question 1: Would you rather...</h2>
+      <div class="answers">
+        <label><input type="radio" name="q1" value="A"> Solve ∫e^(-x²)dx while being chased by a mathematically inclined goose</label>
+        <label><input type="radio" name="q1" value="B"> Play Russian roulette with a water gun filled with pickle juice</label>
+        <label><input type="radio" name="q1" value="C"> Explain quantum physics to a goldfish that keeps interrupting you</label>
+        <label><input type="radio" name="q1" value="D"> Lick a doorknob in a public restroom for scientific purposes</label>
+      </div>
+    </div>
+
+    <div class="question-container hidden" id="q2">
+      <h2>Question 2: Your dream home would feature:</h2>
+      <div class="answers">
+        <label><input type="radio" name="q2" value="A"> A moat filled with SpaghettiOs at precisely 98.6°F</label>
+        <label><input type="radio" name="q2" value="B"> A room where gravity works sideways on Thursdays</label>
+        <label><input type="radio" name="q2" value="C"> 37 different doors that all lead to the same bathroom</label>
+        <label><input type="radio" name="q2" value="D"> A professional-grade cheese aging vault that you tell everyone is for "art storage"</label>
+      </div>
+    </div>
+
+    <div class="question-container hidden" id="q3">
+      <h2>Question 3: Your supervillain origin story involves:</h2>
+      <div class="answers">
+        <label><input type="radio" name="q3" value="A"> Someone ate the leftovers you were mentally saving for 3 weeks</label>
+        <label><input type="radio" name="q3" value="B"> You discovered your reflection blinks when you don't</label>
+        <label><input type="radio" name="q3" value="C"> A squirrel stole your dental records and now seems to be impersonating you</label>
+        <label><input type="radio" name="q3" value="D"> Every shopping cart you touch immediately develops a squeaky wheel</label>
+      </div>
+    </div>
+
+    <div class="question-container hidden" id="q4">
+      <h2>Question 4: Your spirit animal is:</h2>
+      <div class="answers">
+        <label><input type="radio" name="q4" value="A"> A raccoon wearing a tiny business suit and selling questionable insurance</label>
+        <label><input type="radio" name="q4" value="B"> A flamingo that's convinced it's actually a very tall penguin</label>
+        <label><input type="radio" name="q4" value="C"> A hedgehog that's actually just a small cat who fell into a cactus</label>
+        <label><input type="radio" name="q4" value="D"> An octopus that's learned to disguise itself as a mediocre middle manager</label>
+      </div>
+    </div>
+
+    <div class="question-container hidden" id="q5">
+      <h2>Question 5: Your response to mild inconvenience is:</h2>
+      <div class="answers">
+        <label><input type="radio" name="q5" value="A"> Writing a 17-page manifesto about toaster settings</label>
+        <label><input type="radio" name="q5" value="B"> Developing a complex alternate personality that only speaks in 1920s slang</label>
+        <label><input type="radio" name="q5" value="C"> Starting a rumor that you're actually three toddlers in a trench coat</label>
+        <label><input type="radio" name="q5" value="D"> Learning ancient Sumerian just to properly express your frustration</label>
+      </div>
+    </div>
+
+    <div class="question-container hidden" id="q6">
+      <h2>Question 6: Your perfect date would include:</h2>
+      <div class="answers">
+        <label><input type="radio" name="q6" value="A"> Synchronized eyebrow dancing in a library while whispering country names backwards</label>
+        <label><input type="radio" name="q6" value="B"> Wearing formal attire to go dumpster diving behind fancy restaurants</label>
+        <label><input type="radio" name="q6" value="C"> Trying to teach pigeons to play chess in the park (the queen pigeon keeps cheating)</label>
+        <label><input type="radio" name="q6" value="D"> Breaking into a zoo at night just to tell the giraffes your darkest secrets</label>
+      </div>
+    </div>
+
+    <div class="question-container hidden" id="q7">
+      <h2>Question 7: If you found $100, you would:</h2>
+      <div class="answers">
+        <label><input type="radio" name="q7" value="A"> Buy 100 bouncy balls and release them simultaneously in an IKEA</label>
+        <label><input type="radio" name="q7" value="B"> Hire a skywriter to draw a massive question mark over your ex's house</label>
+        <label><input type="radio" name="q7" value="C"> Invest in your business idea: sweaters specifically designed for hairless cats who are going through a goth phase</label>
+        <label><input type="radio" name="q7" value="D"> Commission an oil painting of yourself as various types of pasta</label>
+      </div>
+    </div>
+
+    <div class="question-container hidden" id="q8">
+      <h2>Question 8: Your favorite conspiracy theory is:</h2>
+      <div class="answers">
+        <label><input type="radio" name="q8" value="A"> Birds aren't real - they're just very committed performance artists</label>
+        <label><input type="radio" name="q8" value="B"> Mirrors are actually portals to parallel universes where everything is backwards</label>
+        <label><input type="radio" name="q8" value="C"> The inside of every watermelon contains a tiny civilization that erases our memories after we eat them</label>
+        <label><input type="radio" name="q8" value="D"> The moon is actually just the sun wearing sunglasses at night</label>
+      </div>
+    </div>
+
+    <div class="question-container hidden" id="q9">
+      <h2>Question 9: What's your most useless talent?</h2>
+      <div class="answers">
+        <label><input type="radio" name="q9" value="A"> Being able to identify any breakfast cereal blindfolded just by the sound it makes in milk</label>
+        <label><input type="radio" name="q9" value="B"> Uncanny ability to find the exact expiration date on any product in under 3 seconds</label>
+        <label><input type="radio" name="q9" value="C"> Can perfectly imitate a dial-up modem while maintaining eye contact</label>
+        <label><input type="radio" name="q9" value="D"> Knowing exactly how many grapes would fit in any container without counting</label>
+      </div>
+    </div>
+
+    <div class="question-container hidden" id="q10">
+      <h2>Question 10: Your ideal pet would be:</h2>
+      <div class="answers">
+        <label><input type="radio" name="q10" value="A"> A lobster that you've taught to give excellent high-fives</label>
+        <label><input type="radio" name="q10" value="B"> A parrot that only quotes discontinued breakfast cereal commercials</label>
+        <label><input type="radio" name="q10" value="C"> A llama that thinks it's a renowned art critic</label>
+        <label><input type="radio" name="q10" value="D"> A goldfish that somehow knows all your passwords</label>
+      </div>
+    </div>
+
+    <div class="question-container hidden" id="q11">
+      <h2>Question 11: Your kryptonite is:</h2>
+      <div class="answers">
+        <label><input type="radio" name="q11" value="A"> The specific sound of someone licking an envelope too enthusiastically</label>
+        <label><input type="radio" name="q11" value="B"> Accidentally making eye contact with someone through the gap in a public bathroom stall</label>
+        <label><input type="radio" name="q11" value="C"> Having to explain to your grandmother why her Facebook was hacked by a "prince"</label>
+        <label><input type="radio" name="q11" value="D"> Anyone who says "we should totally hang out sometime" with no intention of following through</label>
+      </div>
+    </div>
+
+    <div class="question-container hidden" id="q12">
+      <h2>Question 12: In a zombie apocalypse, you would:</h2>
+      <div class="answers">
+        <label><input type="radio" name="q12" value="A"> Train an army of raccoons to be your personal bodyguards</label>
+        <label><input type="radio" name="q12" value="B"> Become a zombie therapist helping the undead work through their hunger issues</label>
+        <label><input type="radio" name="q12" value="C"> Start a fashion line of stylish yet practical apocalypse-wear</label>
+        <label><input type="radio" name="q12" value="D"> Hide in an Ikea and gradually convince yourself you've always lived there</label>
+      </div>
+    </div>
+
+    <button id="next-btn">Next Question</button>
+  </div>
+  
+  <div id="result">
+    <h2>Your Disney Princess Identity Is...</h2>
+    <div id="princess-result">
+      <!-- Result will go here -->
+    </div>
+    <button id="restart-btn" class="restart-btn">Take the Quiz Again</button>
+  </div>
+  
+  <script>
+    const questions = document.querySelectorAll('.question-container');
+    const nextBtn = document.getElementById('next-btn');
+    const quizContainer = document.getElementById('quiz-container');
+    const resultContainer = document.getElementById('result');
+    const princessResult = document.getElementById('princess-result');
+    const restartBtn = document.getElementById('restart-btn');
+    const progressBar = document.getElementById('progress');
+    
+    let currentQuestion = 0;
+    const answers = {};
+    
+    function showQuestion(questionIndex) {
+      questions.forEach((q, index) => {
+        if (index === questionIndex) {
+          q.classList.remove('hidden');
+          q.classList.add('visible');
+        } else {
+          q.classList.add('hidden');
+          q.classList.remove('visible');
+        }
+      });
+      
+      // Update progress bar
+      const progress = ((questionIndex + 1) / questions.length) * 100;
+      progressBar.style.width = `${progress}%`;
+      
+      // Update button text for last question
+      if (questionIndex === questions.length - 1) {
+        nextBtn.textContent = 'Show My Princess!';
+      } else {
+        nextBtn.textContent = 'Next Question';
+      }
+    }
+    
+    function collectAnswer() {
+      const currentQuestionName = `q${currentQuestion + 1}`;
+      const selectedOption = document.querySelector(`input[name="${currentQuestionName}"]:checked`);
+      
+      if (selectedOption) {
+        answers[currentQuestionName] = selectedOption.value;
+        return true;
+      }
+      
+      alert('Please select an answer!');
+      return false;
+    }
+    
+    function calculateResult() {
+      const counts = { A: 0, B: 0, C: 0, D: 0 };
+      
+      // Count answers
+      Object.values(answers).forEach(answer => {
+        counts[answer]++;
+      });
+      
+      // Find maximum
+      let maxCount = 0;
+      let maxType = '';
+      
+      for (const type in counts) {
+        if (counts[type] > maxCount) {
+          maxCount = counts[type];
+          maxType = type;
+        }
+      }
+      
+      // If there's a tie, choose randomly between tied types
+      const tiedTypes = Object.keys(counts).filter(type => counts[type] === maxCount);
+      if (tiedTypes.length > 1) {
+        maxType = tiedTypes[Math.floor(Math.random() * tiedTypes.length)];
+      }
+      
+      return maxType;
+    }
+    
+    function showResult(resultType) {
+      let princess = '';
+      let description = '';
+      
+      switch (resultType) {
+        case 'A':
+          princess = 'Belle';
+          description = "You're Belle, but the version that's one lab accident away from becoming a supervillain! You're wickedly intelligent and have at least three slightly concerning hobbies that you're VERY passionate about. You probably have lengthy conversations with household objects even when they don't talk back, and you've definitely created a detailed spreadsheet ranking your favorite books by how likely they are to survive a house fire. Your ideal date involves exploring abandoned buildings while discussing obscure philosophical theories, and you've been known to correct fictional characters while watching movies.";
+          break;
+        case 'B':
+          princess = 'Mulan';
+          description = "You're Mulan, if Mulan secretly collected vintage staplers and occasionally pretended to be a foreign diplomat for fun! You have absolutely no fear of chaos and might actually be its unofficial ambassador. Your friends describe you as 'strategically unhinged,' meaning you make wild decisions that somehow work out through sheer force of will. You've definitely created at least one fake identity for 'emergency purposes,' and you approach life's challenges by asking yourself, 'What would a chaotic raccoon in human clothing do?' Your battle strategy is to confuse everyone so thoroughly that they surrender out of sheer bewilderment.";
+          break;
+        case 'C':
+          princess = 'Moana';
+          description = "You're Moana, if Moana communicated exclusively through interpretive dance and had passionate arguments with the ocean about pop culture! You're wildly independent and have probably tried to adopt at least three wild animals as 'adventure companions.' You refer to yourself in the third person at least twice daily and have a tendency to narrate mundane activities as if they're epic quests. Your life philosophy is 'when in doubt, befriend something that could definitely kill you,' and you've been banned from at least one public aquarium for trying to 'free your people.' You've definitely practiced your dramatic hair-flip-while-emerging-from-water move in your bathroom mirror.";
+          break;
+        case 'D':
+          princess = 'Tiana';
+          description = "You're Tiana, but the version that's secretly plotting world domination through expertly crafted beignets! Your work ethic is so intense it makes workaholics look lazy, and you've definitely created a 15-year plan that you update weekly. Your friends know not to disturb you during your 'plotting hours,' and you've perfected the art of smiling while simultaneously planning seven backup strategies. You believe sleep is for the weak and have probably tried to patent at least three bizarre cooking inventions. You convert stress into productivity with such efficiency that scientists are baffled, and you've been known to reorganize other people's kitchens when they're not looking.";
+          break;
+        default:
+          princess = 'Rapunzel';
+          description = "You're Rapunzel, if Rapunzel had 17 different Pinterest boards dedicated to 'potential uses for discarded chewing gum'! Your enthusiasm for literally everything is both inspiring and slightly concerning to those around you. You've developed at least 74 different hobbies, mastered none of them, and are still collecting more. Your hair has probably been every color of the rainbow (sometimes simultaneously), and you've been known to adopt strange creatures based solely on their 'vibes.' You speak in exclamation points!!!! and have an emotional connection to at least three inanimate objects in your home. You've definitely tried to communicate with the moon and were genuinely disappointed when it didn't answer back.";
+      }
+      
+      princessResult.innerHTML = `
+        <div class="princess-name">You're ${princess}!</div>
+        <img src="/api/placeholder/300/300" alt="${princess}" />
+        <p>${description}</p>
+      `;
+      
+      quizContainer.style.display = 'none';
+      resultContainer.style.display = 'block';
+      
+      // Create sparkles
+      createSparkles();
+    }
+    
+    function createSparkles() {
+      for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+          const sparkle = document.createElement('div');
+          sparkle.classList.add('sparkle');
+          
+          // Random position
+          sparkle.style.left = `${Math.random() * window.innerWidth}px`;
+          sparkle.style.top = `${Math.random() * window.innerHeight}px`;
+          
+          // Random size
+          const size = 5 + Math.random() * 15;
+          sparkle.style.width = `${size}px`;
+          sparkle.style.height = `${size}px`;
+          
+          // Random color
+          const colors = ['#ff66b3', '#66ccff', '#9933ff', 'gold', '#ff3399'];
+          sparkle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          
+          document.body.appendChild(sparkle);
+          
+          // Animation
+          sparkle.animate([
+            { opacity: 1, transform: 'scale(1)' },
+            { opacity: 0, transform: 'scale(0)' }
+          ], {
+            duration: 1000 + Math.random() * 1000,
+            fill: 'forwards'
+          });
+          
+          // Remove after animation
+          setTimeout(() => {
+            document.body.removeChild(sparkle);
+          }, 2000);
+          
+        }, i * 100);
+      }
+    }
+    
+    // Event listeners
+    nextBtn.addEventListener('click', () => {
+      if (collectAnswer()) {
+        currentQuestion++;
+        
+        if (currentQuestion < questions.length) {
+          showQuestion(currentQuestion);
+        } else {
+          const result = calculateResult();
+          showResult(result);
+        }
+      }
+    });
+    
+    restartBtn.addEventListener('click', () => {
+      currentQuestion = 0;
+      Object.keys(answers).forEach(key => delete answers[key]);
+      
+      showQuestion(currentQuestion);
+      quizContainer.style.display = 'block';
+      resultContainer.style.display = 'none';
+      progressBar.style.width = '0%';
+    });
+    
+    // Initialize
+    showQuestion(currentQuestion);
+  </script>
+</body>
+</html>
