@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>West Marches Ship Builder</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .builder {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+        
+        .controls {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .results {
+            background: #e8f4f8;
+            padding: 25px;
+            border-radius: 10px;
+            border: 2px solid #bee5eb;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+            height: 8px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        
+        input[type="range"]:hover {
+            opacity: 1;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+        
+        .value-display {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .cost-breakdown {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cost-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #2c3e50;
+            border-top: 2px solid #667eea;
+            padding-top: 15px;
+            margin-top: 10px;
+        }
+        
+        .ship-stats {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 5px solid #28a745;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+        
+        .preset-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .preset-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .preset-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .weather-indicator {
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        
+        .weather-good { background: #d4edda; color: #155724; }
+        .weather-neutral { background: #fff3cd; color: #856404; }
+        .weather-bad { background: #f8d7da; color: #721c24; }
+        
+        @media (max-width: 768px) {
+            .builder {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .preset-buttons {
+                justify-content: center;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⛵ West Marches Ship Builder</h1>
+        
+        <div class="preset-buttons">
+            <button class="preset-btn" onclick="loadPreset('canoe')">Outrigger Canoe</button>
+            <button class="preset-btn" onclick="loadPreset('trader')">Coastal Trader</button>
+            <button class="preset-btn" onclick="loadPreset('cutter')">Speed Cutter</button>
+            <button class="preset-btn" onclick="loadPreset('hauler')">Heavy Hauler</button>
+            <button class="preset-btn" onclick="loadPreset('reset')">Reset</button>
+        </div>
+        
+        <div class="builder">
+            <div class="controls">
+                <h3>Ship Configuration</h3>
+                
+                <div class="control-group">
+                    <label for="speed">Speed: <span class="value-display" id="speedValue">3 hrs/league</span></label>
+                    <input type="range" id="speed" min="0.2" max="4" step="0.1" value="3" oninput="updateShip()">
+                </div>
+                
+                <div class="control-group">
+                    <label for="totalCapacity">Total People Capacity: <span class="value-display" id="totalCapacityValue">1</span></label>
+                    <input type="range" id="totalCapacity" min="1" max="6" step="1" value="1" oninput="updateShip()">
+                </div>
+                
+                <div class="control-group">
+                    <label for="crew">Crew Required: <span class="value-display" id="crewValue">1</span></label>
+                    <input type="range" id="crew" min="0" max="6" step="1" value="1" oninput="updateShip()">
+                    <div id="crewMessage" style="color: #721c24; font-weight: bold; margin-top: 5px; display: none;">Auto-Cpt-6000 has yet to be discovered</div>
+                    <div id="capacityMessage" style="color: #721c24; font-weight: bold; margin-top: 5px; display: none;">Not enough room for crew!</div>
+                </div>
+                
+                <div class="control-group">
+                    <label for="hp">Hull Points (HP): <span class="value-display" id="hpValue">1</span></label>
+                    <input type="range" id="hp" min="0" max="20" step="1" value="1" oninput="updateShip()">
+                </div>
+                
+                <div class="control-group">
+                    <label for="cargo">Cargo Capacity (lbs): <span class="value-display" id="cargoValue">100</span></label>
+                    <input type="range" id="cargo" min="0" max="5000" step="100" value="100" oninput="updateShip()">
+                </div>
+                
+                <div class="control-group">
+                    <label for="weather">Weather Resistance: <span class="value-display" id="weatherValue">0</span></label>
+                    <input type="range" id="weather" min="-10" max="10" step="1" value="0" oninput="updateShip()">
+                </div>
+            </div>
+            
+            <div class="results">
+                <div class="ship-stats">
+                    <h3>Ship Statistics</h3>
+                    <div class="stat-row">
+                        <span>Speed:</span>
+                        <span id="displaySpeed">3 hours/league</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Crew Required:</span>
+                        <span id="displayCrew">1</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Hull Points:</span>
+                        <span id="displayHP">1</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Cargo Capacity:</span>
+                        <span id="displayCargo">100 lbs</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Total Capacity:</span>
+                        <span id="displayTotalCapacity">1 people</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Passengers:</span>
+                        <span id="displayPassengers">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span>Weather Resistance:</span>
+                        <span id="displayWeather">Neutral</span>
+                    </div>
+                </div>
+                
+                <div class="cost-breakdown">
+                    <h3>Cost Breakdown</h3>
+                    <div class="cost-item">
+                        <span>Base Hull:</span>
+                        <span>100 gp</span>
+                    </div>
+                    <div class="cost-item">
+                        <span>Speed Enhancement:</span>
+                        <span id="speedCost">200 gp</span>
+                    </div>
+                    <div class="cost-item">
+                        <span>Crew Efficiency:</span>
+                        <span id="crewCost">0 gp</span>
+                    </div>
+                    <div class="cost-item">
+                        <span>Extra Hull Points:</span>
+                        <span id="hpCost">0 gp</span>
+                    </div>
+                    <div class="cost-item">
+                        <span>Extra Cargo:</span>
+                        <span id="cargoCost">0 gp</span>
+                    </div>
+                    <div class="cost-item">
+                        <span>Total Capacity:</span>
+                        <span id="capacityCost">0 gp</span>
+                    </div>
+                    <div class="cost-item">
+                        <span>Weather Modification:</span>
+                        <span id="weatherCost">0 gp</span>
+                    </div>
+                    <div class="cost-item">
+                        <span>TOTAL COST:</span>
+                        <span id="totalCost">300 gp</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateShip() {
+            // Get values
+            let speed = parseFloat(document.getElementById('speed').value);
+            const totalCapacity = parseInt(document.getElementById('totalCapacity').value);
+            let crew = parseInt(document.getElementById('crew').value);
+            const hp = parseInt(document.getElementById('hp').value);
+            const cargo = parseInt(document.getElementById('cargo').value);
+            const weather = parseInt(document.getElementById('weather').value);
+            
+            // Snap speed to proper increments
+            if (speed > 1) {
+                speed = Math.round(speed);
+                document.getElementById('speed').value = speed;
+            } else if (speed <= 1) {
+                // For speeds <= 1, snap to clean fractions that give whole league/hr numbers
+                const leaguesPerHour = 1 / speed;
+                const roundedLeaguesPerHour = Math.round(leaguesPerHour);
+                speed = 1 / roundedLeaguesPerHour;
+                document.getElementById('speed').value = speed;
+            }
+            
+            // Update crew maximum based on total capacity
+            const crewSlider = document.getElementById('crew');
+            crewSlider.max = totalCapacity;
+            
+            // Show messages and enforce constraints
+            const crewMessage = document.getElementById('crewMessage');
+            const capacityMessage = document.getElementById('capacityMessage');
+            
+            // Check for Auto-Cpt-6000 (crew = 0)
+            if (crew === 0) {
+                crewMessage.style.display = 'block';
+                capacityMessage.style.display = 'none';
+                crew = 1; // Force minimum crew
+                crewSlider.value = 1;
+            }
+            // Check if crew exceeds capacity
+            else if (crew > totalCapacity) {
+                capacityMessage.style.display = 'block';
+                crewMessage.style.display = 'none';
+                crew = totalCapacity; // Force crew to max capacity
+                crewSlider.value = totalCapacity;
+            } else {
+                crewMessage.style.display = 'none';
+                capacityMessage.style.display = 'none';
+            }
+            
+            // Calculate passengers
+            const passengers = Math.max(0, totalCapacity - crew);
+            
+            // Update value displays
+            let speedDisplay, speedStatDisplay;
+            if (speed >= 1) {
+                speedDisplay = `${speed} hrs/league`;
+                speedStatDisplay = `${speed} hours/league`;
+            } else {
+                const leaguesPerHour = Math.round(1 / speed);
+                speedDisplay = `${leaguesPerHour} leagues/hr`;
+                speedStatDisplay = `${leaguesPerHour} leagues/hour`;
+            }
+            
+            document.getElementById('speedValue').textContent = speedDisplay;
+            document.getElementById('totalCapacityValue').textContent = totalCapacity;
+            document.getElementById('crewValue').textContent = crew;
+            document.getElementById('hpValue').textContent = hp;
+            document.getElementById('cargoValue').textContent = cargo;
+            document.getElementById('weatherValue').textContent = weather;
+            
+            // Update ship stats display
+            document.getElementById('displaySpeed').textContent = speedStatDisplay;
+            document.getElementById('displayTotalCapacity').textContent = `${totalCapacity} people`;
+            document.getElementById('displayCrew').textContent = crew;
+            document.getElementById('displayHP').textContent = hp;
+            document.getElementById('displayCargo').textContent = `${cargo} lbs`;
+            document.getElementById('displayPassengers').textContent = passengers;
+            
+            // Weather display
+            let weatherText = 'Neutral';
+            let weatherClass = 'weather-neutral';
+            if (weather > 0) {
+                weatherText = `+${weather} bonus`;
+                weatherClass = 'weather-good';
+            } else if (weather < 0) {
+                weatherText = `${weather} penalty`;
+                weatherClass = 'weather-bad';
+            }
+            document.getElementById('displayWeather').innerHTML = `<span class="${weatherClass}">${weatherText}</span>`;
+            
+            // Calculate costs
+            const baseCost = 100;
+            
+            // Speed cost - 4 hrs/league is free, 3 hrs/league is 200 gp
+            // Super expensive when faster than 1 hr/league
+            let speedCost;
+            if (speed <= 1) {
+                // Super expensive for speeds faster than 1 hr/league
+                speedCost = Math.pow(4 - speed, 3) * 200;
+            } else {
+                // Regular scaling for speeds 1-4 hrs/league
+                // 4 hrs = 0 gp, 3 hrs = 200 gp
+                speedCost = Math.pow(4 - speed, 2) * 200;
+            }
+            
+            const crewCost = (crew - 1) * -100; // More crew reduces cost
+            const hpCost = (hp - 1) * 200;
+            const cargoCost = (cargo - 100) / 100 * 50; // Cost per 100 lbs above base 100
+            const capacityCost = (totalCapacity - 1) * 25; // Cost for total capacity
+            
+            // Weather cost with diminishing returns for penalties
+            let weatherCost;
+            if (weather >= 0) {
+                weatherCost = weather * 300; // Positive weather: linear scaling
+            } else {
+                // Negative weather: diminishing returns using power of 0.7
+                weatherCost = -Math.pow(Math.abs(weather), 0.7) * 300;
+            }
+            
+            const totalCost = Math.max(50, baseCost + speedCost + crewCost + hpCost + cargoCost + capacityCost + weatherCost);
+            
+            // Update cost displays
+            document.getElementById('speedCost').textContent = `${Math.ceil(speedCost)} gp`;
+            document.getElementById('crewCost').textContent = `${Math.ceil(crewCost)} gp`;
+            document.getElementById('hpCost').textContent = `${Math.ceil(hpCost)} gp`;
+            document.getElementById('cargoCost').textContent = `${Math.ceil(cargoCost)} gp`;
+            document.getElementById('capacityCost').textContent = `${Math.ceil(capacityCost)} gp`;
+            document.getElementById('weatherCost').textContent = `${Math.ceil(weatherCost) >= 0 ? '+' : ''}${Math.ceil(weatherCost)} gp`;
+            document.getElementById('totalCost').textContent = `${Math.ceil(totalCost)} gp`;
+        }
+        
+        function loadPreset(preset) {
+            switch(preset) {
+                case 'canoe':
+                    setValues(4, 3, 1, 1, 200, -2);
+                    break;
+                case 'trader':
+                    setValues(2, 4, 3, 2, 800, 0);
+                    break;
+                case 'cutter':
+                    setValues(0.2, 5, 4, 2, 500, 0);
+                    break;
+                case 'hauler':
+                    setValues(3, 6, 5, 3, 2500, 1);
+                    break;
+                case 'reset':
+                    setValues(3, 1, 1, 1, 100, 0);
+                    break;
+            }
+        }
+        
+        function setValues(speed, totalCapacity, crew, hp, cargo, weather) {
+            document.getElementById('speed').value = speed;
+            document.getElementById('totalCapacity').value = totalCapacity;
+            document.getElementById('crew').value = crew;
+            document.getElementById('hp').value = hp;
+            document.getElementById('cargo').value = cargo;
+            document.getElementById('weather').value = weather;
+            updateShip();
+        }
+        
+        // Initialize
+        updateShip();
+    </script>
+</body>
+</html>

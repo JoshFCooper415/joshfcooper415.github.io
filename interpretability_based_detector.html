@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Text Detector</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .model-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+
+        .model-info h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .model-info p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .status {
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .status.loading {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .status.ready {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.processing {
+            background: #cce8ff;
+            color: #004085;
+            border: 1px solid #b3d9ff;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.complete {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        /* Progress Bar Styles */
+        .progress-container {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: #e1e5e9;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+
+        .progress-details {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        .input-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+            background: white;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .analyze-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-width: 200px;
+        }
+
+        .analyze-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .result.human {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .result.ai {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+
+        .result.error {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+
+        .result.loading {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #e1e5e9;
+        }
+
+        .prediction {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .confidence {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            text-align: center;
+            opacity: 0.9;
+        }
+
+        .probability {
+            font-size: 1em;
+            text-align: center;
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat {
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 AI Text Detector</h1>
+        <p class="subtitle">Detect if text was written by AI or humans</p>
+
+        <div class="model-info">
+            <h3>📊 Model Status</h3>
+            <p>Loading AI text detector from <a href="https://huggingface.co/Joshfcooper/ai-text-detector-optimized" target="_blank" style="color: #667eea; text-decoration: none;">Hugging Face</a></p>
+            <div id="status" class="status loading">🔄 Loading model...</div>
+            
+            <!-- Progress bar for model download -->
+            <div id="progressContainer" class="progress-container">
+                <div class="progress-info">
+                    <span>Model Download Progress</span>
+                    <span id="progressText">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+                <div class="progress-details">
+                    <span id="downloadInfo">Initializing download...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-section">
+            <h3>📝 Enter Text to Analyze</h3>
+            <textarea 
+                id="textInput" 
+                placeholder="Paste your text here... (minimum 100 characters required for accurate analysis)"
+                spellcheck="false"
+            ></textarea>
+            
+            <button class="analyze-btn" id="analyzeBtn" onclick="analyzeText()" disabled>
+                <span id="btnText">🧠 Analyze Text</span>
+                <div id="btnSpinner" class="loading-spinner" style="display: none;"></div>
+            </button>
+        </div>
+
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+    
+    <script>
+        let session = null;
+        
+        // Progress bar functions
+        function showProgress(show = true) {
+            const container = document.getElementById('progressContainer');
+            if (container) {
+                container.style.display = show ? 'block' : 'none';
+            }
+        }
+
+        function updateProgress(percent, info = '') {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const downloadInfo = document.getElementById('downloadInfo');
+            
+            if (progressBar) progressBar.style.width = percent + '%';
+            if (progressText) progressText.textContent = Math.round(percent) + '%';
+            if (downloadInfo && info) downloadInfo.textContent = info;
+        }
+
+        function updateStatus(type, message) {
+            const statusDiv = document.getElementById('status');
+            if (statusDiv) {
+                statusDiv.textContent = message;
+                statusDiv.className = `status ${type}`;
+            }
+        }
+
+        // Model loader with progress tracking
+        async function loadModelWithProgress(url) {
+            console.log('Starting model download with progress tracking...');
+            showProgress(true);
+            updateProgress(0, 'Starting download...');
+            
+            try {
+                // First fetch to get the file
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const contentLength = response.headers.get('content-length');
+                const total = contentLength ? parseInt(contentLength, 10) : 0;
+                
+                console.log('Model file size:', total ? `${(total / 1024 / 1024).toFixed(1)} MB` : 'Unknown');
+                updateProgress(5, total ? `Downloading ${(total / 1024 / 1024).toFixed(1)} MB...` : 'Downloading...');
+                
+                const reader = response.body.getReader();
+                const chunks = [];
+                let loaded = 0;
+                
+                while (true) {
+                    const { done, value } = await reader.read();
+                    
+                    if (done) break;
+                    
+                    chunks.push(value);
+                    loaded += value.length;
+                    
+                    if (total > 0) {
+                        const percent = Math.min((loaded / total) * 85, 85);
+                        updateProgress(percent, `Downloaded ${(loaded / 1024 / 1024).toFixed(1)} MB of ${(total / 1024 / 1024).toFixed(1)} MB`);
+                    } else {
+                        updateProgress(Math.min((loaded / 10000000) * 50, 80), `Downloaded ${(loaded / 1024 / 1024).toFixed(1)} MB...`);
+                    }
+                }
+                
+                updateProgress(85, 'Creating model session...');
+                
+                // Combine chunks into ArrayBuffer
+                const arrayBuffer = new ArrayBuffer(loaded);
+                const uint8Array = new Uint8Array(arrayBuffer);
+                let offset = 0;
+                
+                for (const chunk of chunks) {
+                    uint8Array.set(chunk, offset);
+                    offset += chunk.length;
+                }
+                
+                updateProgress(95, 'Initializing ONNX runtime...');
+                
+                // Create the session from the ArrayBuffer
+                const modelSession = await ort.InferenceSession.create(arrayBuffer);
+                
+                updateProgress(100, 'Model loaded successfully!');
+                setTimeout(() => showProgress(false), 2000);
+                
+                return modelSession;
+                
+            } catch (error) {
+                showProgress(false);
+                throw error;
+            }
+        }
+
+        // Initialize model
+        async function initializeModel() {
+            try {
+                console.log('🚀 Starting model initialization...');
+                updateStatus('loading', '📥 Downloading model from Hugging Face...');
+                
+                const modelUrl = 'https://huggingface.co/Joshfcooper/ai-text-detector-optimized/resolve/main/fixed_optimized_detector.onnx';
+                
+                session = await loadModelWithProgress(modelUrl);
+                
+                console.log('✅ Model loaded successfully!');
+                console.log('Model inputs:', session.inputNames);
+                console.log('Model outputs:', session.outputNames);
+                
+                updateStatus('ready', '✅ Model loaded and ready!');
+                document.getElementById('analyzeBtn').disabled = false;
+                
+            } catch (error) {
+                console.error('❌ Model loading failed:', error);
+                updateStatus('error', `❌ Failed to load model: ${error.message}`);
+                showResult('error', `Failed to load the AI model: ${error.message}`);
+            }
+        }
+
+        // Simple tokenizer (for demo - in production you'd use the actual tokenizer)
+        function simpleTokenize(text, maxLength = 256) {
+            const words = text.toLowerCase().split(/\s+/);
+            const tokens = [1]; // Start token
+            
+            for (let word of words) {
+                if (tokens.length >= maxLength - 1) break;
+                
+                // Simple hash-based token generation
+                let hash = 0;
+                for (let i = 0; i < word.length; i++) {
+                    const char = word.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash;
+                }
+                tokens.push(Math.abs(hash) % 50000 + 2);
+            }
+            
+            // Pad to maxLength
+            while (tokens.length < maxLength) {
+                tokens.push(0); // Padding token
+            }
+            
+            return tokens.slice(0, maxLength);
+        }
+
+        function createAttentionMask(tokens) {
+            return tokens.map(token => token === 0 ? 0 : 1);
+        }
+
+        // Analysis function
+        async function analyzeText() {
+            const text = document.getElementById('textInput').value.trim();
+            
+            if (!text) {
+                showResult('error', 'Please enter some text to analyze.');
+                return;
+            }
+            
+            if (text.length < 100) {
+                showResult('error', 'Please enter at least 100 characters for accurate analysis.');
+                return;
+            }
+            
+            if (!session) {
+                showResult('error', 'Model not loaded yet. Please wait...');
+                return;
+            }
+            
+            setLoading(true);
+            showResult('loading', 'Analyzing text with neural network...');
+            
+            try {
+                // Tokenize the text
+                const tokens = simpleTokenize(text, 256);
+                const attentionMask = createAttentionMask(tokens);
+                
+                // Convert to Int64Arrays for ONNX
+                const inputIds = new BigInt64Array(tokens.map(t => BigInt(t)));
+                const attentionMaskArray = new BigInt64Array(attentionMask.map(m => BigInt(m)));
+                
+                // Create ONNX tensors
+                const feeds = {
+                    'input_ids': new ort.Tensor('int64', inputIds, [1, 256]),
+                    'attention_mask': new ort.Tensor('int64', attentionMaskArray, [1, 256])
+                };
+                
+                // Run inference
+                const startTime = performance.now();
+                const results = await session.run(feeds);
+                const inferenceTime = performance.now() - startTime;
+                
+                const probability = results.probability_human.data[0];
+                
+                // Interpret results (flipped logic as noted earlier)
+                const isHuman = probability < 0.5;
+                const confidence = Math.abs(probability - 0.5) * 2;
+                const humanProbability = 1 - probability;
+                
+                displayResults(humanProbability, isHuman, confidence, text.length, inferenceTime);
+                
+            } catch (error) {
+                console.error('Analysis error:', error);
+                showResult('error', 'Error analyzing text. Please try again.');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function displayResults(probability, isHuman, confidence, textLength, inferenceTime) {
+            const resultDiv = document.getElementById('result');
+            const className = isHuman ? 'human' : 'ai';
+            const prediction = isHuman ? 'Human Written' : 'AI Generated';
+            const icon = isHuman ? '👤' : '🤖';
+            
+            resultDiv.className = `result ${className}`;
+            resultDiv.style.display = 'block';
+            
+            resultDiv.innerHTML = `
+                <div class="prediction">${icon} ${prediction}</div>
+                <div class="confidence">Confidence: ${(confidence * 100).toFixed(1)}%</div>
+                <div class="probability">Human Probability: ${(probability * 100).toFixed(1)}%</div>
+                
+                <div class="stats">
+                    <div class="stat">
+                        <span class="stat-value">${textLength}</span>
+                        <span class="stat-label">Characters</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">${Math.round(textLength / 5)}</span>
+                        <span class="stat-label">Est. Words</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">${(probability * 100).toFixed(0)}%</span>
+                        <span class="stat-label">Human Score</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">${inferenceTime.toFixed(0)}ms</span>
+                        <span class="stat-label">Inference Time</span>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 10px; font-size: 0.9em;">
+                    <strong>Performance:</strong> ${inferenceTime.toFixed(0)}ms inference time
+                </div>
+            `;
+            
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function showResult(type, message) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = `result ${type}`;
+            resultDiv.style.display = 'block';
+            
+            if (type === 'loading') {
+                resultDiv.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <div class="loading-spinner"></div>
+                        ${message}
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `<div>${message}</div>`;
+            }
+        }
+
+        function setLoading(isLoading) {
+            const btn = document.getElementById('analyzeBtn');
+            const btnText = document.getElementById('btnText');
+            const btnSpinner = document.getElementById('btnSpinner');
+            
+            btn.disabled = isLoading;
+            btnText.style.display = isLoading ? 'none' : 'inline';
+            btnSpinner.style.display = isLoading ? 'inline-block' : 'none';
+        }
+
+        // Handle Enter key
+        document.getElementById('textInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                analyzeText();
+            }
+        });
+
+        // Initialize when page loads
+        window.addEventListener('load', initializeModel);
+        
+    </script>
+</body>
+</html>
