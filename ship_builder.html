@@ -223,7 +223,7 @@
                 
                 <div class="control-group">
                     <label for="speed">Speed: <span class="value-display" id="speedValue">2 hrs/league</span></label>
-                    <input type="range" id="speed" min="0.2" max="4" step="0.1" value="2" oninput="updateShip()">
+                    <input type="range" id="speed" min="0.25" max="5" step="0.25" value="2.5" oninput="updateShip()">
                 </div>
                 
                 <div class="control-group">
@@ -434,8 +434,19 @@
         }
 
         function updateShip() {
-            // Get values
-            let speed = parseFloat(document.getElementById('speed').value);
+            // Get slider value and convert to actual speed
+            const speedSliderValue = parseFloat(document.getElementById('speed').value);
+            let speed;
+            
+            // Convert slider value to actual speed (higher slider = faster ship)
+            if (speedSliderValue <= 1) {
+                // For values 0.25 to 1, map to 4 to 1 hrs/league (slower speeds)
+                speed = 5.25 - speedSliderValue;
+            } else {
+                // For values 1.25 to 5, map to fractional leagues per hour (faster speeds)
+                speed = 1 / speedSliderValue;
+            }
+            
             const totalCapacity = parseInt(document.getElementById('totalCapacity').value);
             let crew = parseInt(document.getElementById('crew').value);
             const hp = parseInt(document.getElementById('hp').value);
@@ -445,12 +456,10 @@
             // Snap speed to proper increments
             if (speed > 1) {
                 speed = Math.round(speed);
-                document.getElementById('speed').value = speed;
             } else if (speed <= 1) {
                 const leaguesPerHour = 1 / speed;
                 const roundedLeaguesPerHour = Math.round(leaguesPerHour);
                 speed = 1 / roundedLeaguesPerHour;
-                document.getElementById('speed').value = speed;
             }
             
             // Generate ship name
@@ -573,25 +582,35 @@
         function loadPreset(preset) {
             switch(preset) {
                 case 'canoe':
-                    setValues(4, 3, 1, 1, 200, -2);
+                    setSliderForSpeed(4, 3, 1, 1, 200, -2);
                     break;
                 case 'trader':
-                    setValues(2, 4, 3, 2, 800, 0);
+                    setSliderForSpeed(2, 4, 3, 2, 800, 0);
                     break;
                 case 'cutter':
-                    setValues(0.2, 5, 4, 2, 500, 0);
+                    setSliderForSpeed(0.2, 5, 4, 2, 500, 0);
                     break;
                 case 'hauler':
-                    setValues(3, 6, 5, 3, 2500, 1);
+                    setSliderForSpeed(3, 6, 5, 3, 2500, 1);
                     break;
                 case 'reset':
-                    setValues(2, 3, 2, 5, 1000, 0);
+                    setSliderForSpeed(2, 3, 2, 5, 1000, 0);
                     break;
             }
         }
         
-        function setValues(speed, totalCapacity, crew, hp, cargo, weather) {
-            document.getElementById('speed').value = speed;
+        function setSliderForSpeed(speed, totalCapacity, crew, hp, cargo, weather) {
+            // Convert actual speed to slider value (inverse of conversion in updateShip)
+            let sliderValue;
+            if (speed > 1) {
+                // For hrs/league speeds, map back to slider
+                sliderValue = 5.25 - speed;
+            } else {
+                // For leagues/hour speeds, map back to slider
+                sliderValue = 1 / speed;
+            }
+            
+            document.getElementById('speed').value = sliderValue;
             document.getElementById('totalCapacity').value = totalCapacity;
             document.getElementById('crew').value = crew;
             document.getElementById('hp').value = hp;
