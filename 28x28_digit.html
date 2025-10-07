@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>28x28 Binary Digit Drawer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        #canvas {
+            border: 2px solid #333;
+            cursor: crosshair;
+            background-color: white;
+            image-rendering: pixelated;
+        }
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button.secondary {
+            background-color: #008CBA;
+        }
+        button.secondary:hover {
+            background-color: #007399;
+        }
+        button.danger {
+            background-color: #f44336;
+        }
+        button.danger:hover {
+            background-color: #da190b;
+        }
+        .info {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 4px;
+            max-width: 560px;
+        }
+        #output {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            max-width: 560px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <h1>28×28 Binary Digit Drawer</h1>
+    <canvas id="canvas" width="560" height="560"></canvas>
+    
+    <div class="controls">
+        <button onclick="clearCanvas()" class="danger">Clear Canvas</button>
+        <button onclick="downloadTXT()" class="secondary">Download TXT</button>
+        <button onclick="showArray()">Show Array</button>
+    </div>
+    
+    <div class="info">
+        <strong>Instructions:</strong> Click and drag to draw. Each pixel represents one cell in the 28×28 grid.
+    </div>
+    
+    <div id="output" style="display:none;"></div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const gridSize = 28;
+        const cellSize = canvas.width / gridSize;
+        
+        // Initialize grid with zeros
+        let grid = Array(gridSize).fill().map(() => Array(gridSize).fill(0));
+        
+        let isDrawing = false;
+
+        // Draw the grid
+        function drawGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    if (grid[i][j] === 1) {
+                        ctx.fillStyle = 'black';
+                        ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+                    }
+                }
+            }
+            
+            // Draw grid lines
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i <= gridSize; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * cellSize, 0);
+                ctx.lineTo(i * cellSize, canvas.height);
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.moveTo(0, i * cellSize);
+                ctx.lineTo(canvas.width, i * cellSize);
+                ctx.stroke();
+            }
+        }
+
+        function getGridPosition(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const col = Math.floor(x / cellSize);
+            const row = Math.floor(y / cellSize);
+            return { row, col };
+        }
+
+        function fillCell(row, col) {
+            if (row >= 0 && row < gridSize && col >= 0 && col < gridSize) {
+                grid[row][col] = 1;
+                drawGrid();
+            }
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            const pos = getGridPosition(e);
+            fillCell(pos.row, pos.col);
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDrawing) {
+                const pos = getGridPosition(e);
+                fillCell(pos.row, pos.col);
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isDrawing = false;
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            isDrawing = false;
+        });
+
+        function clearCanvas() {
+            grid = Array(gridSize).fill().map(() => Array(gridSize).fill(0));
+            drawGrid();
+            document.getElementById('output').style.display = 'none';
+        }
+
+        function downloadTXT() {
+            // Flatten the 2D array into a single list
+            const flat = grid.flat();
+            const txt = flat.join('\n');
+            const dataBlob = new Blob([txt], { type: 'text/plain' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'digit_28x28.txt';
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function showArray() {
+            const output = document.getElementById('output');
+            const flat = grid.flat();
+            output.textContent = '[' + flat.join(', ') + ']';
+            output.style.display = 'block';
+        }
+
+        // Initial draw
+        drawGrid();
+    </script>
+</body>
+</html>
