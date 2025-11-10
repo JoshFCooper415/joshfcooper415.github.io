@@ -3,1237 +3,592 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toki Pona Glyph Editor</title>
+    <title>Toki Pona Magic Circle Editor</title>
     <style>
-        /*
-         * To use the FairfaxPonaHD font, you must place the font file
-         * (e.g., 'FairfaxPonaHD.ttf') in a 'fairfaxhd' directory,
-         * relative to this HTML file.
-         */
+        html, body {
+  background-color: #fff;
+  color: #000;
+  filter: none;
+}
+
+* {
+  color: inherit !important;
+  background: transparent !important;
+  border-color: #000 !important;
+}
+
+
+
         @font-face {
             font-family: "linja-pona";
             src: url("fairfaxhd/FairfaxPonaHD.ttf") format("truetype");
         }
-
         .linja-pona { font-family: "linja-pona", "Linja Pona", serif; }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #1a1a2e;
-            --bg-tertiary: #252542;
-            --text-primary: #e0e0ff;
-            --text-secondary: #9090b0;
-            --accent-gold: #ffd700;
-            --accent-purple: #9370db;
-            --accent-silver: #c0c0c0;
-            --accent-green: #50fa7b;
-            --accent-red: #ff5555;
-            --accent-blue: #8be9fd;
-            --border-color: #3a3a5a;
+            --bg-primary: #0a0a0f; --bg-secondary: #1a1a2e; --bg-tertiary: #252542;
+            --text-primary: #e0e0ff; --text-secondary: #9090b0;
+            --accent-gold: #ffd700; --accent-purple: #9370db;
+            --accent-green: #50fa7b; --accent-red: #ff5555; --border-color: #3a3a5a;
         }
-        
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-            color: var(--text-primary);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            color: var(--text-primary); height: 100vh; display: flex; flex-direction: column; overflow: hidden;
         }
-        
         .header {
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between;
             box-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
+        .logo { display: flex; align-items: center; gap: 1rem; }
         .logo-icon {
-            width: 40px;
-            height: 40px;
+            width: 40px; height: 40px;
             background: linear-gradient(135deg, var(--accent-gold), var(--accent-purple));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            animation: glow 2s ease-in-out infinite;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; animation: glow 2s ease-in-out infinite;
         }
-        
         @keyframes glow {
             0%, 100% { box-shadow: 0 0 20px rgba(255,215,0,0.3); }
             50% { box-shadow: 0 0 30px rgba(147,112,219,0.5); }
         }
-        
         .logo-text {
-            font-size: 1.25rem;
-            font-weight: 600;
+            font-size: 1.25rem; font-weight: 600;
             background: linear-gradient(90deg, var(--accent-gold), var(--accent-purple));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
         }
-        
-        .header-actions {
-            display: flex;
-            gap: 1rem;
-        }
-        
+        .header-actions { display: flex; gap: 1rem; }
         .btn {
-            padding: 0.5rem 1rem;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: inherit;
-            font-size: 0.875rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            padding: 0.5rem 1rem; background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            color: var(--text-primary); border-radius: 0.5rem; cursor: pointer; transition: all 0.3s ease;
+            font-family: inherit; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;
         }
-        
         .btn:hover {
-            background: var(--accent-purple);
-            border-color: var(--accent-purple);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(147,112,219,0.3);
+            background: var(--accent-purple); border-color: var(--accent-purple);
+            transform: translateY(-1px); box-shadow: 0 4px 12px rgba(147,112,219,0.3);
         }
-        
         .btn-primary {
             background: linear-gradient(135deg, var(--accent-purple), var(--accent-gold));
-            border: none;
-            font-weight: 500;
+            border: none; font-weight: 500;
         }
-        
-        .main-container {
-            flex: 1;
-            display: flex;
-            overflow: hidden;
-        }
-        
+        .main-container { flex: 1; display: flex; overflow: hidden; }
         .sidebar {
-            width: 250px;
-            background: var(--bg-secondary);
-            border-right: 1px solid var(--border-color);
-            padding: 1.5rem;
-            overflow-y: auto;
+            width: 250px; background: var(--bg-secondary); border-right: 1px solid var(--border-color);
+            padding: 1.5rem; overflow-y: auto;
         }
-        
         .sidebar h3 {
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            margin-bottom: 1rem;
-            letter-spacing: 1px;
+            font-size: 0.875rem; text-transform: uppercase; color: var(--text-secondary);
+            margin-bottom: 1rem; letter-spacing: 1px;
         }
-        
-        .rune-palette {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.5rem;
-            margin-bottom: 2rem;
-        }
-        
+        .rune-palette { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 2rem; }
         .rune-btn {
-            padding: 0.75rem;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            color: var(--accent-gold);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: center;
-            font-size: 0.875rem;
+            padding: 0.75rem; background: var(--bg-tertiary); border: 1px solid var(--border-color);
+            border-radius: 0.5rem; color: var(--accent-gold); cursor: pointer; transition: all 0.2s ease;
+            text-align: center; font-size: 0.875rem;
         }
-        
-        .rune-btn:hover {
-            background: var(--accent-purple);
-            transform: scale(1.05);
-            box-shadow: 0 2px 8px rgba(147,112,219,0.4);
-        }
-        
-        .editor-area {
-            flex: 1;
-            display: flex;
-            background: var(--bg-primary);
-        }
-        
-        .editor-pane, .preview-pane {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .editor-pane {
-            border-right: 1px solid var(--border-color);
-        }
-        
+        .rune-btn:hover { background: var(--accent-purple); transform: scale(1.05); box-shadow: 0 2px 8px rgba(147,112,219,0.4); }
+        .editor-area { flex: 1; display: flex; background: var(--bg-primary); }
+        .editor-pane, .preview-pane { flex: 1; display: flex; flex-direction: column; }
+        .editor-pane { border-right: 1px solid var(--border-color); }
         .pane-header {
-            padding: 1rem 1.5rem;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            padding: 1rem 1.5rem; background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+            font-weight: 500; display: flex; align-items: center; justify-content: space-between;
         }
-        
-        .editor-content {
-            flex: 1;
-            padding: 1.5rem;
-            overflow-y: auto;
-        }
-        
+        .editor-content { flex: 1; padding: 1.5rem; overflow-y: auto; }
         .code-editor {
-            width: 100%;
-            min-height: 100%;
-            background: transparent;
-            border: none;
-            color: var(--text-primary);
-            font-family: 'Monaco', 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.6;
-            resize: none;
-            outline: none;
+            width: 100%; min-height: 100%; background: transparent; border: none; color: var(--text-primary);
+            font-family: 'Monaco', 'Courier New', monospace; font-size: 14px; line-height: 1.6;
+            resize: none; outline: none;
         }
-        
         .preview-content {
-            flex: 1;
-            padding: 2rem;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .circle-canvas {
-            max-width: 100%;
-            height: auto;
-        }
-        
-        .syntax-help {
-            background: var(--bg-tertiary);
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-top: 1rem;
-        }
-        
-        .syntax-help h4 {
-            font-size: 0.875rem;
-            margin-bottom: 0.5rem;
-            color: var(--accent-gold);
-        }
-        
-        .syntax-help ul {
-            list-style: none;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-        
-        .syntax-help li {
-            padding: 0.25rem 0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .syntax-help code {
+            flex: 1; overflow: hidden; position: relative; display: flex; flex-direction: column;
             background: var(--bg-primary);
-            padding: 0.125rem 0.25rem;
-            border-radius: 0.25rem;
-            color: var(--accent-blue);
         }
-        
+        #svgContainer { flex: 1; width: 100%; height: 100%; overflow: auto; background: #ffffff; }
+        #magicCircle { width: 100%; height: 100%; background: #ffffff; }
+        .rune-circle { fill: #ffffff; stroke: #000000; stroke-width: 20; }
+        .group-circle { fill: #f0f0f0; stroke: #9370db; stroke-width: 15; }
+        .rune-text {
+            fill: #000000; font-family: 'linja-pona', serif; font-weight: bold;
+            text-anchor: middle; dominant-baseline: middle;
+        }
+        .main-circle { fill: none; stroke: #000000; stroke-width: 20; }
+        .connection-curve,
+        .connection-line {
+        stroke: #000 !important;
+        fill: none !important;
+        opacity: 1 !important;
+        stroke-width: 8px !important;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        mix-blend-mode: normal !important;
+        isolation: isolate;
+        }
+
+        .syntax-help { background: var(--bg-tertiary); border-radius: 0.5rem; padding: 1rem; margin-top: 1rem; }
+        .syntax-help h4 { font-size: 0.875rem; margin-bottom: 0.5rem; color: var(--accent-gold); }
+        .syntax-help ul { list-style: none; padding-left: 0; }
+        .syntax-help li { margin-bottom: 0.5rem; font-size: 0.75rem; color: var(--text-secondary); }
+        .syntax-help code {
+            background: var(--bg-primary); padding: 0.125rem 0.25rem; border-radius: 0.25rem;
+            font-family: 'Monaco', monospace; color: var(--accent-green);
+        }
+        .pane-controls { display: flex; gap: 0.5rem; font-size: 0.75rem; color: var(--text-secondary); }
         .error-message {
-            background: rgba(255, 85, 85, 0.1);
-            border: 1px solid var(--accent-red);
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-top: 1rem;
-            font-size: 0.875rem;
+            background: rgba(255, 85, 85, 0.1); border: 1px solid var(--accent-red); color: var(--accent-red);
+            padding: 1rem; border-radius: 0.5rem; margin: 1rem;
         }
-        
         .success-message {
-            background: rgba(80, 250, 123, 0.1);
-            border: 1px solid var(--accent-green);
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-top: 1rem;
-            font-size: 0.875rem;
-        }
-        
-        @media (max-width: 768px) {
-            .sidebar {
-                display: none;
-            }
-            
-            .editor-area {
-                flex-direction: column;
-            }
-            
-            .editor-pane {
-                border-right: none;
-                border-bottom: 1px solid var(--border-color);
-            }
-        }
-        
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            background: rgba(80, 250, 123, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green);
+            padding: 1rem; border-radius: 0.5rem; margin: 1rem;
         }
     </style>
 </head>
 <body>
-    <header class="header">
+    <div class="header">
         <div class="logo">
-            <div class="logo-icon">⭕</div>
-            <div class="logo-text">TPMM Editor</div>
+            <div class="logo-icon linja-pona">sike</div>
+            <div class="logo-text">Toki Pona Magic Circle</div>
         </div>
         <div class="header-actions">
-            <button class="btn" onclick="clearEditor()">
-                <span>🗑️</span> Clear
-            </button>
-            <button class="btn" onclick="exportPNG()">
-                <span>🖼️</span> Export PNG
-            </button>
-            <button class="btn btn-primary" onclick="renderCircle()">
-                <span>✨</span> Render
-            </button>
+            <button class="btn" id="clearBtn">Clear</button>
         </div>
-    </header>
-    
+    </div>
     <div class="main-container">
         <aside class="sidebar">
             <h3>Rune Palette</h3>
             <div class="rune-palette" id="runePalette"></div>
-            
             <h3>Connections</h3>
             <div class="rune-palette" id="connectionPalette"></div>
-            
             <div class="syntax-help">
-                <h4>Quick Reference</h4>
+                <h4>Quick Guide</h4>
                 <ul>
-                    <li><code>rune*2</code> - Amplified rune</li>
-                    <li><code>-></code> - Sequential flow</li>
-                    <li><code>~</code> - Simultaneous fusion</li>
-                    <li><code>{ }</code> - Inscribed circle</li>
-                    <li><code>( )</code> - Grouped runes</li>
+                    <li><code>rune1 -> rune2</code> Sequential flow</li>
+                    <li><code>(rune1 ~ rune2)</code> Grouped runes</li>
+                    <li><code>{ runes }</code> Inscribed circle</li>
+                    <li><code>rune*2</code> Double size</li>
                 </ul>
             </div>
         </aside>
-        
         <div class="editor-area">
             <div class="editor-pane">
                 <div class="pane-header">
-                    <span>✏️ TPMM Editor</span>
-                    <span id="charCount" style="font-size: 0.875rem; color: var(--text-secondary);">0 chars</span>
+                    <span>Editor</span>
+                    <div class="pane-controls">
+                        <span id="charCount">0 chars</span>
+                        <span id="runeCount">0 runes</span>
+                    </div>
                 </div>
                 <div class="editor-content">
-                    <textarea id="codeEditor" class="code-editor" placeholder="Enter your TPMM notation here..."></textarea>
+                    <textarea class="code-editor" id="codeEditor" 
+                        placeholder="Enter your rune sequence here... (e.g., mi -> pona -> suli)"
+                        spellcheck="false"></textarea>
                 </div>
             </div>
-            
             <div class="preview-pane">
-                <div class="pane-header">
-                    <span>🔮 Circle Preview</span>
-                    <span id="runeCount" style="font-size: 0.875rem; color: var(--text-secondary);">0 runes</span>
-                </div>
+                <div class="pane-header"><span>Preview</span></div>
                 <div class="preview-content">
-                    <canvas id="circleCanvas" class="circle-canvas" width="500" height="500"></canvas>
+                    <div id="svgContainer">
+                        <svg id="magicCircle" viewBox="0 0 32000 32000" preserveAspectRatio="xMidYMid meet">
+                            <g id="circleGroup"></g>
+                        </svg>
+                    </div>
                     <div id="messageArea"></div>
                 </div>
             </div>
         </div>
     </div>
-
-<script>
-// TPMM Parser
-class TPMMParser {
-    constructor() {
-        this.runeLibrary = {
-            'a': { unicode: '\u{F1900}' },
-            'akesi': { unicode: '\u{F1901}' },
-            'ala': { unicode: '\u{F1902}' },
-            'alasa': { unicode: '\u{F1903}' },
-            'ale': { unicode: '\u{F1904}' },
-            'anpa': { unicode: '\u{F1905}' },
-            'ante': { unicode: '\u{F1906}' },
-            'anu': { unicode: '\u{F1907}' },
-            'awen': { unicode: '\u{F1908}' },
-            'e': { unicode: '\u{F1909}' },
-            'en': { unicode: '\u{F190A}' },
-            'esun': { unicode: '\u{F190B}' },
-            'ijo': { unicode: '\u{F190C}' },
-            'ike': { unicode: '\u{F190D}' },
-            'ilo': { unicode: '\u{F190E}' },
-            'insa': { unicode: '\u{F190F}' },
-            'jaki': { unicode: '\u{F1910}' },
-            'jan': { unicode: '\u{F1911}' },
-            'jelo': { unicode: '\u{F1912}' },
-            'jo': { unicode: '\u{F1913}' },
-            'kala': { unicode: '\u{F1914}' },
-            'kalama': { unicode: '\u{F1915}' },
-            'kama': { unicode: '\u{F1916}' },
-            'kasi': { unicode: '\u{F1917}' },
-            'ken': { unicode: '\u{F1918}' },
-            'kepeken': { unicode: '\u{F1919}' },
-            'kili': { unicode: '\u{F191A}' },
-            'kiwen': { unicode: '\u{F191B}' },
-            'ko': { unicode: '\u{F191C}' },
-            'kon': { unicode: '\u{F191D}' },
-            'kule': { unicode: '\u{F191E}' },
-            'kulupu': { unicode: '\u{F191F}' },
-            'kute': { unicode: '\u{F1920}' },
-            'la': { unicode: '\u{F1921}' },
-            'lape': { unicode: '\u{F1922}' },
-            'laso': { unicode: '\u{F1923}' },
-            'lawa': { unicode: '\u{F1924}' },
-            'len': { unicode: '\u{F1925}' },
-            'lete': { unicode: '\u{F1926}' },
-            'li': { unicode: '\u{F1927}' },
-            'lili': { unicode: '\u{F1928}' },
-            'linja': { unicode: '\u{F1929}' },
-            'lipu': { unicode: '\u{F192A}' },
-            'loje': { unicode: '\u{F192B}' },
-            'lon': { unicode: '\u{F192C}' },
-            'luka': { unicode: '\u{F192D}' },
-            'lukin': { unicode: '\u{F192E}' },
-            'lupa': { unicode: '\u{F192F}' },
-            'ma': { unicode: '\u{F1930}' },
-            'mama': { unicode: '\u{F1931}' },
-            'mani': { unicode: '\u{F1932}' },
-            'meli': { unicode: '\u{F1933}' },
-            'mi': { unicode: '\u{F1934}' },
-            'mije': { unicode: '\u{F1935}' },
-            'moku': { unicode: '\u{F1936}' },
-            'moli': { unicode: '\u{F1937}' },
-            'monsi': { unicode: '\u{F1938}' },
-            'mu': { unicode: '\u{F1939}' },
-            'mun': { unicode: '\u{F193A}' },
-            'musi': { unicode: '\u{F193B}' },
-            'mute': { unicode: '\u{F193C}' },
-            'nanpa': { unicode: '\u{F193D}' },
-            'nasa': { unicode: '\u{F193E}' },
-            'nasin': { unicode: '\u{F193F}' },
-            'nena': { unicode: '\u{F1940}' },
-            'ni': { unicode: '\u{F1941}' },
-            'nimi': { unicode: '\u{F1942}' },
-            'noka': { unicode: '\u{F1943}' },
-            'o': { unicode: '\u{F1944}' },
-            'olin': { unicode: '\u{F1945}' },
-            'ona': { unicode: '\u{F1946}' },
-            'open': { unicode: '\u{F1947}' },
-            'pakala': { unicode: '\u{F1948}' },
-            'pali': { unicode: '\u{F1949}' },
-            'palisa': { unicode: '\u{F194A}' },
-            'pan': { unicode: '\u{F194B}' },
-            'pana': { unicode: '\u{F194C}' },
-            'pi': { unicode: '\u{F194D}' },
-            'pilin': { unicode: '\u{F194E}' },
-            'pimeja': { unicode: '\u{F194F}' },
-            'pini': { unicode: '\u{F1950}' },
-            'pipi': { unicode: '\u{F1951}' },
-            'poka': { unicode: '\u{F1952}' },
-            'poki': { unicode: '\u{F1953}' },
-            'pona': { unicode: '\u{F1954}' },
-            'pu': { unicode: '\u{F1955}' },
-            'sama': { unicode: '\u{F1956}' },
-            'seli': { unicode: '\u{F1957}' },
-            'selo': { unicode: '\u{F1958}' },
-            'seme': { unicode: '\u{F1959}' },
-            'sewi': { unicode: '\u{F195A}' },
-            'sijelo': { unicode: '\u{F195B}' },
-            'sike': { unicode: '\u{F195C}' },
-            'sin': { unicode: '\u{F195D}' },
-            'sina': { unicode: '\u{F195E}' },
-            'sinpin': { unicode: '\u{F195F}' },
-            'sitelen': { unicode: '\u{F1960}' },
-            'sona': { unicode: '\u{F1961}' },
-            'soweli': { unicode: '\u{F1962}' },
-            'suli': { unicode: '\u{F1963}' },
-            'suno': { unicode: '\u{F1964}' },
-            'supa': { unicode: '\u{F1965}' },
-            'suwi': { unicode: '\u{F1966}' },
-            'tan': { unicode: '\u{F1967}' },
-            'taso': { unicode: '\u{F1968}' },
-            'tawa': { unicode: '\u{F1969}' },
-            'telo': { unicode: '\u{F196A}' },
-            'tenpo': { unicode: '\u{F196B}' },
-            'toki': { unicode: '\u{F196C}' },
-            'tomo': { unicode: '\u{F196D}' },
-            'tu': { unicode: '\u{F196E}' },
-            'unpa': { unicode: '\u{F196F}' },
-            'uta': { unicode: '\u{F1970}' },
-            'utala': { unicode: '\u{F1971}' },
-            'walo': { unicode: '\u{F1972}' },
-            'wan': { unicode: '\u{F1973}' },
-            'waso': { unicode: '\u{F1974}' },
-            'wawa': { unicode: '\u{F1975}' },
-            'weka': { unicode: '\u{F1976}' },
-            'wile': { unicode: '\u{F1977}' },
-            'kijetesantakalu': { unicode: '\u{F1980}' },
-            'kin': { unicode: '\u{F1979}' },
-            'kipisi': { unicode: '\u{F197B}' },
-            'ku': { unicode: '\u{F1988}' },
-            'leko': { unicode: '\u{F197C}' },
-            'misikeke': { unicode: '\u{F1987}' },
-            'monsuta': { unicode: '\u{F197D}' },
-            'n': { unicode: '\u{F1986}' },
-            'namako': { unicode: '\u{F1978}' },
-            'soko': { unicode: '\u{F1981}' },
-            'tonsi': { unicode: '\u{F197E}' },
-            'ali': { unicode: '\u{F1904}' },
-            'epiku': { unicode: '\u{F1983}' },
-            'jasima': { unicode: '\u{F197F}' },
-            'lanpan': { unicode: '\u{F1985}' },
-            'linluwi': { unicode: '\u{FFAC4}' },
-            'majuna': { unicode: '\u{F19A2}' },
-            'meso': { unicode: '\u{F1982}' },
-            'nimisin': { unicode: '\u{FFD96}' },
-            'oko': { unicode: '\u{F197A}' },
-            'su': { unicode: '\u{FFB2F}' },
-            'apeja': { unicode: '\u{F19A1}' },
-            'isipin': { unicode: '\u{FFAC0}' },
-            'jami': { unicode: '\u{FFB31}' },
-            'jonke': { unicode: '\u{FFB4F}' },
-            'kamalawala': { unicode: '\u{FFADA}' },
-            'kapesi': { unicode: '\u{FFAC1}' },
-            'kiki': { unicode: '\u{FFAC3}' },
-            'kokosila': { unicode: '\u{F1984}' },
-            'konwe': { unicode: '\u{FFB58}' },
-            'kulijo': { unicode: '\u{FFAE1}' },
-            'melome': { unicode: '\u{FFB32}' },
-            'mijomi': { unicode: '\u{FFB36}' },
-            'misa': { unicode: '\u{FFAD2}' },
-            'mulapisu': { unicode: '\u{FFAC8}' },
-            'nja': { unicode: '\u{FFB60}' },
-            'ojuta': { unicode: '\u{FFD83}' },
-            'oke': { unicode: '\u{FFAE4}' },
-            'omekapo': { unicode: '\u{FFB3B}' },
-            'owe': { unicode: '\u{FFB65}' },
-            'pake': { unicode: '\u{F19A0}' },
-            'pakola': { unicode: '\u{FFD9A}' },
-            'penpo': { unicode: '\u{FFDC9}' },
-            'pika': { unicode: '\u{FFB6A}' },
-            'po': { unicode: '\u{FFAE7}' },
-            'powe': { unicode: '\u{F19A3}' },
-            'puwa': { unicode: '\u{FFB3C}' },
-            'san': { unicode: '\u{FFAEB}' },
-            'soto': { unicode: '\u{FFAEC}' },
-            'sutopatikuna': { unicode: '\u{FFAFB}' },
-            'taki': { unicode: '\u{FFAED}' },
-            'teje': { unicode: '\u{FFAEF}' },
-            'te': { unicode: '\u{FFAF0}' },
-            'to': { unicode: '\u{FFAF1}' },
-            'unu': { unicode: '\u{FFACA}' },
-            'usawi': { unicode: '\u{FFAF6}' },
-            'wa': { unicode: '\u{FFACB}' },
-            'wasoweli': { unicode: '\u{FFAF7}' },
-            'wekama': { unicode: '\u{FFB3E}' },
-            'wuwojiti': { unicode: '\u{FFD86}' },
-            'yupekosi': { unicode: '\u{FFAFC}' },
-            'aka': { unicode: '\u{FFB3A}' },
-            'akesiv': { unicode: '\u{FFAFF}' },
-            'ako': { unicode: '\u{FFB73}' },
-            'aku': { unicode: '\u{FFD87}' },
-            'alente': { unicode: '\u{FFD80}' },
-            'alu': { unicode: '\u{FFB40}' },
-            'ana': { unicode: '\u{FFDB1}' },
-            'ani': { unicode: '\u{FFD88}' },
-            'anta': { unicode: '\u{FFD89}' },
-            'apelo': { unicode: '\u{FFD8A}' },
-            'api': { unicode: '\u{FFDBB}' },
-            'asu': { unicode: '\u{FFE55}' },
-            'awase': { unicode: '\u{FFB41}' },
-            'eki': { unicode: '\u{FFB3A}' },
-            'elen': { unicode: '\u{FFD8B}' },
-            'eliki': { unicode: '\u{FFDAC}' },
-            'ene': { unicode: '\u{FFDB2}' },
-            'enepi': { unicode: '\u{FFDAD}' },
-            'eni': { unicode: '\u{FFDB2}' },
-            'enko': { unicode: '\u{FFB43}' },
-            'epikule': { unicode: '\u{FFB8B}' },
-            'ete': { unicode: '\u{FFACC}' },
-            'ewe': { unicode: '\u{FFAD9}' },
-            'i': { unicode: '\u{FFB46}' },
-            'iki': { unicode: '\u{FFB47}' },
-            'inta': { unicode: '\u{FFE56}' },
-            'ipi': { unicode: '\u{FFB48}' },
-            'iseki': { unicode: '\u{FFD8C}' },
-            'itomi': { unicode: '\u{FFB49}' },
-            'ja': { unicode: '\u{FFD2F}' },
-            'jaku': { unicode: '\u{FFB4D}' },
-            'jalan': { unicode: '\u{FFAD1}' },
-            'jans': { unicode: '\u{FFB8E}' },
-            'je': { unicode: '\u{FFB4E}' },
-            'jete': { unicode: '\u{FFE57}' },
-            'jew': { unicode: '\u{FFB8F}' },
-            'jule': { unicode: '\u{FFD81}' },
-            'jume': { unicode: '\u{FFB74}' },
-            'kalamARR': { unicode: '\u{FFAFE}' },
-            'kalapisituwi': { unicode: '\u{FFD8D}' },
-            'kalijopilale': { unicode: '\u{FFBA0}' },
-            'kan': { unicode: '\u{FFACF}' },
-            'kana': { unicode: '\u{FFD8E}' },
-            'kani': { unicode: '\u{FFE58}' },
-            'kankuli': { unicode: '\u{FFDE1}' },
-            'kapa': { unicode: '\u{FFB51}' },
-            'ke': { unicode: '\u{FFADB}' },
-            'kelo': { unicode: '\u{FFDCC}' },
-            'kepa': { unicode: '\u{FFE50}' },
-            'kepen': { unicode: '\u{F1919}' },
-            'kese': { unicode: '\u{FFADF}' },
-            'kewe': { unicode: '\u{FFDCB}' },
-            'ki': { unicode: '\u{FFB55}' },
-            'kijesankalu': { unicode: '\u{FFE59}' },
-            'kijosin': { unicode: '\u{FFBA1}' },
-            'kikolo': { unicode: '\u{FFD8F}' },
-            'kikulo': { unicode: '\u{FFD90}' },
-            'kinute': { unicode: '\u{FFE5A}' },
-            'kisa': { unicode: '\u{FFB57}' },
-            'kitu': { unicode: '\u{FFE5B}' },
-            'kokoliko': { unicode: '\u{FFD91}' },
-            'kolo': { unicode: '\u{FFDBE}' },
-            'koni': { unicode: '\u{FFD92}' },
-            'konsi': { unicode: '\u{FFB75}' },
-            'kosan': { unicode: '\u{FFB59}' },
-            'kosikosa': { unicode: '\u{FFD93}' },
-            'kulaso': { unicode: '\u{FFDCA}' },
-            'kulepiku': { unicode: '\u{FFB8A}' },
-            'kulu': { unicode: '\u{FFB5D}' },
-            'kuntu': { unicode: '\u{FFAD0}' },
-            'kutopoma': { unicode: '\u{FFB77}' },
-            'lan': { unicode: '\u{FFE68}' },
-            'lansan': { unicode: '\u{FFBAB}' },
-            'lato': { unicode: '\u{FFDB4}' },
-            'lijokuku': { unicode: '\u{FFB78}' },
-            'likujo': { unicode: '\u{FFAE2}' },
-            'lisana': { unicode: '\u{FFDC0}' },
-            'lo': { unicode: '\u{FFB7A}' },
-            'loka': { unicode: '\u{FFAD1}' },
-            'lokon': { unicode: '\u{FFB5E}' },
-            'lu': { unicode: '\u{FFB7A}' },
-            'mamasi': { unicode: '\u{FFBA9}' },
-            'mamasina': { unicode: '\u{FFBA9}' },
-            'masalo': { unicode: '\u{FFD94}' },
-            'masenta': { unicode: '\u{FFDCD}' },
-            'masu': { unicode: '\u{FFDB3}' },
-            'matula': { unicode: '\u{FFD95}' },
-            'me': { unicode: '\u{FFB7C}' },
-            'miko': { unicode: '\u{FFE51}' },
-            'molusa': { unicode: '\u{FFB5F}' },
-            'nalanja': { unicode: '\u{FFDB6}' },
-            'nan': { unicode: '\u{FFE5C}' },
-            'nasin+mani': { unicode: '\u{FFDAE}' },
-            'natu': { unicode: '\u{FFB3A}' },
-            'neja': { unicode: '\u{FFAE3}' },
-            'nele': { unicode: '\u{FFB7D}' },
-            'nowi': { unicode: '\u{FFD97}' },
-            'nuwa': { unicode: '\u{FFB7F}' },
-            'okepuma': { unicode: '\u{FFB61}' },
-            'oki': { unicode: '\u{FFB84}' },
-            'olala': { unicode: '\u{FFD98}' },
-            'omekalike': { unicode: '\u{FFD84}' },
-            'omen': { unicode: '\u{FFB62}' },
-            'oni': { unicode: '\u{FFB63}' },
-            'onono': { unicode: '\u{FFE5E}' },
-            'opasan': { unicode: '\u{FFD99}' },
-            'pa': { unicode: '\u{FFB66}' },
-            'paka': { unicode: '\u{FFE5F}' },
-            'panke': { unicode: '\u{FFD9C}' },
-            'panpan': { unicode: '\u{FFE60}' },
-            'pasila': { unicode: '\u{FFB67}' },
-            'pata': { unicode: '\u{FFAE5}' },
-            'pe': { unicode: '\u{FFE61}' },
-            'peta': { unicode: '\u{FFB69}' },
-            'peto': { unicode: '\u{FFAE6}' },
-            'pipo': { unicode: '\u{FFB6B}' },
-            'pipolo': { unicode: '\u{FFD9E}' },
-            'polinpin': { unicode: '\u{FFAE8}' },
-            'pomotolo': { unicode: '\u{FFAE9}' },
-            'poni': { unicode: '\u{FFB80}' },
-            'pulaso': { unicode: '\u{FFDCC}' },
-            'saja': { unicode: '\u{FFDB0}' },
-            'salantapotalusa': { unicode: '\u{FFE62}' },
-            'samu': { unicode: '\u{FFAC9}' },
-            'santa': { unicode: '\u{FFE64}' },
-            'sapelipope': { unicode: '\u{FFD9F}' },
-            'sikako': { unicode: '\u{FFDA0}' },
-            'sikomo': { unicode: '\u{FFB6C}' },
-            'silapa': { unicode: '\u{FFDA1}' },
-            'sipi': { unicode: '\u{FFB81}' },
-            'sipije': { unicode: '\u{FFDA2}' },
-            'sisi': { unicode: '\u{FFDA3}' },
-            'siwala': { unicode: '\u{FFDA4}' },
-            'slape': { unicode: '\u{FFB8D}' },
-            'snoweli': { unicode: '\u{FFDA5}' },
-            'sokeli': { unicode: '\u{FFE65}' },
-            'soni': { unicode: '\u{FFDA6}' },
-            'sowoli': { unicode: '\u{FFB86}' },
-            'su0': { unicode: '\u{FFB3D}' },
-            'sulaso': { unicode: '\u{FFDCB}' },
-            'sunta': { unicode: '\u{FFE66}' },
-            'ta': { unicode: '\u{FFDA7}' },
-            'tasun': { unicode: '\u{FFDA8}' },
-            'tawake': { unicode: '\u{FFE6D}' },
-            'teken': { unicode: '\u{FFDB9}' },
-            'ten': { unicode: '\u{F196B}' },
-            'tokana': { unicode: '\u{FFB70}' },
-            'tona': { unicode: '\u{FFBAE}' },
-            'topo': { unicode: '\u{FFDB5}' },
-            'tuli': { unicode: '\u{FFAEB}' },
-            'tuwa': { unicode: '\u{FFE54}' },
-            'uka': { unicode: '\u{FFE67}' },
-            'umesu': { unicode: '\u{FFAF2}' },
-            'wawajete': { unicode: '\u{FFB71}' },
-            'we': { unicode: '\u{FFDB7}' },
-            'wi': { unicode: '\u{FFB82}' },
-            'wiju': { unicode: '\u{FFDAF}' },
-            'wiki': { unicode: '\u{FFBAC}' },
-            'wiwi': { unicode: '\u{FFDAB}' },
-            'wowujiti': { unicode: '\u{FFD86}' },
-            'yutu': { unicode: '\u{FFB8C}' },
-            'interpunct': { unicode: '\u{F199C}' },
-            'colon': { unicode: '\u{F199D}' }
+    <script>
+        'use strict';
+        const C = {
+            SVG: { W: 32000, H: 32000, CX: 16000, CY: 16000 },
+            CIRCLE: { R: 4800, IS: 0.5, ISTEP: 0.1 },
+            RUNE: { SZ: 750, FSZ: 1000, SM: 6.0, CF: 0.3 },
+            GROUP: { MARGIN: 2.0 }, // Group radius = largest rune * margin
+            CONN: { AL: 100, AA: Math.PI / 6 },
+            UI: { DD: 150, MT: 3000 },
+            SCALE: { PADDING: 1000 }
         };
-    }
-    
-    parse(input) {
-        const lines = input.trim().split('\n');
-        const result = { mainCircle: [], inscribedCircles: [] };
+        const RUNES = {
+            'a': '\u{F1900}', 'akesi': '\u{F1901}', 'ala': '\u{F1902}', 'alasa': '\u{F1903}',
+            'ale': '\u{F1904}', 'ali': '\u{F1904}', 'anpa': '\u{F1905}', 'ante': '\u{F1906}',
+            'anu': '\u{F1907}', 'awen': '\u{F1908}', 'e': '\u{F1909}', 'en': '\u{F190A}',
+            'esun': '\u{F190B}', 'ijo': '\u{F190C}', 'ike': '\u{F190D}', 'ilo': '\u{F190E}',
+            'insa': '\u{F190F}', 'jaki': '\u{F1910}', 'jan': '\u{F1911}', 'jelo': '\u{F1912}',
+            'jo': '\u{F1913}', 'kala': '\u{F1914}', 'kalama': '\u{F1915}', 'kama': '\u{F1916}',
+            'kasi': '\u{F1917}', 'ken': '\u{F1918}', 'kepeken': '\u{F1919}', 'kili': '\u{F191A}',
+            'kiwen': '\u{F191B}', 'ko': '\u{F191C}', 'kon': '\u{F191D}', 'kule': '\u{F191E}',
+            'kulupu': '\u{F191F}', 'kute': '\u{F1920}', 'la': '\u{F1921}', 'lape': '\u{F1922}',
+            'laso': '\u{F1923}', 'lawa': '\u{F1924}', 'len': '\u{F1925}', 'lete': '\u{F1926}',
+            'li': '\u{F1927}', 'lili': '\u{F1928}', 'linja': '\u{F1929}', 'lipu': '\u{F192A}',
+            'loje': '\u{F192B}', 'lon': '\u{F192C}', 'luka': '\u{F192D}', 'lukin': '\u{F192E}',
+            'lupa': '\u{F192F}', 'ma': '\u{F1930}', 'mama': '\u{F1931}', 'mani': '\u{F1932}',
+            'meli': '\u{F1933}', 'mi': '\u{F1934}', 'mije': '\u{F1935}', 'moku': '\u{F1936}',
+            'moli': '\u{F1937}', 'monsi': '\u{F1938}', 'mu': '\u{F1939}', 'mun': '\u{F193A}',
+            'musi': '\u{F193B}', 'mute': '\u{F193C}', 'nanpa': '\u{F193D}', 'nasa': '\u{F193E}',
+            'nasin': '\u{F193F}', 'nena': '\u{F1940}', 'ni': '\u{F1941}', 'nimi': '\u{F1942}',
+            'noka': '\u{F1943}', 'o': '\u{F1944}', 'olin': '\u{F1945}', 'ona': '\u{F1946}',
+            'open': '\u{F1947}', 'pakala': '\u{F1948}', 'pali': '\u{F1949}', 'palisa': '\u{F194A}',
+            'pan': '\u{F194B}', 'pana': '\u{F194C}', 'pi': '\u{F194D}', 'pilin': '\u{F194E}',
+            'pimeja': '\u{F194F}', 'pini': '\u{F1950}', 'pipi': '\u{F1951}', 'poka': '\u{F1952}',
+            'poki': '\u{F1953}', 'pona': '\u{F1954}', 'pu': '\u{F1955}', 'sama': '\u{F1956}',
+            'seli': '\u{F1957}', 'selo': '\u{F1958}', 'seme': '\u{F1959}', 'sewi': '\u{F195A}',
+            'sijelo': '\u{F195B}', 'sike': '\u{F195C}', 'sin': '\u{F195D}', 'sina': '\u{F195E}',
+            'sinpin': '\u{F195F}', 'sitelen': '\u{F1960}', 'sona': '\u{F1961}', 'soweli': '\u{F1962}',
+            'suli': '\u{F1963}', 'suno': '\u{F1964}', 'supa': '\u{F1965}', 'suwi': '\u{F1966}',
+            'tan': '\u{F1967}', 'taso': '\u{F1968}', 'tawa': '\u{F1969}', 'telo': '\u{F196A}',
+            'tenpo': '\u{F196B}', 'toki': '\u{F196C}', 'tomo': '\u{F196D}', 'tu': '\u{F196E}',
+            'unpa': '\u{F196F}', 'uta': '\u{F1970}', 'utala': '\u{F1971}', 'walo': '\u{F1972}',
+            'wan': '\u{F1973}', 'waso': '\u{F1974}', 'wawa': '\u{F1975}', 'weka': '\u{F1976}',
+            'wile': '\u{F1977}', 'namako': '\u{F1978}', 'kin': '\u{F1979}', 'oko': '\u{F197A}',
+            'kipisi': '\u{F197B}', 'leko': '\u{F197C}', 'monsuta': '\u{F197D}', 'tonsi': '\u{F197E}',
+            'jasima': '\u{F197F}', 'kijetesantakalu': '\u{F1980}', 'soko': '\u{F1981}',
+            'meso': '\u{F1982}', 'epiku': '\u{F1983}', 'kokosila': '\u{F1984}', 'lanpan': '\u{F1985}',
+            'n': '\u{F1986}', 'misikeke': '\u{F1987}', 'ku': '\u{F1988}'
+        };
+        const RLIST = ['a','akesi','ala','ale','anpa','awen','epiku','jaki','jan','jelo','jo','kala','kalama','kama','kasi','kepeken','kiwen','ko','kon','kule','kulupu','kute','li','lili','linja','lipu','loje','lon','luka','lukin','ma','meli','mi','mije','moku','moli','monsi','mun','muse','mute','nanpa','nasa','nasin','ni','nimi','noka','olin','ona','open','pali','pi','pilin','pimeja','pini','pona','pu','sama','seli','seme','sewi','sike','sinpin','sona','soweli','suli','suno','suwi','taso','telo','tenpo','toki','tomo','unpa','uta','utala','walo','wan','waso','wawa','weka','wile'];
+        const CPAL = [{symbol:'→',value:'->'},{symbol:'~',value:'~'},{symbol:'{ }',value:'{}'},{symbol:'( )',value:'()'}];
+        const EX = `open -> lukin -> (mi ~ sina) -> ma -> (jan ~ soweli ~ waso) -> mute -> sona -> li -> pona\n{\n  soweli -> (musi ~ pona) -> olin -> suno\n}`;
         
-        let currentDepth = 0;
-        let currentCircle = result.mainCircle;
-        let circleStack = [currentCircle];
+        const svgEl = (tag, attrs = {}) => {
+            const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+            Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+            return el;
+        };
+        const polar = (cx, cy, r, a) => ({ x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) });
         
-        for (const line of lines) {
-            const trimmed = line.trim();
-            if (!trimmed || trimmed.startsWith('#')) continue;
-            
-            const openBraces = (trimmed.match(/{/g) || []).length;
-            const closeBraces = (trimmed.match(/}/g) || []).length;
-            
-            if (openBraces > 0) {
-                currentDepth++;
-                const newCircle = [];
-                result.inscribedCircles.push({ depth: currentDepth, runes: newCircle });
-                circleStack.push(newCircle);
-                currentCircle = newCircle;
-            }
-            
-            const cleanLine = trimmed.replace(/[{}]/g, '');
-            if (cleanLine) {
-                const elements = this.parseElements(cleanLine);
-                currentCircle.push(...elements);
-            }
-            
-            if (closeBraces > 0) {
-                currentDepth--;
-                circleStack.pop();
-                currentCircle = circleStack[circleStack.length - 1] || result.mainCircle;
-            }
-        }
-        
-        return result;
-    }
-    
-    parseElements(line) {
-        const elements = [];
-        let i = 0;
-        
-        while (i < line.length) {
-            while (i < line.length && /\s/.test(line[i])) i++;
-            if (i >= line.length) break;
-            
-            if (line[i] === '(') {
-                let depth = 1;
-                let j = i + 1;
-                while (j < line.length && depth > 0) {
-                    if (line[j] === '(') depth++;
-                    if (line[j] === ')') depth--;
-                    j++;
-                }
-                
-                const groupContent = line.substring(i + 1, j - 1).trim();
-                const groupElements = this.parseGroupedElements(groupContent);
-                elements.push({ type: 'group', elements: groupElements });
-                i = j;
-            }
-            else if (line.substring(i, i + 2) === '->') {
-                elements.push({ type: 'connection', value: '->' });
-                i += 2;
-            }
-            else if (line[i] === '~') {
-                elements.push({ type: 'connection', value: '~' });
-                i++;
-            }
-            else {
-                let j = i;
-                while (j < line.length && /[a-z0-9*.]/.test(line[j])) j++;
-                
-                const runeStr = line.substring(i, j);
-                const match = runeStr.match(/^([a-z]+)(\*(\d+\.?\d*))?$/);
-                
-                if (match) {
-                    const runeName = match[1];
-                    const multiplier = match[3] ? parseFloat(match[3]) : 1;
-                    
-                    if (this.runeLibrary[runeName]) {
-                        elements.push({
-                            type: 'rune',
-                            name: runeName,
-                            multiplier: multiplier,
-                            ...this.runeLibrary[runeName]
-                        });
+        class Parser {
+            constructor(lib) { this.lib = lib; }
+            parse(input) {
+                const tokens = [];
+                input.split('\n').forEach(line => {
+                    const t = line.trim();
+                    if (!t || t.startsWith('#') || t.startsWith('//')) return;
+                    let i = 0;
+                    while (i < t.length) {
+                        while (i < t.length && /\s/.test(t[i])) i++;
+                        if (i >= t.length) break;
+                        const c = t[i];
+                        if (c === '{') { tokens.push({type:'BO'}); i++; }
+                        else if (c === '}') { tokens.push({type:'BC'}); i++; }
+                        else if (c === '(') { tokens.push({type:'PO'}); i++; }
+                        else if (c === ')') { tokens.push({type:'PC'}); i++; }
+                        else if (c === '~') { tokens.push({type:'T'}); i++; }
+                        else if (t.substring(i, i + 2) === '->') { tokens.push({type:'A'}); i += 2; }
+                        else {
+                            let e = i;
+                            while (e < t.length && /[a-z0-9*.]/.test(t[e])) e++;
+                            const rs = t.substring(i, e);
+                            const m = rs.match(/^([a-z]+)(\*(\d+\.?\d*))?$/);
+                            if (m && this.lib[m[1]]) {
+                                tokens.push({type:'R',name:m[1],unicode:this.lib[m[1]],mult:m[3]?parseFloat(m[3]):1});
+                            }
+                            i = e;
+                        }
                     }
-                }
-                i = j;
-            }
-        }
-        
-        return elements;
-    }
-    
-    parseGroupedElements(content) {
-        const elements = [];
-        const parts = content.split(/\s*(~)\s*/);
-        
-        for (const part of parts) {
-            const trimmed = part.trim();
-            if (!trimmed) continue;
-            
-            if (trimmed === '~') {
-                elements.push({ type: 'connection', value: '~' });
-            } else {
-                const match = trimmed.match(/^([a-z]+)(\*(\d+\.?\d*))?$/);
-                if (match) {
-                    const runeName = match[1];
-                    const multiplier = match[3] ? parseFloat(match[3]) : 1;
-                    
-                    if (this.runeLibrary[runeName]) {
-                        elements.push({
-                            type: 'rune',
-                            name: runeName,
-                            multiplier: multiplier,
-                            ...this.runeLibrary[runeName]
-                        });
-                    }
-                }
-            }
-        }
-        
-        return elements;
-    }
-}
-
-// Circle Renderer
-class CircleRenderer {
-    constructor(canvas) {
-        this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
-        this.centerX = canvas.width / 2;
-        this.centerY = canvas.height / 2;
-        this.radius = Math.min(canvas.width, canvas.height) * 0.35;
-    }
-    
-    render(parsedData) {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        this.ctx.strokeStyle = '#ffd700';
-        this.ctx.lineWidth = 2;
-        
-        this.drawCircle(this.centerX, this.centerY, this.radius);
-        
-        const processedMain = this.processElementsForDrawing(parsedData.mainCircle);
-        this.drawProcessedElements(processedMain, this.centerX, this.centerY, this.radius);
-        
-        let innerRadius = this.radius * 0.6;
-        for (const inscribed of parsedData.inscribedCircles) {
-            this.drawCircle(this.centerX, this.centerY, innerRadius);
-            const processedInscribed = this.processElementsForDrawing(inscribed.runes);
-            this.drawProcessedElements(processedInscribed, this.centerX, this.centerY, innerRadius);
-            innerRadius *= 0.6;
-        }
-    }
-    
-    processElementsForDrawing(elements) {
-        const processed = [];
-        
-        for (let i = 0; i < elements.length; i++) {
-            const element = elements[i];
-            
-            if (element.type === 'group') {
-                processed.push({
-                    type: 'inscribed-group',
-                    elements: element.elements.filter(e => e.type === 'rune')
                 });
-            } else if (element.type === 'rune') {
-                processed.push(element);
-            } else if (element.type === 'connection') {
-                if (processed.length > 0) {
-                    processed[processed.length - 1].nextConnection = element.value;
+                return this.parseSeq({i:0,tokens});
+            }
+            parseSeq(ctx) {
+                const els = [];
+                while (ctx.i < ctx.tokens.length) {
+                    const tok = ctx.tokens[ctx.i];
+                    if (tok.type === 'BC' || tok.type === 'PC') break;
+                    if (tok.type === 'BO') {
+                        ctx.i++;
+                        const ins = this.parseSeq(ctx);
+                        els.push({type:'inscribed',elements:ins});
+                        ctx.i++;
+                    } else if (tok.type === 'PO') {
+                        ctx.i++;
+                        const grp = this.parseGrp(ctx);
+                        els.push({type:'group',runes:grp});
+                        ctx.i++;
+                    } else if (tok.type === 'R') {
+                        els.push(tok);
+                        ctx.i++;
+                    } else if (tok.type === 'A' || tok.type === 'T') {
+                        els.push({type:'connection',value:tok.type==='A'?'->':'~'});
+                        ctx.i++;
+                    } else ctx.i++;
+                }
+                return els;
+            }
+            parseGrp(ctx) {
+                const runes = [];
+                while (ctx.i < ctx.tokens.length && ctx.tokens[ctx.i].type !== 'PC') {
+                    const tok = ctx.tokens[ctx.i];
+                    if (tok.type === 'R') {
+                        runes.push(tok);
+                    }
+                    // Skip connections inside groups
+                    ctx.i++;
+                }
+                return runes;
+            }
+        }
+        
+        class Renderer {
+            constructor(svg) {
+                this.svg = svg;
+                this.grp = document.getElementById('circleGroup');
+                this.baseScale = 1.0;
+            }
+            render(parsed) {
+                this.grp.innerHTML = '';
+                const circles = svgEl('g'), connections = svgEl('g'), runes = svgEl('g');
+                this.L = {circles, connections, runes};
+                this.renderC(parsed, 0, 0, C.CIRCLE.R);
+                this.grp.appendChild(circles);
+                this.grp.appendChild(connections);
+                this.grp.appendChild(runes);
+                
+                // Center the content without scaling
+                this.grp.setAttribute('transform', `translate(${C.SVG.CX}, ${C.SVG.CY})`);
+            }
+            proc(els) {
+                const p = [];
+                for (let i = 0; i < els.length; i++) {
+                    const e = els[i];
+                    if (e.type === 'group' || e.type === 'inscribed' || e.type === 'R') {
+                        p.push(e);
+                    }
+                    else if (e.type === 'connection' && p.length > 0) {
+                        p[p.length - 1].nc = e.value;
+                    }
+                }
+                return p;
+            }
+            renderC(els, cx, cy, r) {
+                const p = this.proc(els);
+                if (p.length === 0) return;
+                const main = p.filter(e => e.type !== 'inscribed');
+                const inscr = p.filter(e => e.type === 'inscribed');
+                const ar = this.calcR(main, r);
+                this.L.circles.appendChild(svgEl('circle', {cx,cy,r:ar,class:'main-circle'}));
+                const as = (2 * Math.PI) / main.length;
+                const pos = main.map((it, i) => {
+                    const a = i * as - Math.PI / 2;
+                    const po = polar(cx, cy, ar, a);
+                    return {...po, angle:a};
+                });
+                const hasC = main.some(it => it.nc);
+                main.forEach((it, i) => {
+                    if (it.nc && i < main.length - 1) this.drawConn(pos[i].x, pos[i].y, pos[i+1].x, pos[i+1].y, it.nc, cx, cy, ar);
+                });
+                if (hasC && main.length >= 2) {
+                    const li = main.length - 1;
+                    let ct = '->';
+                    for (let i = li; i >= 0; i--) if (main[i].nc) { ct = main[i].nc; break; }
+                    this.drawConn(pos[li].x, pos[li].y, pos[0].x, pos[0].y, ct, cx, cy, ar);
+                }
+                main.forEach((it, i) => {
+                    if (it.type === 'group') {
+                        this.drawGroup(it.runes, pos[i].x, pos[i].y);
+                    }
+                    else if (it.type === 'R') {
+                        this.drawR(it, pos[i].x, pos[i].y, 1.0);
+                    }
+                });
+                inscr.forEach((ic, i) => {
+                    const ir = ar * (C.CIRCLE.IS - i * C.CIRCLE.ISTEP);
+                    if (ir > 50) this.renderC(ic.elements, cx, cy, ir);
+                });
+            }
+            calcR(els, br) {
+                if (els.length === 0) return br;
+                const mes = Math.max(150, ...els.map(it => {
+                    if (it.type === 'group') {
+                        return this.calcGroupSize(it.runes);
+                    }
+                    return C.RUNE.SZ * 2;
+                }));
+                const ec = els.length;
+                let cm = 1 + (ec * C.RUNE.CF);
+                if (ec > 5) cm *= 1.5;
+                if (ec > 10) cm *= 1.8;
+                if (ec > 15) cm *= 2.0;
+                const sm = C.RUNE.SM * cm;
+                const lp = ec > 5 ? 1 + (ec - 5) * 0.1 : 1.0;
+                const mc = ec * mes * sm * lp;
+                const mr = mc / (2 * Math.PI);
+                return Math.max(br, mr);
+            }
+            calcGroupSize(runes) {
+                // Calculate the size a group needs - making it bigger
+                const maxRuneSize = Math.max(...runes.map(r => C.RUNE.SZ * r.mult * 2));
+                if (runes.length === 1) return maxRuneSize * 2.5;
+                if (runes.length === 2) return maxRuneSize * 3.5;
+                // For 3+ runes in circle
+                return maxRuneSize * (runes.length * 1.2);
+            }
+            drawConn(x1, y1, x2, y2, type, cx, cy, r) {
+                if (type === '~') {
+                    const dx = x2 - x1, dy = y2 - y1;
+                    const dist = Math.hypot(dx, dy) || 1;
+                    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+                    const nx = -dy / dist, ny = dx / dist;
+                    const offset = Math.max(30, Math.min(r * 0.3, dist * 0.25));
+                    const cp1x = mx + nx * offset, cp1y = my + ny * offset;
+                    const cp2x = mx - nx * offset, cp2y = my - ny * offset;
+                    this.L.connections.appendChild(svgEl('path', {
+                        d: `M ${x1} ${y1} Q ${cp1x} ${cp1y} ${x2} ${y2}`,
+                        class: 'connection-curve', fill: 'none'
+                    }));
+                    this.L.connections.appendChild(svgEl('path', {
+                        d: `M ${x1} ${y1} Q ${cp2x} ${cp2y} ${x2} ${y2}`,
+                        class: 'connection-curve', fill: 'none'
+                    }));
+                } else {
+                    this.L.connections.appendChild(svgEl('line', {x1,y1,x2,y2,class:'connection-line'}));
+                    if (type === '->') {
+                        const a = Math.atan2(y2 - y1, x2 - x1);
+                        const ax1 = x2 - C.CONN.AL * Math.cos(a - C.CONN.AA);
+                        const ay1 = y2 - C.CONN.AL * Math.sin(a - C.CONN.AA);
+                        const ax2 = x2 - C.CONN.AL * Math.cos(a + C.CONN.AA);
+                        const ay2 = y2 - C.CONN.AL * Math.sin(a + C.CONN.AA);
+                        this.L.connections.appendChild(svgEl('path', {d:`M ${ax1} ${ay1} L ${x2} ${y2} L ${ax2} ${ay2}`,class:'connection-line',fill:'none'}));
+                    }
+                }
+            }
+            drawR(rune, x, y, sf) {
+                const fs = rune.mult * sf;
+                const rad = C.RUNE.SZ * fs;
+                this.L.circles.appendChild(svgEl('circle', {cx:x,cy:y,r:rad,class:'rune-circle'}));
+                const txt = svgEl('text', {x,y,class:'rune-text','font-size':C.RUNE.FSZ*fs});
+                txt.textContent = rune.unicode;
+                this.L.runes.appendChild(txt);
+            }
+            drawGroup(runes, x, y) {
+                // Calculate group radius to fit all runes
+                const maxRuneRad = Math.max(...runes.map(r => C.RUNE.SZ * r.mult));
+                let groupRad;
+                
+                if (runes.length === 1) {
+                    groupRad = maxRuneRad * 2.5;
+                } else if (runes.length === 2) {
+                    groupRad = maxRuneRad * 3.5;
+                } else {
+                    groupRad = maxRuneRad * (runes.length * 1.2);
+                }
+                
+                // Draw group circle
+                this.L.circles.appendChild(svgEl('circle', {cx:x, cy:y, r:groupRad, class:'group-circle'}));
+                
+                // Draw runes inside - with larger scale factors
+                if (runes.length === 1) {
+                    this.drawR(runes[0], x, y, 1.2);
+                } else if (runes.length === 2) {
+                    const spacing = groupRad * 0.5;
+                    this.drawR(runes[0], x - spacing, y, 1.0);
+                    this.drawR(runes[1], x + spacing, y, 1.0);
+                } else {
+                    const innerRad = groupRad * 0.6;
+                    const angleStep = (Math.PI * 2) / runes.length;
+                    runes.forEach((rune, idx) => {
+                        const angle = idx * angleStep - Math.PI / 2;
+                        const rx = x + Math.cos(angle) * innerRad;
+                        const ry = y + Math.sin(angle) * innerRad;
+                        this.drawR(rune, rx, ry, 0.8);
+                    });
                 }
             }
         }
         
-        return processed;
-    }
-    
-    drawCircle(x, y, radius) {
-        this.ctx.strokeStyle = '#ffd700';
-        this.ctx.lineWidth = 2;
-        this.ctx.shadowBlur = 6;
-        this.ctx.shadowColor = '#ffd700';
-        
-        this.ctx.beginPath();
-        this.ctx.arc(x, y, radius, 0, Math.PI * 2);
-        this.ctx.stroke();
-        
-        this.ctx.shadowBlur = 0;
-    }
-    
-    drawProcessedElements(processed, centerX, centerY, radius) {
-        const angleStep = (Math.PI * 2) / Math.max(processed.length, 1);
-        
-        processed.forEach((item, index) => {
-            const angle = index * angleStep - Math.PI / 2;
-            const x = centerX + Math.cos(angle) * radius;
-            const y = centerY + Math.sin(angle) * radius;
-            
-            if (item.type === 'inscribed-group') {
-                this.drawInscribedGroup(item.elements, x, y);
-            } else if (item.type === 'rune') {
-                this.drawSingleRune(item, x, y);
+        class App {
+            constructor() {
+                this.parser = new Parser(RUNES);
+                this.renderer = null;
+                this.els = {
+                    ed: document.getElementById('codeEditor'),
+                    cc: document.getElementById('charCount'),
+                    rc: document.getElementById('runeCount'),
+                    ma: document.getElementById('messageArea')
+                };
+                this.debouncedUpd = this.debounce(() => this.update(), C.UI.DD);
             }
-            
-            if (item.nextConnection && index < processed.length - 1) {
-                const nextAngle = (index + 1) * angleStep - Math.PI / 2;
-                const nextX = centerX + Math.cos(nextAngle) * radius;
-                const nextY = centerY + Math.sin(nextAngle) * radius;
-                this.drawConnection(x, y, nextX, nextY, item.nextConnection, centerX, centerY, radius);
+            debounce(func, wait) {
+                let timeout;
+                return function(...args) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func(...args), wait);
+                };
             }
-        });
-        
-        // New logic to complete the circle
-        if (processed.length > 1 && processed[processed.length - 1].nextConnection === '->') {
-            const firstElementAngle = 0 * angleStep - Math.PI / 2;
-            const firstX = centerX + Math.cos(firstElementAngle) * radius;
-            const firstY = centerY + Math.sin(firstElementAngle) * radius;
-            
-            const lastElementAngle = (processed.length - 1) * angleStep - Math.PI / 2;
-            const lastX = centerX + Math.cos(lastElementAngle) * radius;
-            const lastY = centerY + Math.sin(lastElementAngle) * radius;
-            
-            this.drawConnection(lastX, lastY, firstX, firstY, '->', centerX, centerY, radius);
-        }
-    }
-    
-    drawInscribedGroup(elements, x, y) {
-        this.ctx.save();
-        
-        const baseRadius = 30;
-        const groupRadius = baseRadius + (elements.length - 1) * 5;
-        
-        this.ctx.strokeStyle = '#9370db';
-        this.ctx.lineWidth = 2;
-        this.ctx.beginPath();
-        this.ctx.arc(x, y, groupRadius, 0, Math.PI * 2);
-        this.ctx.stroke();
-        
-        this.ctx.shadowBlur = 8;
-        this.ctx.shadowColor = '#9370db';
-        this.ctx.stroke();
-        this.ctx.shadowBlur = 0;
-        
-        this.ctx.fillStyle = 'rgba(147, 112, 219, 0.1)';
-        this.ctx.beginPath();
-        this.ctx.arc(x, y, groupRadius, 0, Math.PI * 2);
-        this.ctx.fill();
-        
-        const runeElements = elements.filter(e => e.type === 'rune');
-        
-        if (runeElements.length === 1) {
-            this.drawSingleRune(runeElements[0], x, y, 0.8);
-        } else if (runeElements.length === 2) {
-            const spacing = groupRadius * 0.6;
-            this.drawSingleRune(runeElements[0], x - spacing, y, 0.6);
-            this.drawSingleRune(runeElements[1], x + spacing, y, 0.6);
-        } else if (runeElements.length > 2) {
-            const innerRadius = groupRadius * 0.65;
-            const angleStep = (Math.PI * 2) / runeElements.length;
-            
-            runeElements.forEach((rune, index) => {
-                const angle = index * angleStep - Math.PI / 2;
-                const runeX = x + Math.cos(angle) * innerRadius;
-                const runeY = y + Math.sin(angle) * innerRadius;
-                this.drawSingleRune(rune, runeX, runeY, 0.5);
-            });
-        }
-        
-        this.ctx.restore();
-    }
-    
-    drawSingleRune(rune, x, y, scaleFactor = 1) {
-        const runeRadius = 15 * rune.multiplier * scaleFactor;
-        this.ctx.fillStyle = '#ffd700';
-        this.ctx.beginPath();
-        this.ctx.arc(x, y, runeRadius, 0, Math.PI * 2);
-        this.ctx.fill();
-        
-        this.ctx.fillStyle = '#0a0a0f';
-        this.ctx.font = `bold ${20 * rune.multiplier * scaleFactor}px linja-pona`;
-        this.ctx.textAlign = 'center';
-        this.ctx.textBaseline = 'middle';
-        this.ctx.fillText(rune.unicode, x, y);
-    }
-    
-    drawConnection(x1, y1, x2, y2, connType, centerX, centerY, radius) {
-        this.ctx.beginPath();
-        this.ctx.moveTo(x1, y1);
-        
-        if (connType === '~') {
-            const angle1 = Math.atan2(y1 - centerY, x1 - centerX);
-            const angle2 = Math.atan2(y2 - centerY, x2 - centerX);
-            const cp1x = centerX + Math.cos((angle1 + angle2) / 2) * (radius * 1.2);
-            const cp1y = centerY + Math.sin((angle1 + angle2) / 2) * (radius * 1.2);
-            this.ctx.quadraticCurveTo(cp1x, cp1y, x2, y2);
-            this.ctx.strokeStyle = '#9370db';
-        } else {
-            this.ctx.lineTo(x2, y2);
-            this.ctx.strokeStyle = '#c0c0c0';
+            init() {
+                return document.fonts.ready.then(() => {
+                    this.renderer = new Renderer(document.getElementById('magicCircle'));
+                    const rp = document.getElementById('runePalette');
+                    RLIST.forEach(r => {
+                        const b = document.createElement('button');
+                        b.className = 'rune-btn linja-pona';
+                        b.textContent = r;
+                        b.onclick = () => this.ins(r);
+                        rp.appendChild(b);
+                    });
+                    const cp = document.getElementById('connectionPalette');
+                    CPAL.forEach(c => {
+                        const b = document.createElement('button');
+                        b.className = 'rune-btn';
+                        b.textContent = c.symbol;
+                        b.onclick = () => this.insC(c.value);
+                        cp.appendChild(b);
+                    });
+                    this.els.ed.addEventListener('input', () => this.debouncedUpd());
+                    document.getElementById('clearBtn').onclick = () => this.clear();
+                    this.els.ed.value = EX;
+                    this.update();
+                });
+            }
+            ins(txt) {
+                const {ed} = this.els;
+                const s = ed.selectionStart, e = ed.selectionEnd;
+                ed.value = ed.value.substring(0, s) + txt + ed.value.substring(e);
+                ed.selectionStart = ed.selectionEnd = s + txt.length;
+                ed.focus();
+                this.debouncedUpd();
+            }
+            insC(conn) {
+                let ins = conn, off = conn.length;
+                if (conn === '{}') { ins = '{\n  \n}'; off = 3; }
+                else if (conn === '()') { ins = '( ~ )'; off = 1; }
+                const {ed} = this.els;
+                const s = ed.selectionStart, e = ed.selectionEnd;
+                ed.value = ed.value.substring(0, s) + ins + ed.value.substring(e);
+                ed.selectionStart = ed.selectionEnd = s + off;
+                ed.focus();
+                this.debouncedUpd();
+            }
+            update() {
+                const {ed, cc, rc, ma} = this.els;
+                cc.textContent = `${ed.value.length} chars`;
+                try {
+                    const parsed = this.parser.parse(ed.value);
+                    let tot = 0;
+                    const cnt = (its) => {
+                        its.forEach(e => {
+                            if (e.type === 'R') tot++;
+                            else if (e.type === 'group') tot += e.runes.length;
+                            else if (e.type === 'inscribed') cnt(e.elements);
+                        });
+                    };
+                    cnt(parsed);
+                    rc.textContent = `${tot} runes`;
+                    this.renderer.render(parsed);
+                    ma.innerHTML = '';
+                } catch (err) {
+                    ma.innerHTML = `<div class="error-message">⚠️ Error: ${err.message}</div>`;
+                }
+            }
+            clear() {
+                if (confirm('Clear the editor? This will remove all content.')) {
+                    this.els.ed.value = '';
+                    this.update();
+                }
+            }
         }
         
-        this.ctx.lineWidth = 1.5;
-        this.ctx.stroke();
-        
-        if (connType === '->') {
-            const angle = Math.atan2(y2 - y1, x2 - x1);
-            const arrowLength = 8;
-            const arrowAngle = Math.PI / 6;
-            
-            this.ctx.beginPath();
-            this.ctx.moveTo(x2, y2);
-            this.ctx.lineTo(
-                x2 - arrowLength * Math.cos(angle - arrowAngle),
-                y2 - arrowLength * Math.sin(angle - arrowAngle)
-            );
-            this.ctx.moveTo(x2, y2);
-            this.ctx.lineTo(
-                x2 - arrowLength * Math.cos(angle + arrowAngle),
-                y2 - arrowLength * Math.sin(angle + arrowAngle)
-            );
-            this.ctx.stroke();
-        }
-    }
-}
-
-// Global variables
-let parser = new TPMMParser();
-let renderer = null;
-
-// Functions
-function updatePreview() {
-    const editor = document.getElementById('codeEditor');
-    const charCount = document.getElementById('charCount');
-    const runeCount = document.getElementById('runeCount');
-    const messageArea = document.getElementById('messageArea');
-    
-    charCount.textContent = `${editor.value.length} chars`;
-    
-    try {
-        const parsed = parser.parse(editor.value);
-        
-        let totalRunes = 0;
-        const countRunes = (elements) => {
-            return elements.filter(e => e.type === 'rune').length;
-        };
-        
-        totalRunes += countRunes(parsed.mainCircle);
-        parsed.inscribedCircles.forEach(circle => {
-            totalRunes += countRunes(circle.runes);
-        });
-        
-        runeCount.textContent = `${totalRunes} runes`;
-        
-        renderer.render(parsed);
-        messageArea.innerHTML = '';
-        
-    } catch (error) {
-        messageArea.innerHTML = `<div class="error-message">⚠️ Syntax Error: ${error.message}</div>`;
-    }
-}
-
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-const debouncedUpdatePreview = debounce(updatePreview, 150);
-
-function insertRune(runeName) {
-    const editor = document.getElementById('codeEditor');
-    const start = editor.selectionStart;
-    const end = editor.selectionEnd;
-    const text = editor.value;
-    
-    const newText = text.substring(0, start) + runeName + text.substring(end);
-    editor.value = newText;
-    editor.selectionStart = editor.selectionEnd = start + runeName.length;
-    editor.focus();
-    
-    debouncedUpdatePreview();
-}
-
-function insertConnection(conn) {
-    const editor = document.getElementById('codeEditor');
-    const start = editor.selectionStart;
-    const end = editor.selectionEnd;
-    const text = editor.value;
-    
-    let insertion = conn;
-    if (conn === '{}') {
-        insertion = '{\n  \n}';
-    }
-    
-    const newText = text.substring(0, start) + insertion + text.substring(end);
-    editor.value = newText;
-    
-    if (conn === '{}') {
-        editor.selectionStart = editor.selectionEnd = start + 3;
-    } else {
-        editor.selectionStart = editor.selectionEnd = start + insertion.length;
-    }
-    
-    editor.focus();
-    debouncedUpdatePreview();
-}
-
-function clearEditor() {
-    if (confirm('Clear the editor? This will remove all content.')) {
-        document.getElementById('codeEditor').value = '';
-        updatePreview();
-    }
-}
-
-function exportPNG() {
-    const canvas = document.getElementById('circleCanvas');
-    const url = canvas.toDataURL('image/png');
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'magic-circle.png';
-    a.click();
-    
-    document.getElementById('messageArea').innerHTML = 
-        '<div class="success-message">✅ Circle exported as PNG!</div>';
-}
-
-function renderCircle() {
-    updatePreview();
-    const messageArea = document.getElementById('messageArea');
-    messageArea.innerHTML = '<div class="success-message">✨ Circle rendered successfully!</div>';
-    
-    const canvas = document.getElementById('circleCanvas');
-    canvas.style.animation = 'none';
-    setTimeout(() => {
-        canvas.style.animation = 'rotate 20s linear infinite';
-    }, 10);
-}
-
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    // Wait for all fonts to be loaded before initializing
-    document.fonts.ready.then(() => {
-        const canvas = document.getElementById('circleCanvas');
-        renderer = new CircleRenderer(canvas);
-        
-        // Initialize rune palette with a selection of new and old runes
-        const runePalette = document.getElementById('runePalette');
-        const runes = ['a', 'akesi', 'ala', 'ale', 'anpa', 'awen', 'epiku', 'jaki', 'jan', 'jelo', 'jo', 'kala', 'kalama', 
-                      'kama', 'kasi', 'kepeken', 'kiwen', 'ko', 'kon', 'kule', 'kulupu', 'kute', 'li', 'lili', 'linja', 'lipu', 'loje', 'lon', 
-                      'luka', 'lukin', 'ma', 'meli', 'mi', 'mije', 'moku', 'moli', 'monsi', 'mun', 'mute', 'nanpa', 'nasa', 'nasin', 'ni', 
-                      'nimi', 'noka', 'olin', 'ona', 'open', 'pali', 'pi', 'pilin', 'pimeja', 'pini', 'pona', 'pu', 'sama', 'seli', 'seme',
-                      'sewi', 'sike', 'sinpin', 'sona', 'soweli', 'suli', 'suno', 'suwi', 'taso', 'telo', 'tenpo', 'toki', 'tomo', 'unpa', 
-                      'uta', 'utala', 'walo', 'wan', 'waso', 'wawa', 'weka', 'wile'];
-        
-        runes.forEach(rune => {
-            const btn = document.createElement('button');
-            btn.className = 'rune-btn linja-pona';
-            btn.textContent = rune;
-            btn.onclick = () => insertRune(rune);
-            runePalette.appendChild(btn);
-        });
-        
-        // Initialize connection palette
-        const connectionPalette = document.getElementById('connectionPalette');
-        const connections = [
-            { symbol: '→', value: '->' },
-            { symbol: '~', value: '~' },
-            { symbol: '{ }', value: '{}' }
-        ];
-        
-        connections.forEach(conn => {
-            const btn = document.createElement('button');
-            btn.className = 'rune-btn';
-            btn.textContent = conn.symbol;
-            btn.onclick = () => insertConnection(conn.value);
-            connectionPalette.appendChild(btn);
-        });
-        
-        // Set up event listeners
-        const editor = document.getElementById('codeEditor');
-        editor.addEventListener('input', debouncedUpdatePreview);
-        
-        // Load an example with a circular flow
-        editor.value = `open -> lukin -> ma -> mute -> sona -> li -> pona ->
-{
-  soweli -> musi -> olin ->
-}
-`;
-        
-        updatePreview();
-    });
-});
-
-// Keyboard shortcuts
-document.addEventListener('keydown', (e) => {
-    if (e.ctrlKey || e.metaKey) {
-        switch(e.key) {
-            case 'e':
-                e.preventDefault();
-                exportPNG();
-                break;
-            case 'r':
-                e.preventDefault();
-                renderCircle();
-                break;
-        }
-    }
-});
-</script>
+        const app = new App();
+        document.addEventListener('DOMContentLoaded', () => app.init());
+    </script>
 </body>
 </html>

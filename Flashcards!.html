@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeopardy! Flashcards</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        function JeopardyFlashcards() {
+            const [questions, setQuestions] = useState([]);
+            const [currentQuestion, setCurrentQuestion] = useState(null);
+            const [showAnswer, setShowAnswer] = useState(false);
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState(null);
+            const [fileLoaded, setFileLoaded] = useState(false);
+            const [stats, setStats] = useState({ total: 0, current: 0 });
+
+            const handleFileUpload = (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                setLoading(true);
+                setError(null);
+
+                Papa.parse(file, {
+                    header: true,
+                    skipEmptyLines: true,
+                    transformHeader: (header) => {
+                        // Remove leading/trailing spaces from headers
+                        return header.trim();
+                    },
+                    complete: (results) => {
+                        console.log('CSV parsed, sample row:', results.data[0]);
+                        console.log('Available columns:', Object.keys(results.data[0] || {}));
+                        
+                        // Filter out questions with missing data
+                        const validQuestions = results.data.filter(q => {
+                            return q.Question && 
+                                   q.Answer && 
+                                   q.Category &&
+                                   q.Question.trim() !== '' &&
+                                   q.Answer.trim() !== '';
+                        });
+
+                        if (validQuestions.length === 0) {
+                            setError('No valid questions found in CSV file. Check browser console for details.');
+                            console.error('First row data:', results.data[0]);
+                            setLoading(false);
+                            return;
+                        }
+
+                        console.log(`Loaded ${validQuestions.length} valid questions`);
+                        setQuestions(validQuestions);
+                        setStats({ total: validQuestions.length, current: 0 });
+                        setFileLoaded(true);
+                        loadRandomQuestion(validQuestions);
+                        setLoading(false);
+                    },
+                    error: (error) => {
+                        setError(`Error parsing CSV: ${error.message}`);
+                        setLoading(false);
+                    }
+                });
+            };
+
+            const loadRandomQuestion = (questionList = questions) => {
+                if (questionList.length === 0) return;
+                
+                const randomIndex = Math.floor(Math.random() * questionList.length);
+                setCurrentQuestion(questionList[randomIndex]);
+                setShowAnswer(false);
+                setStats(prev => ({ ...prev, current: prev.current + 1 }));
+            };
+
+            const handleReveal = () => {
+                setShowAnswer(true);
+            };
+
+            const handleNext = () => {
+                loadRandomQuestion();
+            };
+
+            const cleanText = (text) => {
+                if (!text) return '';
+                // Remove HTML entities and clean up text
+                return text
+                    .replace(/<\/?[^>]+(>|$)/g, '')
+                    .replace(/&quot;/g, '"')
+                    .replace(/&#39;/g, "'")
+                    .replace(/&amp;/g, '&')
+                    .trim();
+            };
+
+            return (
+                <div className="container">
+                    {!fileLoaded ? (
+                        <div className="upload-container">
+                            <div className="upload-box">
+                                <h2 className="upload-title">Load Questions</h2>
+                                <p className="upload-instructions">
+                                    Upload the Jeopardy CSV file from Kaggle<br />
+                                    <a 
+                                        href="https://www.kaggle.com/datasets/tunguz/200000-jeopardy-questions" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="download-link"
+                                    >
+                                        Download from Kaggle →
+                                    </a>
+                                </p>
+                                <label htmlFor="csv-upload" className="upload-label">
+                                    <span className="upload-icon">📁</span>
+                                    <span>Choose CSV File</span>
+                                    <input
+                                        id="csv-upload"
+                                        type="file"
+                                        accept=".csv"
+                                        onChange={handleFileUpload}
+                                        className="file-input"
+                                    />
+                                </label>
+                                {loading && (
+                                    <div className="loading-text">
+                                        <div className="spinner"></div>
+                                        <p>Loading questions...</p>
+                                    </div>
+                                )}
+                                {error && (
+                                    <div className="error-text">
+                                        <p>{error}</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="card-container">
+                            <div className="stats-bar">
+                                <span>Question {stats.current} of {stats.total.toLocaleString()}</span>
+                                <button onClick={() => setFileLoaded(false)} className="change-file-btn">
+                                    Change File
+                                </button>
+                            </div>
+
+                            {currentQuestion && (
+                                <>
+                                    <div className="card">
+                                        <div className="card-header">
+                                            <span className="category">
+                                                {cleanText(currentQuestion.Category)}
+                                            </span>
+                                            {currentQuestion.Value && (
+                                                <span className="value">
+                                                    {cleanText(currentQuestion.Value)}
+                                                </span>
+                                            )}
+                                        </div>
+                                        
+                                        <div className="question-section">
+                                            <p className="question-text">
+                                                {cleanText(currentQuestion.Question)}
+                                            </p>
+                                        </div>
+
+                                        {showAnswer && (
+                                            <div className="answer-section">
+                                                <div className="answer-label">Answer:</div>
+                                                <p className="answer-text">
+                                                    {cleanText(currentQuestion.Answer)}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="button-group">
+                                        {!showAnswer ? (
+                                            <button onClick={handleReveal} className="btn btn-reveal">
+                                                Reveal Answer
+                                            </button>
+                                        ) : (
+                                            <button onClick={handleNext} className="btn btn-next">
+                                                Next Question
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {currentQuestion['Air Date'] && (
+                                        <div className="metadata">
+                                            <p>Originally aired: {currentQuestion['Air Date']}</p>
+                                            {currentQuestion.Round && (
+                                                <p>Round: {cleanText(currentQuestion.Round)}</p>
+                                            )}
+                                            {currentQuestion['Show Number'] && (
+                                                <p>Show: #{currentQuestion['Show Number']}</p>
+                                            )}
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                    )}
+
+                    <style>{`
+                        * {
+                            margin: 0;
+                            padding: 0;
+                            box-sizing: border-box;
+                        }
+
+                        body {
+                            font-family: 'Helvetica Neue', Arial, sans-serif;
+                            background: linear-gradient(135deg, #0c1445 0%, #1a237e 100%);
+                            min-height: 100vh;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            padding: 20px;
+                        }
+
+                        .container {
+                            width: 100%;
+                            max-width: 800px;
+                        }
+
+                        .header {
+                            text-align: center;
+                            margin-bottom: 40px;
+                            color: white;
+                        }
+
+                        .title {
+                            font-size: 3.5rem;
+                            font-weight: 900;
+                            text-transform: uppercase;
+                            letter-spacing: 3px;
+                            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5),
+                                         0 4px 8px rgba(0, 0, 0, 0.3);
+                            color: #FFD700;
+                            margin-bottom: 10px;
+                        }
+
+                        .subtitle {
+                            font-size: 1.2rem;
+                            color: #b0bec5;
+                            font-style: italic;
+                        }
+
+                        .upload-container {
+                            background: white;
+                            border-radius: 16px;
+                            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                            overflow: hidden;
+                        }
+
+                        .upload-box {
+                            padding: 60px 40px;
+                            text-align: center;
+                        }
+
+                        .upload-title {
+                            font-size: 2rem;
+                            color: #0c1445;
+                            margin-bottom: 20px;
+                            font-weight: 700;
+                        }
+
+                        .upload-instructions {
+                            font-size: 1.1rem;
+                            color: #546e7a;
+                            margin-bottom: 30px;
+                            line-height: 1.8;
+                        }
+
+                        .download-link {
+                            color: #1976d2;
+                            text-decoration: none;
+                            font-weight: 600;
+                            transition: color 0.3s ease;
+                        }
+
+                        .download-link:hover {
+                            color: #1565c0;
+                            text-decoration: underline;
+                        }
+
+                        .upload-label {
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 12px;
+                            padding: 20px 40px;
+                            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+                            color: white;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-size: 1.1rem;
+                            font-weight: 700;
+                            transition: all 0.3s ease;
+                            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                        }
+
+                        .upload-label:hover {
+                            transform: translateY(-2px);
+                            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+                        }
+
+                        .upload-icon {
+                            font-size: 1.5rem;
+                        }
+
+                        .file-input {
+                            display: none;
+                        }
+
+                        .loading-text {
+                            margin-top: 30px;
+                            color: #546e7a;
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            gap: 15px;
+                        }
+
+                        .error-text {
+                            margin-top: 30px;
+                            color: #d32f2f;
+                            font-weight: 600;
+                        }
+
+                        .stats-bar {
+                            background: #0c1445;
+                            padding: 15px 30px;
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            color: white;
+                            font-weight: 600;
+                        }
+
+                        .change-file-btn {
+                            background: rgba(255, 255, 255, 0.2);
+                            color: white;
+                            border: 1px solid rgba(255, 255, 255, 0.3);
+                            padding: 8px 16px;
+                            border-radius: 6px;
+                            cursor: pointer;
+                            font-size: 0.9rem;
+                            font-weight: 600;
+                            transition: all 0.3s ease;
+                        }
+
+                        .change-file-btn:hover {
+                            background: rgba(255, 255, 255, 0.3);
+                        }
+
+                        .card-container {
+                            background: white;
+                            border-radius: 16px;
+                            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                            overflow: hidden;
+                            min-height: 400px;
+                        }
+
+                        .card {
+                            padding: 40px;
+                        }
+
+                        .card-header {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: 30px;
+                            padding-bottom: 20px;
+                            border-bottom: 3px solid #0c1445;
+                            flex-wrap: wrap;
+                            gap: 10px;
+                        }
+
+                        .category {
+                            font-size: 1.3rem;
+                            font-weight: 700;
+                            text-transform: uppercase;
+                            color: #0c1445;
+                            letter-spacing: 1px;
+                        }
+
+                        .value {
+                            font-size: 1.5rem;
+                            font-weight: 900;
+                            color: #FFD700;
+                            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+                        }
+
+                        .question-section {
+                            margin-bottom: 30px;
+                        }
+
+                        .question-text {
+                            font-size: 1.5rem;
+                            line-height: 1.6;
+                            color: #1a237e;
+                            text-align: center;
+                            font-weight: 500;
+                        }
+
+                        .answer-section {
+                            background: linear-gradient(135deg, #0c1445 0%, #1a237e 100%);
+                            padding: 25px;
+                            border-radius: 12px;
+                            margin-top: 20px;
+                            animation: slideIn 0.4s ease-out;
+                        }
+
+                        @keyframes slideIn {
+                            from {
+                                opacity: 0;
+                                transform: translateY(-10px);
+                            }
+                            to {
+                                opacity: 1;
+                                transform: translateY(0);
+                            }
+                        }
+
+                        .answer-label {
+                            font-size: 1rem;
+                            font-weight: 700;
+                            color: #FFD700;
+                            text-transform: uppercase;
+                            letter-spacing: 2px;
+                            margin-bottom: 10px;
+                        }
+
+                        .answer-text {
+                            font-size: 1.4rem;
+                            line-height: 1.5;
+                            color: white;
+                            text-align: center;
+                            font-weight: 500;
+                        }
+
+                        .button-group {
+                            padding: 0 40px 30px;
+                            display: flex;
+                            justify-content: center;
+                        }
+
+                        .btn {
+                            padding: 16px 48px;
+                            font-size: 1.1rem;
+                            font-weight: 700;
+                            text-transform: uppercase;
+                            letter-spacing: 1px;
+                            border: none;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                        }
+
+                        .btn:hover {
+                            transform: translateY(-2px);
+                            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+                        }
+
+                        .btn:active {
+                            transform: translateY(0);
+                        }
+
+                        .btn-reveal {
+                            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+                            color: white;
+                        }
+
+                        .btn-next {
+                            background: linear-gradient(135deg, #43a047 0%, #388e3c 100%);
+                            color: white;
+                        }
+
+                        .metadata {
+                            padding: 0 40px 30px;
+                            text-align: center;
+                            color: #78909c;
+                            font-size: 0.9rem;
+                            font-style: italic;
+                        }
+
+                        .metadata p {
+                            margin: 5px 0;
+                        }
+
+                        .spinner {
+                            width: 40px;
+                            height: 40px;
+                            border: 4px solid #e3f2fd;
+                            border-top: 4px solid #1976d2;
+                            border-radius: 50%;
+                            animation: spin 1s linear infinite;
+                        }
+
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+
+                        @media (max-width: 768px) {
+                            .title {
+                                font-size: 2.5rem;
+                            }
+
+                            .card {
+                                padding: 30px 20px;
+                            }
+
+                            .question-text {
+                                font-size: 1.2rem;
+                            }
+
+                            .answer-text {
+                                font-size: 1.1rem;
+                            }
+
+                            .btn {
+                                padding: 14px 36px;
+                                font-size: 1rem;
+                            }
+
+                            .upload-box {
+                                padding: 40px 20px;
+                            }
+
+                            .stats-bar {
+                                flex-direction: column;
+                                gap: 10px;
+                                text-align: center;
+                            }
+                        }
+                    `}</style>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<JeopardyFlashcards />, document.getElementById('root'));
+    </script>
+</body>
+</html>

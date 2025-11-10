@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>28x28 Binary Digit Drawer</title>
+    <title>28x28 MNIST Digit Classifier</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,11 +16,30 @@
         h1 {
             margin-bottom: 20px;
         }
-        #canvas {
+        .canvas-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 10px;
+        }
+        .canvas-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .canvas-wrapper canvas {
             border: 2px solid #333;
             cursor: crosshair;
             background-color: white;
             image-rendering: pixelated;
+        }
+        .canvas-wrapper.active canvas {
+            border-color: #4CAF50;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+        .canvas-label {
+            margin-top: 5px;
+            font-weight: bold;
+            color: #333;
         }
         .controls {
             margin-top: 20px;
@@ -41,6 +60,10 @@
         button:hover {
             background-color: #45a049;
         }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
         button.secondary {
             background-color: #008CBA;
         }
@@ -58,7 +81,7 @@
             padding: 10px;
             background-color: white;
             border-radius: 4px;
-            max-width: 560px;
+            max-width: 800px;
         }
         #output {
             margin-top: 10px;
@@ -66,44 +89,271 @@
             background-color: #f9f9f9;
             border: 1px solid #ddd;
             border-radius: 4px;
-            max-width: 560px;
+            max-width: 800px;
             max-height: 200px;
             overflow-y: auto;
             font-family: monospace;
             font-size: 12px;
             word-break: break-all;
         }
+        #status {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 4px;
+            max-width: 800px;
+        }
+        #classification {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: white;
+            border: 2px solid #4CAF50;
+            border-radius: 4px;
+            max-width: 800px;
+        }
+        .result-item {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        .result-digit {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <h1>28×28 Binary Digit Drawer</h1>
-    <canvas id="canvas" width="560" height="560"></canvas>
+    <h1>28×28 MNIST Digit Classifier</h1>
     
-    <div class="controls">
-        <button onclick="clearCanvas()" class="danger">Clear Canvas</button>
-        <button onclick="downloadTXT()" class="secondary">Download TXT</button>
-        <button onclick="showArray()">Show Array</button>
+    <div class="canvas-container">
+        <div class="canvas-wrapper active" id="wrapper0">
+            <canvas id="canvas0" width="280" height="280"></canvas>
+            <div class="canvas-label">Digit 1</div>
+        </div>
+        <div class="canvas-wrapper" id="wrapper1">
+            <canvas id="canvas1" width="280" height="280"></canvas>
+            <div class="canvas-label">Digit 2</div>
+        </div>
+        <div class="canvas-wrapper" id="wrapper2">
+            <canvas id="canvas2" width="280" height="280"></canvas>
+            <div class="canvas-label">Digit 3</div>
+        </div>
     </div>
     
+    <div class="controls">
+        <button onclick="clearAllCanvases()" class="danger">Clear All</button>
+        <button onclick="classifyAllDigits()" id="classifyBtn" disabled>Classify All Digits</button>
+        <button onclick="downloadAllTXT()" class="secondary">Download All TXT</button>
+    </div>
+    
+    <div id="status">Loading MNIST dataset...</div>
+    <div id="classification" class="hidden"></div>
+    
     <div class="info">
-        <strong>Instructions:</strong> Click and drag to draw. Each pixel represents one cell in the 28×28 grid.
+        <strong>Instructions:</strong> Draw digits on each canvas. Click between canvases to switch. Once MNIST loads, click "Classify All Digits" to identify them using Hamming distance.
     </div>
     
     <div id="output" style="display:none;"></div>
 
+    <script src="https://cdn.jsdelivr.net/npm/mnist@1.1.0/dist/mnist.js"></script>
     <script>
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
         const gridSize = 28;
-        const cellSize = canvas.width / gridSize;
-        
-        // Initialize grid with zeros
-        let grid = Array(gridSize).fill().map(() => Array(gridSize).fill(0));
-        
+        const numCanvases = 3;
+        let canvases = [];
+        let contexts = [];
+        let grids = [];
+        let currentCanvas = 0;
         let isDrawing = false;
+        let mnistData = null;
 
-        // Draw the grid
-        function drawGrid() {
+        // Initialize all canvases
+        for (let i = 0; i < numCanvases; i++) {
+            const canvas = document.getElementById(`canvas${i}`);
+            const ctx = canvas.getContext('2d');
+            canvases.push(canvas);
+            contexts.push(ctx);
+            grids.push(Array(gridSize).fill().map(() => Array(gridSize).fill(0)));
+            
+            const cellSize = canvas.width / gridSize;
+            
+            // Add click listeners to switch active canvas
+            canvas.addEventListener('click', () => {
+                setActiveCanvas(i);
+            });
+            
+            // Drawing events
+            canvas.addEventListener('mousedown', (e) => {
+                setActiveCanvas(i);
+                isDrawing = true;
+                const pos = getGridPosition(e, canvas, cellSize);
+                fillCell(pos.row, pos.col, i, cellSize);
+            });
+
+            canvas.addEventListener('mousemove', (e) => {
+                if (isDrawing && currentCanvas === i) {
+                    const pos = getGridPosition(e, canvas, cellSize);
+                    fillCell(pos.row, pos.col, i, cellSize);
+                }
+            });
+
+            canvas.addEventListener('mouseup', () => {
+                isDrawing = false;
+            });
+
+            canvas.addEventListener('mouseleave', () => {
+                isDrawing = false;
+            });
+            
+            drawGrid(i);
+        }
+
+        function setActiveCanvas(index) {
+            currentCanvas = index;
+            for (let i = 0; i < numCanvases; i++) {
+                document.getElementById(`wrapper${i}`).classList.toggle('active', i === index);
+            }
+        }
+
+        async function loadMNIST() {
+            try {
+                const statusEl = document.getElementById('status');
+                statusEl.textContent = 'Loading MNIST dataset from CDN...';
+                
+                // Wait for the mnist library to be available
+                if (typeof mnist === 'undefined') {
+                    throw new Error('MNIST library not loaded');
+                }
+                
+                statusEl.textContent = 'Processing MNIST data...';
+                
+                // Get the training set from the mnist library
+                const set = mnist.set(8000, 2000);
+                const training = set.training;
+                
+                mnistData = [];
+                
+                // Convert to our format
+                for (let i = 0; i < training.length; i++) {
+                    // Binarize the image (threshold at 0.5 since mnist library normalizes to [0,1])
+                    const binaryImage = training[i].input.map(pixel => pixel > 0.5 ? 1 : 0);
+                    
+                    // Get the label from the output array
+                    const label = training[i].output.indexOf(1);
+                    
+                    mnistData.push({
+                        image: binaryImage,
+                        label: label
+                    });
+                    
+                    // Update progress every 1000 samples
+                    if (i % 1000 === 0 && i > 0) {
+                        statusEl.textContent = `Processing MNIST data... ${i}/${training.length}`;
+                    }
+                }
+                
+                statusEl.textContent = `MNIST loaded successfully! ${mnistData.length} training examples ready.`;
+                statusEl.style.backgroundColor = '#d4edda';
+                statusEl.style.borderColor = '#28a745';
+                
+                document.getElementById('classifyBtn').disabled = false;
+            } catch (error) {
+                const statusEl = document.getElementById('status');
+                statusEl.textContent = 'Error loading MNIST: ' + error.message;
+                statusEl.style.backgroundColor = '#f8d7da';
+                statusEl.style.borderColor = '#dc3545';
+                console.error('MNIST loading error:', error);
+                
+                // Initialize empty array
+                mnistData = [];
+            }
+        }
+
+        function hammingDistance(arr1, arr2) {
+            let distance = 0;
+            for (let i = 0; i < arr1.length; i++) {
+                if (arr1[i] !== arr2[i]) {
+                    distance++;
+                }
+            }
+            return distance;
+        }
+
+        function classifyDigit(gridIndex) {
+            if (!mnistData || mnistData.length === 0) {
+                return {
+                    label: '?',
+                    distance: 0,
+                    index: -1,
+                    error: 'No training data available'
+                };
+            }
+
+            const inputVector = grids[gridIndex].flat();
+            
+            let minDistance = Infinity;
+            let predictedLabel = -1;
+            let closestIndex = -1;
+
+            for (let i = 0; i < mnistData.length; i++) {
+                const distance = hammingDistance(inputVector, mnistData[i].image);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    predictedLabel = mnistData[i].label;
+                    closestIndex = i;
+                }
+            }
+
+            return {
+                label: predictedLabel,
+                distance: minDistance,
+                index: closestIndex
+            };
+        }
+
+        function classifyAllDigits() {
+            const results = [];
+            for (let i = 0; i < numCanvases; i++) {
+                results.push(classifyDigit(i));
+            }
+
+            const classificationEl = document.getElementById('classification');
+            let html = '<h3>Classification Results:</h3>';
+            
+            results.forEach((result, i) => {
+                if (result.error) {
+                    html += `
+                        <div class="result-item">
+                            <strong>Digit ${i + 1}:</strong> <span class="result-digit">Error</span><br>
+                            <small>${result.error}</small>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="result-item">
+                            <strong>Digit ${i + 1}:</strong> <span class="result-digit">${result.label}</span><br>
+                            <small>Hamming Distance: ${result.distance} / 784 pixels different</small><br>
+                            <small>Closest training example: #${result.index}</small>
+                        </div>
+                    `;
+                }
+            });
+            
+            classificationEl.innerHTML = html;
+            classificationEl.classList.remove('hidden');
+        }
+
+        function drawGrid(canvasIndex) {
+            const canvas = canvases[canvasIndex];
+            const ctx = contexts[canvasIndex];
+            const grid = grids[canvasIndex];
+            const cellSize = canvas.width / gridSize;
+            
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             for (let i = 0; i < gridSize; i++) {
@@ -115,7 +365,6 @@
                 }
             }
             
-            // Draw grid lines
             ctx.strokeStyle = '#ddd';
             ctx.lineWidth = 0.5;
             for (let i = 0; i <= gridSize; i++) {
@@ -131,7 +380,7 @@
             }
         }
 
-        function getGridPosition(e) {
+        function getGridPosition(e, canvas, cellSize) {
             const rect = canvas.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
@@ -140,62 +389,49 @@
             return { row, col };
         }
 
-        function fillCell(row, col) {
-            if (row >= 0 && row < gridSize && col >= 0 && col < gridSize) {
-                grid[row][col] = 1;
-                drawGrid();
+        function fillCell(row, col, canvasIndex, cellSize) {
+            // Fill a 3x3 area centered on the clicked cell
+            for (let dr = -1; dr <= 1; dr++) {
+                for (let dc = -1; dc <= 1; dc++) {
+                    const r = row + dr;
+                    const c = col + dc;
+                    if (r >= 0 && r < gridSize && c >= 0 && c < gridSize) {
+                        grids[canvasIndex][r][c] = 1;
+                    }
+                }
             }
+            drawGrid(canvasIndex);
         }
 
-        canvas.addEventListener('mousedown', (e) => {
-            isDrawing = true;
-            const pos = getGridPosition(e);
-            fillCell(pos.row, pos.col);
-        });
-
-        canvas.addEventListener('mousemove', (e) => {
-            if (isDrawing) {
-                const pos = getGridPosition(e);
-                fillCell(pos.row, pos.col);
+        function clearAllCanvases() {
+            for (let i = 0; i < numCanvases; i++) {
+                grids[i] = Array(gridSize).fill().map(() => Array(gridSize).fill(0));
+                drawGrid(i);
             }
-        });
-
-        canvas.addEventListener('mouseup', () => {
-            isDrawing = false;
-        });
-
-        canvas.addEventListener('mouseleave', () => {
-            isDrawing = false;
-        });
-
-        function clearCanvas() {
-            grid = Array(gridSize).fill().map(() => Array(gridSize).fill(0));
-            drawGrid();
             document.getElementById('output').style.display = 'none';
+            document.getElementById('classification').classList.add('hidden');
         }
 
-        function downloadTXT() {
-            // Flatten the 2D array into a single list
-            const flat = grid.flat();
-            const txt = flat.join('\n');
-            const dataBlob = new Blob([txt], { type: 'text/plain' });
+        function downloadAllTXT() {
+            let allData = '';
+            for (let i = 0; i < numCanvases; i++) {
+                const flat = grids[i].flat();
+                allData += `Digit ${i + 1}:\n`;
+                allData += flat.join('\n');
+                allData += '\n\n';
+            }
+            
+            const dataBlob = new Blob([allData], { type: 'text/plain' });
             const url = URL.createObjectURL(dataBlob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = 'digit_28x28.txt';
+            link.download = 'digits_28x28_all.txt';
             link.click();
             URL.revokeObjectURL(url);
         }
 
-        function showArray() {
-            const output = document.getElementById('output');
-            const flat = grid.flat();
-            output.textContent = '[' + flat.join(', ') + ']';
-            output.style.display = 'block';
-        }
-
-        // Initial draw
-        drawGrid();
+        // Initialize
+        loadMNIST();
     </script>
 </body>
 </html>
