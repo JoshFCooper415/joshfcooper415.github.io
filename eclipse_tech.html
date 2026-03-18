@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eclipse: Second Dawn — Tech & Upgrade Reference</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #0d1117; color: #e6edf3; min-height: 100vh; }
+
+  header { background: #161b22; border-bottom: 1px solid #30363d; padding: 1rem 1.5rem; position: sticky; top: 0; z-index: 100; }
+  header h1 { font-size: 1.2rem; color: #58a6ff; margin-bottom: 0.6rem; letter-spacing: 1px; text-transform: uppercase; }
+
+  #search { width: 100%; padding: 0.55rem 0.8rem; background: #21262d; border: 1px solid #30363d; border-radius: 6px; color: #e6edf3; font-size: 1rem; outline: none; }
+  #search:focus { border-color: #58a6ff; }
+  #search::placeholder { color: #8b949e; }
+
+  .filters { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.6rem; }
+  .filter-btn { padding: 0.25rem 0.7rem; border-radius: 20px; border: 1px solid; cursor: pointer; font-size: 0.78rem; font-weight: 600; background: transparent; transition: background 0.15s; }
+  .filter-btn.active, .filter-btn:hover { color: #0d1117; }
+
+  .filter-btn[data-cat="all"]     { border-color: #8b949e; color: #8b949e; }
+  .filter-btn[data-cat="all"].active { background: #8b949e; }
+  .filter-btn[data-cat="military"]{ border-color: #f85149; color: #f85149; }
+  .filter-btn[data-cat="military"].active { background: #f85149; }
+  .filter-btn[data-cat="grid"]    { border-color: #3fb950; color: #3fb950; }
+  .filter-btn[data-cat="grid"].active { background: #3fb950; }
+  .filter-btn[data-cat="nano"]    { border-color: #58a6ff; color: #58a6ff; }
+  .filter-btn[data-cat="nano"].active { background: #58a6ff; }
+  .filter-btn[data-cat="rare"]    { border-color: #d2a8ff; color: #d2a8ff; }
+  .filter-btn[data-cat="rare"].active { background: #d2a8ff; }
+  .filter-btn[data-cat="part"]    { border-color: #e3b341; color: #e3b341; }
+  .filter-btn[data-cat="part"].active { background: #e3b341; }
+
+  main { padding: 1rem 1.5rem; max-width: 960px; margin: 0 auto; }
+
+  .section-header { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #8b949e; margin: 1.2rem 0 0.5rem; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.6rem; }
+
+  .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 0.75rem 1rem; transition: border-color 0.15s; }
+  .card:hover { border-color: #58a6ff44; }
+  .card[data-cat="military"] { border-left: 3px solid #f85149; }
+  .card[data-cat="grid"]     { border-left: 3px solid #3fb950; }
+  .card[data-cat="nano"]     { border-left: 3px solid #58a6ff; }
+  .card[data-cat="rare"]     { border-left: 3px solid #d2a8ff; }
+  .card[data-cat="part"]     { border-left: 3px solid #e3b341; }
+
+  .card-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.25rem; }
+  .card-type { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; margin-bottom: 0.4rem; }
+  .card-desc { font-size: 0.85rem; line-height: 1.5; color: #c9d1d9; }
+
+  .tag { display: inline-block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 0.1rem 0.4rem; border-radius: 3px; margin-right: 0.3rem; margin-bottom: 0.4rem; }
+  .tag-weapon   { background: #f8514920; color: #f85149; border: 1px solid #f8514960; }
+  .tag-shield   { background: #58a6ff20; color: #58a6ff; border: 1px solid #58a6ff60; }
+  .tag-computer { background: #3fb95020; color: #3fb950; border: 1px solid #3fb95060; }
+  .tag-drive    { background: #e3b34120; color: #e3b341; border: 1px solid #e3b34160; }
+  .tag-hull     { background: #8b949e20; color: #8b949e; border: 1px solid #8b949e60; }
+  .tag-energy   { background: #d2a8ff20; color: #d2a8ff; border: 1px solid #d2a8ff60; }
+  .tag-build    { background: #3fb95020; color: #3fb950; border: 1px solid #3fb95060; }
+  .tag-instant  { background: #e3b34120; color: #e3b341; border: 1px solid #e3b34160; }
+  .tag-permanent{ background: #58a6ff20; color: #58a6ff; border: 1px solid #58a6ff60; }
+  .tag-missile  { background: #f0883e20; color: #f0883e; border: 1px solid #f0883e60; }
+
+  .stat-row { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.4rem; }
+  .stat { font-size: 0.75rem; color: #8b949e; }
+  .stat strong { color: #e6edf3; }
+
+  .hidden { display: none !important; }
+  #no-results { text-align: center; padding: 3rem; color: #8b949e; display: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Eclipse: Second Dawn — Tech &amp; Upgrade Reference</h1>
+  <input type="text" id="search" placeholder="Search technologies, effects, ship parts…" autofocus>
+  <div class="filters">
+    <button class="filter-btn active" data-cat="all">All</button>
+    <button class="filter-btn" data-cat="military">⚔ Military</button>
+    <button class="filter-btn" data-cat="grid">⊞ Grid</button>
+    <button class="filter-btn" data-cat="nano">◎ Nano</button>
+    <button class="filter-btn" data-cat="rare">◯ Rare</button>
+    <button class="filter-btn" data-cat="part">★ Ship Parts</button>
+  </div>
+</header>
+
+<main>
+  <div id="no-results">No results found.</div>
+  <div id="cards-container"></div>
+</main>
+
+<script>
+const data = [
+  // ── MILITARY TECHNOLOGIES ──────────────────────────────────────────────────
+  {
+    name: "Neutron Bombs",
+    cat: "military",
+    type: "Permanent",
+    tags: ["permanent"],
+    desc: "When Attacking Population, all Population Cubes in a Sector are destroyed automatically.",
+    stats: { Cost: "4", "Min Cost": "2" }
+  },
+  {
+    name: "Starbase",
+    cat: "military",
+    type: "Build Tech",
+    tags: ["build"],
+    desc: "You may Build Starbases. Starbases are immobile and cost 3 Materials to build.",
+    stats: { Cost: "3", "Min Cost": "2" }
+  },
+  {
+    name: "Plasma Cannon",
+    cat: "military",
+    type: "Ship Part Tech",
+    tags: ["weapon"],
+    desc: "You may Upgrade your Ship Blueprints with PLASMA CANNON Ship Parts. Fires orange dice. Each ✦✦ is a hit dealing 2 damage.",
+    stats: { Cost: "6", "Min Cost": "2", "Die Color": "Orange", Damage: "2 per hit" }
+  },
+  {
+    name: "Phase Shield",
+    cat: "military",
+    type: "Ship Part Tech",
+    tags: ["shield"],
+    desc: "You may Upgrade your Ship Blueprints with PHASE SHIELD Ship Parts. Grants -2 Shield value.",
+    stats: { Cost: "3", "Min Cost": "1", "Shield Value": "-2" }
+  },
+  {
+    name: "Advanced Mining",
+    cat: "military",
+    type: "Permanent",
+    tags: ["permanent"],
+    desc: "You may place Population Cubes in Advanced Materials Population Squares with your Colony Ships.",
+    stats: { Cost: "6", "Min Cost": "2" }
+  },
+  {
+    name: "Tachyon Source",
+    cat: "military",
+    type: "Ship Part Tech",
+    tags: ["energy"],
+    desc: "You may Upgrade your Ship Blueprints with TACHYON SOURCE Ship Parts. Provides energy for expensive ship parts.",
+    stats: { Cost: "8", "Min Cost": "3" }
+  },
+  {
+    name: "Gluon Computer",
+    cat: "military",
+    type: "Ship Part Tech",
+    tags: ["computer"],
+    desc: "You may Upgrade your Ship Blueprints with GLUON COMPUTER Ship Parts. +3 to hit rolls.",
+    stats: { Cost: "9", "Min Cost": "3", "Computer Bonus": "+3" }
+  },
+  {
+    name: "Plasma Missile",
+    cat: "military",
+    type: "Ship Part Tech",
+    tags: ["missile"],
+    desc: "You may Upgrade your Ship Blueprints with PLASMA MISSILE Ship Parts. Missiles fire once at the start of combat before Engagement Rounds. Fires 2 orange dice per part.",
+    stats: { Cost: "6", "Min Cost": "2", "Die Color": "Orange (×2)", "Fires": "Once, before combat" }
+  },
+
+  // ── GRID TECHNOLOGIES ─────────────────────────────────────────────────────
+  {
+    name: "Gauss Shield",
+    cat: "grid",
+    type: "Ship Part Tech",
+    tags: ["shield"],
+    desc: "You may Upgrade your Ship Blueprints with GAUSS SHIELD Ship Parts. Grants -1 Shield value.",
+    stats: { Cost: "3", "Min Cost": "1", "Shield Value": "-1" }
+  },
+  {
+    name: "Fusion Source",
+    cat: "grid",
+    type: "Ship Part Tech",
+    tags: ["energy"],
+    desc: "You may Upgrade your Ship Blueprints with FUSION SOURCE Ship Parts. Provides 6 energy.",
+    stats: { Cost: "8", "Min Cost": "3", "Energy": "+6" }
+  },
+  {
+    name: "Improved Hull",
+    cat: "grid",
+    type: "Ship Part Tech",
+    tags: ["hull"],
+    desc: "You may Upgrade your Ship Blueprints with IMPROVED HULL Ship Parts. Grants +2 Hull value (ship can absorb 2 more damage before being destroyed).",
+    stats: { Cost: "3", "Min Cost": "1", "Hull": "+2" }
+  },
+  {
+    name: "Positron Computer",
+    cat: "grid",
+    type: "Ship Part Tech",
+    tags: ["computer"],
+    desc: "You may Upgrade your Ship Blueprints with POSITRON COMPUTER Ship Parts. +2 to hit rolls.",
+    stats: { Cost: "6", "Min Cost": "2", "Computer Bonus": "+2" }
+  },
+  {
+    name: "Advanced Economy",
+    cat: "grid",
+    type: "Permanent",
+    tags: ["permanent"],
+    desc: "You may place Population Cubes in Advanced Money Population Squares with your Colony Ships.",
+    stats: { Cost: "6", "Min Cost": "2" }
+  },
+  {
+    name: "Tachyon Drive",
+    cat: "grid",
+    type: "Ship Part Tech",
+    tags: ["drive"],
+    desc: "You may Upgrade your Ship Blueprints with TACHYON DRIVE Ship Parts. Provides +3 Movement Value and initiative bonus.",
+    stats: { Cost: "9", "Min Cost": "3", "Movement": "+3", "Initiative": "+3" }
+  },
+  {
+    name: "Antimatter Cannon",
+    cat: "grid",
+    type: "Ship Part Tech",
+    tags: ["weapon"],
+    desc: "You may Upgrade your Ship Blueprints with ANTIMATTER CANNON Ship Parts. Fires red dice. Each ✦✦✦ is a hit dealing 4 damage.",
+    stats: { Cost: "9", "Min Cost": "3", "Die Color": "Red", Damage: "4 per hit" }
+  },
+  {
+    name: "Quantum Grid",
+    cat: "grid",
+    type: "Instant",
+    tags: ["instant"],
+    desc: "You receive two additional Influence Discs, placed immediately on your Influence Track.",
+    stats: { Cost: "8", "Min Cost": "3", Reward: "+2 Influence Discs" }
+  },
+
+  // ── NANO TECHNOLOGIES ─────────────────────────────────────────────────────
+  {
+    name: "Nanorobots",
+    cat: "nano",
+    type: "Permanent",
+    tags: ["permanent"],
+    desc: "You have one extra Activation when taking the Build Action.",
+    stats: { Cost: "2", "Min Cost": "2", Bonus: "+1 Build Activation" }
+  },
+  {
+    name: "Fusion Drive",
+    cat: "nano",
+    type: "Ship Part Tech",
+    tags: ["drive"],
+    desc: "You may Upgrade your Ship Blueprints with FUSION DRIVE Ship Parts. Provides +2 Movement Value and initiative bonus.",
+    stats: { Cost: "4", "Min Cost": "3", "Movement": "+2", "Initiative": "+2" }
+  },
+  {
+    name: "Orbital",
+    cat: "nano",
+    type: "Build Tech",
+    tags: ["build"],
+    desc: "You may Build Orbitals. Orbitals provide an additional Population Square that can only receive Science or Money Population Cubes. Cost: 4 Materials.",
+    stats: { Cost: "5", "Min Cost": "3", "Build Cost": "4 Materials" }
+  },
+  {
+    name: "Advanced Robotics",
+    cat: "nano",
+    type: "Instant",
+    tags: ["instant"],
+    desc: "You receive one additional Influence Disc, placed immediately on your Influence Track.",
+    stats: { Cost: "3", "Min Cost": "2", Reward: "+1 Influence Disc" }
+  },
+  {
+    name: "Advanced Labs",
+    cat: "nano",
+    type: "Permanent",
+    tags: ["permanent"],
+    desc: "You may place Population Cubes in Advanced Science Population Squares with your Colony Ships.",
+    stats: { Cost: "4", "Min Cost": "2" }
+  },
+  {
+    name: "Monolith",
+    cat: "nano",
+    type: "Build Tech",
+    tags: ["build"],
+    desc: "You may Build Monoliths. Monoliths grant 3 VP at the end of the game. Cost: 10 Materials. Max 1 per Sector.",
+    stats: { Cost: "7", "Min Cost": "3", "Build Cost": "10 Materials", "VP": "3 VP per Monolith" }
+  },
+  {
+    name: "Wormhole Generator",
+    cat: "nano",
+    type: "Permanent",
+    tags: ["permanent"],
+    desc: "You may Explore, Move to, and Influence adjacent Sectors as long as the edges connecting the Sectors contain at least one Wormhole (only ONE wormhole needed on combined edges, rather than a full matching connection).",
+    stats: { Cost: "8", "Min Cost": "3" }
+  },
+  {
+    name: "Artifact Key",
+    cat: "nano",
+    type: "Instant",
+    tags: ["instant"],
+    desc: "For each Artifact ◆ on Sectors you Control, immediately gain 5 Resources of a single type.",
+    stats: { Cost: "3", "Min Cost": "2", Reward: "5 Resources per Artifact controlled" }
+  },
+
+  // ── RARE TECHNOLOGIES ─────────────────────────────────────────────────────
+  {
+    name: "Antimatter Splitter",
+    cat: "rare",
+    type: "Permanent",
+    tags: ["permanent", "weapon"],
+    desc: "Allows you to split damage from Antimatter Cannons freely over targets (normally excess damage is lost).",
+    stats: {}
+  },
+  {
+    name: "Conifold Field",
+    cat: "rare",
+    type: "Ship Part Tech",
+    tags: ["shield"],
+    desc: "You may Upgrade your Ship Blueprints with CONIFOLD FIELD Ship Parts. Provides Hull and Shield bonuses.",
+    stats: {}
+  },
+  {
+    name: "Neutron Absorber",
+    cat: "rare",
+    type: "Permanent",
+    tags: ["permanent"],
+    desc: "Enemy NEUTRON BOMBS have no effect on you. Note: does not affect Planta's Species weakness.",
+    stats: {}
+  },
+  {
+    name: "Absorption Shield",
+    cat: "rare",
+    type: "Ship Part Tech",
+    tags: ["shield"],
+    desc: "You may Upgrade your Ship Blueprints with ABSORPTION SHIELD Ship Parts.",
+    stats: {}
+  },
+  {
+    name: "Cloaking Device",
+    cat: "rare",
+    type: "Permanent",
+    tags: ["permanent"],
+    desc: "Two opponent Ships are required to Pin each of your Ships (instead of 1). Moving through an opponent's Sectors is not an Act of Aggression if your Ships remain Unpinned.",
+    stats: {}
+  },
+  {
+    name: "Improved Logistics",
+    cat: "rare",
+    type: "Permanent",
+    tags: ["permanent"],
+    desc: "Gain 1 additional Move Activation during each Move Action you take.",
+    stats: { Bonus: "+1 Move Activation per Move Action" }
+  },
+  {
+    name: "Sentient Hull",
+    cat: "rare",
+    type: "Ship Part Tech",
+    tags: ["hull"],
+    desc: "You may Upgrade your Ship Blueprints with SENTIENT HULL Ship Parts. Provides +1 Hull.",
+    stats: { "Hull": "+1" }
+  },
+  {
+    name: "Soliton Cannon",
+    cat: "rare",
+    type: "Ship Part Tech",
+    tags: ["weapon"],
+    desc: "You may Upgrade your Ship Blueprints with SOLITON CANNON Ship Parts. Fires blue dice.",
+    stats: { "Die Color": "Blue" }
+  },
+  {
+    name: "Transition Drive",
+    cat: "rare",
+    type: "Ship Part Tech",
+    tags: ["drive"],
+    desc: "You may Upgrade your Ship Blueprints with TRANSITION DRIVE Ship Parts. Provides high movement value.",
+    stats: {}
+  },
+  {
+    name: "Warp Portal",
+    cat: "rare",
+    type: "Instant",
+    tags: ["instant"],
+    desc: "Immediately place the Warp Portal Tile on any Sector you Control. Connects this Sector to all other Warp Portal Sectors. Worth 1 VP if Controlled at game end.",
+    stats: { "VP": "1 VP if controlled at end" }
+  },
+  {
+    name: "Flux Missile",
+    cat: "rare",
+    type: "Ship Part Tech",
+    tags: ["missile"],
+    desc: "You may Upgrade your Ship Blueprints with FLUX MISSILE Ship Parts. Missiles fire once before Engagement Rounds.",
+    stats: { "Fires": "Once, before combat" }
+  },
+  {
+    name: "Pico Modulator",
+    cat: "rare",
+    type: "Permanent",
+    tags: ["permanent"],
+    desc: "Gain 2 additional Upgrade Activations during each Upgrade Action you take.",
+    stats: { Bonus: "+2 Upgrade Activations per Upgrade Action" }
+  },
+  {
+    name: "Ancient Labs",
+    cat: "rare",
+    type: "Instant",
+    tags: ["instant"],
+    desc: "Immediately draw and resolve one Discovery Tile. (If it lets you place something in a Sector, place it in your Starting Sector. If you don't Control your Starting Sector, take it as 2 VP.)",
+    stats: {}
+  },
+  {
+    name: "Zero-Point Source",
+    cat: "rare",
+    type: "Ship Part Tech",
+    tags: ["energy"],
+    desc: "You may Upgrade your Ship Blueprints with ZERO-POINT SOURCE Ship Parts. Provides 12 energy — the highest energy source in the game.",
+    stats: { "Energy": "+12" }
+  },
+  {
+    name: "Metasynthesis",
+    cat: "rare",
+    type: "Permanent",
+    tags: ["permanent"],
+    desc: "You may place Population Cubes in any Advanced Population Squares with your Colony Ships (covers Advanced Mining, Advanced Labs, and Advanced Economy).",
+    stats: {}
+  },
+
+  // ── SHIP PARTS ────────────────────────────────────────────────────────────
+  {
+    name: "Ion Cannon",
+    cat: "part",
+    type: "Weapon — default",
+    tags: ["weapon"],
+    desc: "Default weapon. Fires 1 yellow die. Hits on a roll of ✦ (burst) or on a total of 6+ after adding Computers and subtracting target's Shields. No Tech required.",
+    stats: { "Die": "1 Yellow", Damage: "1 per hit", "Energy Cost": "0" }
+  },
+  {
+    name: "Plasma Cannon",
+    cat: "part",
+    type: "Weapon",
+    tags: ["weapon"],
+    desc: "Fires 1 orange die. Hits on ✦✦ (always) or total 6+. Deals 2 damage on a hit. Requires PLASMA CANNON Tech.",
+    stats: { "Die": "1 Orange", Damage: "2 per hit", "Energy Cost": "2" }
+  },
+  {
+    name: "Antimatter Cannon",
+    cat: "part",
+    type: "Weapon",
+    tags: ["weapon"],
+    desc: "Fires 1 red die. Hits on ✦✦✦ (always) or total 6+. Deals 4 damage on a hit. Requires ANTIMATTER CANNON Tech. Use with ANTIMATTER SPLITTER Rare Tech to split damage freely.",
+    stats: { "Die": "1 Red", Damage: "4 per hit", "Energy Cost": "4" }
+  },
+  {
+    name: "Soliton Cannon",
+    cat: "part",
+    type: "Weapon",
+    tags: ["weapon"],
+    desc: "Fires 1 blue die. Requires SOLITON CANNON Rare Tech.",
+    stats: { "Die": "1 Blue", "Energy Cost": "3" }
+  },
+  {
+    name: "Plasma Missile",
+    cat: "part",
+    type: "Missile",
+    tags: ["missile"],
+    desc: "Fires 2 orange dice ONCE at the start of battle (before Engagement Rounds). Hits on ✦✦ or total 6+. Deals 2 damage per hit. Requires PLASMA MISSILE Tech.",
+    stats: { "Dice": "2 Orange", Damage: "2 per hit", "Energy Cost": "2", "Fires": "Once before combat" }
+  },
+  {
+    name: "Flux Missile",
+    cat: "part",
+    type: "Missile",
+    tags: ["missile"],
+    desc: "Fires missiles once at the start of battle. Requires FLUX MISSILE Rare Tech.",
+    stats: { "Fires": "Once before combat" }
+  },
+  {
+    name: "Electron Computer",
+    cat: "part",
+    type: "Computer — default",
+    tags: ["computer"],
+    desc: "Default computer. Adds +1 to die rolls when trying to hit. No Tech required.",
+    stats: { "Hit Bonus": "+1", "Energy Cost": "0" }
+  },
+  {
+    name: "Positron Computer",
+    cat: "part",
+    type: "Computer",
+    tags: ["computer"],
+    desc: "Adds +2 to die rolls when trying to hit. Requires POSITRON COMPUTER Tech.",
+    stats: { "Hit Bonus": "+2", "Energy Cost": "1" }
+  },
+  {
+    name: "Gluon Computer",
+    cat: "part",
+    type: "Computer",
+    tags: ["computer"],
+    desc: "Adds +3 to die rolls when trying to hit. Requires GLUON COMPUTER Tech.",
+    stats: { "Hit Bonus": "+3", "Energy Cost": "2" }
+  },
+  {
+    name: "Gauss Shield",
+    cat: "part",
+    type: "Shield",
+    tags: ["shield"],
+    desc: "Subtracts 1 from opponent die rolls when targeting this Ship. Requires GAUSS SHIELD Tech.",
+    stats: { "Shield Value": "-1", "Energy Cost": "0" }
+  },
+  {
+    name: "Phase Shield",
+    cat: "part",
+    type: "Shield",
+    tags: ["shield"],
+    desc: "Subtracts 2 from opponent die rolls when targeting this Ship. Requires PHASE SHIELD Tech.",
+    stats: { "Shield Value": "-2", "Energy Cost": "2" }
+  },
+  {
+    name: "Absorption Shield",
+    cat: "part",
+    type: "Shield",
+    tags: ["shield"],
+    desc: "Requires ABSORPTION SHIELD Rare Tech.",
+    stats: {}
+  },
+  {
+    name: "Conifold Field",
+    cat: "part",
+    type: "Shield / Hull",
+    tags: ["shield", "hull"],
+    desc: "Provides both Hull and Shield bonuses. Requires CONIFOLD FIELD Rare Tech.",
+    stats: { "Hull": "+3", "Shield": "-2", "Energy Cost": "2" }
+  },
+  {
+    name: "Hull",
+    cat: "part",
+    type: "Hull — default",
+    tags: ["hull"],
+    desc: "Default hull provides 1 point of damage absorption. A Ship is destroyed when damage exceeds its Hull value. No Tech required.",
+    stats: { "Hull Value": "1", "Energy Cost": "0" }
+  },
+  {
+    name: "Improved Hull",
+    cat: "part",
+    type: "Hull",
+    tags: ["hull"],
+    desc: "Provides +2 damage absorption. Requires IMPROVED HULL Tech.",
+    stats: { "Hull Value": "+2", "Energy Cost": "2" }
+  },
+  {
+    name: "Sentient Hull",
+    cat: "part",
+    type: "Hull",
+    tags: ["hull"],
+    desc: "Provides +1 Hull. Requires SENTIENT HULL Rare Tech.",
+    stats: { "Hull Value": "+1" }
+  },
+  {
+    name: "Nuclear Drive",
+    cat: "part",
+    type: "Drive — default",
+    tags: ["drive"],
+    desc: "Default drive. Provides +1 Movement Value and +1 Initiative. At least one Drive must be on Interceptor, Cruiser, and Dreadnought Blueprints. Cannot be placed on Starbases.",
+    stats: { "Movement": "+1", "Initiative": "+1", "Energy Cost": "0" }
+  },
+  {
+    name: "Fusion Drive",
+    cat: "part",
+    type: "Drive",
+    tags: ["drive"],
+    desc: "Provides +2 Movement Value and +2 Initiative. Cannot be placed on Starbases. Requires FUSION DRIVE Tech.",
+    stats: { "Movement": "+2", "Initiative": "+2", "Energy Cost": "2" }
+  },
+  {
+    name: "Tachyon Drive",
+    cat: "part",
+    type: "Drive",
+    tags: ["drive"],
+    desc: "Provides +3 Movement Value and +3 Initiative. Cannot be placed on Starbases. Requires TACHYON DRIVE Tech.",
+    stats: { "Movement": "+3", "Initiative": "+3", "Energy Cost": "3" }
+  },
+  {
+    name: "Transition Drive",
+    cat: "part",
+    type: "Drive",
+    tags: ["drive"],
+    desc: "Provides high Movement Value. Cannot be placed on Starbases. Requires TRANSITION DRIVE Rare Tech.",
+    stats: { "Energy Cost": "0" }
+  },
+  {
+    name: "Nuclear Source",
+    cat: "part",
+    type: "Energy Source — default",
+    tags: ["energy"],
+    desc: "Default energy source. Provides +3 energy. Energy Production must equal or exceed Energy Consumption from all Ship Parts on that Blueprint.",
+    stats: { "Energy": "+3" }
+  },
+  {
+    name: "Fusion Source",
+    cat: "part",
+    type: "Energy Source",
+    tags: ["energy"],
+    desc: "Provides +6 energy. Requires FUSION SOURCE Tech.",
+    stats: { "Energy": "+6" }
+  },
+  {
+    name: "Tachyon Source",
+    cat: "part",
+    type: "Energy Source",
+    tags: ["energy"],
+    desc: "Provides +9 energy. Requires TACHYON SOURCE Tech.",
+    stats: { "Energy": "+9" }
+  },
+  {
+    name: "Zero-Point Source",
+    cat: "part",
+    type: "Energy Source",
+    tags: ["energy"],
+    desc: "Provides +12 energy — the most powerful energy source. Requires ZERO-POINT SOURCE Rare Tech.",
+    stats: { "Energy": "+12" }
+  }
+];
+
+// ── Tag colour helper ──────────────────────────────────────────────────────
+const tagClass = {
+  weapon: "tag-weapon", shield: "tag-shield", computer: "tag-computer",
+  drive: "tag-drive", hull: "tag-hull", energy: "tag-energy",
+  build: "tag-build", instant: "tag-instant", permanent: "tag-permanent",
+  missile: "tag-missile"
+};
+
+// ── Render ─────────────────────────────────────────────────────────────────
+function renderCards(items) {
+  const container = document.getElementById("cards-container");
+  container.innerHTML = "";
+
+  if (items.length === 0) {
+    document.getElementById("no-results").style.display = "block";
+    return;
+  }
+  document.getElementById("no-results").style.display = "none";
+
+  const groups = { military: [], grid: [], nano: [], rare: [], part: [] };
+  items.forEach(item => groups[item.cat]?.push(item));
+
+  const catMeta = {
+    military: { label: "⚔ Military Technologies" },
+    grid:     { label: "⊞ Grid Technologies" },
+    nano:     { label: "◎ Nano Technologies" },
+    rare:     { label: "◯ Rare Technologies" },
+    part:     { label: "★ Ship Parts & Upgrades" }
+  };
+
+  for (const [cat, items] of Object.entries(groups)) {
+    if (!items.length) continue;
+    const section = document.createElement("div");
+    section.innerHTML = `<div class="section-header">${catMeta[cat].label}</div>`;
+    const grid = document.createElement("div");
+    grid.className = "grid";
+
+    items.forEach(item => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.dataset.cat = item.cat;
+
+      const tagHTML = item.tags.map(t =>
+        `<span class="tag ${tagClass[t] || ''}">${t}</span>`
+      ).join("");
+
+      const statsHTML = Object.entries(item.stats).map(([k, v]) =>
+        `<span class="stat"><strong>${k}:</strong> ${v}</span>`
+      ).join("");
+
+      card.innerHTML = `
+        <div class="card-name">${item.name}</div>
+        <div class="card-type">${item.type}</div>
+        <div>${tagHTML}</div>
+        <div class="card-desc">${item.desc}</div>
+        ${statsHTML ? `<div class="stat-row">${statsHTML}</div>` : ""}
+      `;
+      grid.appendChild(card);
+    });
+
+    section.appendChild(grid);
+    container.appendChild(section);
+  }
+}
+
+// ── State ──────────────────────────────────────────────────────────────────
+let activeFilter = "all";
+let query = "";
+
+function filtered() {
+  return data.filter(item => {
+    const matchCat = activeFilter === "all" || item.cat === activeFilter;
+    if (!matchCat) return false;
+    if (!query) return true;
+    const q = query.toLowerCase();
+    return (
+      item.name.toLowerCase().includes(q) ||
+      item.desc.toLowerCase().includes(q) ||
+      item.type.toLowerCase().includes(q) ||
+      item.tags.some(t => t.includes(q))
+    );
+  });
+}
+
+document.getElementById("search").addEventListener("input", e => {
+  query = e.target.value;
+  renderCards(filtered());
+});
+
+document.querySelectorAll(".filter-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    activeFilter = btn.dataset.cat;
+    renderCards(filtered());
+  });
+});
+
+renderCards(data);
+</script>
+</body>
+</html>

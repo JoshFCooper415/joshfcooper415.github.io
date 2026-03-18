@@ -134,24 +134,27 @@ function smoothAngle(current, target, smoothing) {
             }
         
             resolve(pos) {
-                // Update head position and angle
-                this.targetAngles[0] = Vector.sub(pos, this.joints[0]).heading();
+                // Only update head target angle when there is meaningful movement;
+                // a near-zero vector produces a garbage heading() which causes snapping.
+                const headMovement = Vector.sub(pos, this.joints[0]);
+                if (headMovement.x * headMovement.x + headMovement.y * headMovement.y > 0.25) {
+                    this.targetAngles[0] = headMovement.heading();
+                }
                 this.angles[0] = smoothAngle(this.angles[0], this.targetAngles[0], this.smoothingFactor);
                 this.joints[0] = pos;
-        
-                // Update subsequent joints with smoothing
+
                 for (let i = 1; i < this.joints.length; i++) {
                     const curAngle = Vector.sub(this.joints[i - 1], this.joints[i]).heading();
-                    
-                    // Calculate target angle with constraint
-                    const diff = ((curAngle - this.angles[i - 1] + Math.PI) % (Math.PI * 2)) - Math.PI;
-                    this.targetAngles[i] = this.angles[i - 1] + 
+
+                    // normalizeAngle handles negative values correctly — JS % keeps the
+                    // sign of the dividend so the old ((x+π)%(2π))-π formula snapped
+                    // whenever curAngle - prev crossed the -π boundary.
+                    const diff = normalizeAngle(curAngle - this.angles[i - 1]);
+                    this.targetAngles[i] = this.angles[i - 1] +
                         Math.max(-this.angleConstraint, Math.min(this.angleConstraint, diff));
-        
-                    // Smooth the transition to target angle
+
                     this.angles[i] = smoothAngle(this.angles[i], this.targetAngles[i], this.smoothingFactor);
-        
-                    // Update joint position
+
                     this.joints[i] = Vector.sub(
                         this.joints[i - 1],
                         Vector.fromAngle(this.angles[i]).setMag(this.linkSize)
@@ -302,66 +305,132 @@ function smoothAngle(current, target, smoothing) {
         
         class Fish {
             constructor(origin) {
-                this.spine = new Chain(origin, 12, 16, Math.PI / 12); // Reduced angle constraint
-                
-                // Enhanced color generation
-                const colorSchemes = [
-                    // Tropical color schemes
-                    {
-                        body: `rgb(${200 + Math.random() * 55}, ${100 + Math.random() * 55}, ${0 + Math.random() * 55})`,  // Orange/Yellow
-                        fin: `rgb(${220 + Math.random() * 35}, ${150 + Math.random() * 55}, ${0 + Math.random() * 55})`
-                    },
-                    {
-                        body: `rgb(${0 + Math.random() * 55}, ${100 + Math.random() * 55}, ${200 + Math.random() * 55})`,  // Blue
-                        fin: `rgb(${50 + Math.random() * 55}, ${150 + Math.random() * 55}, ${220 + Math.random() * 35})`
-                    },
-                    {
-                        body: `rgb(${180 + Math.random() * 55}, ${0 + Math.random() * 55}, ${180 + Math.random() * 55})`,  // Purple
-                        fin: `rgb(${200 + Math.random() * 55}, ${50 + Math.random() * 55}, ${200 + Math.random() * 55})`
-                    },
-                    {
-                        body: `rgb(${200 + Math.random() * 55}, ${0 + Math.random() * 55}, ${100 + Math.random() * 55})`,  // Pink
-                        fin: `rgb(${220 + Math.random() * 35}, ${50 + Math.random() * 55}, ${150 + Math.random() * 55})`
-                    },
-                    {
-                        body: `rgb(${0 + Math.random() * 55}, ${180 + Math.random() * 55}, ${180 + Math.random() * 55})`,  // Teal
-                        fin: `rgb(${50 + Math.random() * 55}, ${200 + Math.random() * 55}, ${200 + Math.random() * 55})`
-                    }
-                ];
-                
-                const scheme = colorSchemes[Math.floor(Math.random() * colorSchemes.length)];
-                this.bodyColor = scheme.body;
-                this.finColor = scheme.fin;
+                this.scale = 0.55 + Math.random() * 0.9;
+                const linkSize = Math.max(9, Math.round(16 * this.scale));
+                this.spine = new Chain(origin, 12, linkSize, Math.PI / 12);
 
-                this.bodyWidth = [17, 20, 21, 20.75, 19.25, 16, 12.75, 9.5, 8, 4.75];
-                
+                this.bodyWidth = [16, 20, 23, 23, 22, 18, 14, 10, 7, 4].map(w => w * this.scale);
+
                 this.position = origin.copy();
                 this.velocity = Vector.fromAngle(Math.random() * Math.PI * 2).mult(2);
                 this.acceleration = new Vector();
-                
-                // Smoothing parameters
+
                 this.targetVelocity = this.velocity.copy();
-                this.smoothingFactor = 0.15;
+                this.smoothingFactor = 0.08 + Math.random() * 0.1;
                 this.momentum = 0.92;
 
-                //Food
-                this.foodDetectionRadius = 300;
-                this.foodAttractionStrength = 10;
-                this.eatingDistance = 20;
-                // Boid parameters
-                this.maxSpeed = 3.5;
-                this.maxForce = 0.3;
-                this.perceptionRadius = 100;
-                this.separationRadius = 45;
-                this.collisionRadius = 40;
+                this.foodDetectionRadius = 230 + Math.random() * 120;
+                this.foodAttractionStrength = 8 + Math.random() * 6;
+                this.eatingDistance = 12 + 12 * this.scale;
+
+                this.maxSpeed = 1.8 + Math.random() * 2.2;
+                this.maxForce = 0.18 + Math.random() * 0.15;
+                this.perceptionRadius = 80 + Math.random() * 60;
+                this.separationRadius = 38 + 20 * this.scale;
+                this.collisionRadius = 30 + 14 * this.scale;
                 this.collisionForce = 0.5;
-                
+
                 this.time = Math.random() * 1000;
                 this.timeStep = 0.001;
                 this.margin = 100;
 
-                // Position history for smoothing
                 this.previousPositions = Array(5).fill().map(() => origin.copy());
+
+                this.generateKoiAppearance();
+            }
+
+            generateKoiAppearance() {
+                const koiTypes = [
+                    'kohaku', 'kohaku',
+                    'sanke', 'sanke',
+                    'showa',
+                    'ogon_gold', 'ogon_silver', 'ogon_orange',
+                    'asagi',
+                    'bekko_white', 'bekko_yellow',
+                    'utsuri_white', 'utsuri_yellow',
+                ];
+                this.koiType = koiTypes[Math.floor(Math.random() * koiTypes.length)];
+                this.metallic = false;
+                switch (this.koiType) {
+                    case 'kohaku':
+                        this.baseColor = '#f0ebe0';
+                        this.patches = this.genPatches('#c03020', 2 + Math.floor(Math.random() * 3));
+                        this.finColor = 'rgba(240,235,220,0.75)';
+                        break;
+                    case 'sanke':
+                        this.baseColor = '#f0ebe0';
+                        this.patches = [
+                            ...this.genPatches('#c03020', 1 + Math.floor(Math.random() * 3)),
+                            ...this.genPatches('#222222', 1 + Math.floor(Math.random() * 2)),
+                        ];
+                        this.finColor = 'rgba(240,235,220,0.75)';
+                        break;
+                    case 'showa':
+                        this.baseColor = '#222222';
+                        this.patches = [
+                            ...this.genPatches('#c03020', 1 + Math.floor(Math.random() * 3)),
+                            ...this.genPatches('#f0ebe0', 1 + Math.floor(Math.random() * 2)),
+                        ];
+                        this.finColor = 'rgba(50,50,50,0.8)';
+                        break;
+                    case 'ogon_gold':
+                        this.baseColor = '#d4a020';
+                        this.patches = [];
+                        this.finColor = 'rgba(212,160,32,0.8)';
+                        this.metallic = true;
+                        break;
+                    case 'ogon_silver':
+                        this.baseColor = '#c0c8d0';
+                        this.patches = [];
+                        this.finColor = 'rgba(192,200,208,0.8)';
+                        this.metallic = true;
+                        break;
+                    case 'ogon_orange':
+                        this.baseColor = '#e06818';
+                        this.patches = [];
+                        this.finColor = 'rgba(224,104,24,0.8)';
+                        this.metallic = true;
+                        break;
+                    case 'asagi':
+                        this.baseColor = '#5878a0';
+                        this.patches = this.genPatches('#c03020', 1 + Math.floor(Math.random() * 2));
+                        this.finColor = 'rgba(180,70,50,0.65)';
+                        break;
+                    case 'bekko_white':
+                        this.baseColor = '#f0ebe0';
+                        this.patches = this.genPatches('#222222', 2 + Math.floor(Math.random() * 3));
+                        this.finColor = 'rgba(240,235,220,0.75)';
+                        break;
+                    case 'bekko_yellow':
+                        this.baseColor = '#e8c820';
+                        this.patches = this.genPatches('#222222', 2 + Math.floor(Math.random() * 3));
+                        this.finColor = 'rgba(232,200,32,0.8)';
+                        break;
+                    case 'utsuri_white':
+                        this.baseColor = '#222222';
+                        this.patches = this.genPatches('#f0ebe0', 2 + Math.floor(Math.random() * 3));
+                        this.finColor = 'rgba(50,50,50,0.8)';
+                        break;
+                    case 'utsuri_yellow':
+                        this.baseColor = '#222222';
+                        this.patches = this.genPatches('#e8c820', 2 + Math.floor(Math.random() * 3));
+                        this.finColor = 'rgba(50,50,50,0.8)';
+                        break;
+                }
+            }
+
+            genPatches(color, count) {
+                const patches = [];
+                for (let i = 0; i < count; i++) {
+                    patches.push({
+                        color,
+                        spineIndex: 0.5 + Math.random() * 7.5,
+                        sizeX: 0.45 + Math.random() * 0.75,
+                        sizeY: 0.7 + Math.random() * 1.0,
+                        lateralOffset: (Math.random() - 0.5) * 0.6,
+                    });
+                }
+                return patches;
             }
 
             smooth(value, target, factor) {
@@ -570,110 +639,172 @@ function smoothAngle(current, target, smoothing) {
             display(ctx) {
                 const j = this.spine.joints;
                 const a = this.spine.angles;
-                
+
                 const headToMid1 = relativeAngleDiff(a[0], a[6]);
                 const headToMid2 = relativeAngleDiff(a[0], a[7]);
                 const headToTail = headToMid1 + relativeAngleDiff(a[6], a[11]);
 
-                ctx.strokeStyle = '#fff';
-                ctx.lineWidth = 1;
-                ctx.fillStyle = this.finColor;
+                const buildBodyPath = () => {
+                    ctx.beginPath();
+                    for (let i = 0; i < 10; i++) {
+                        const x = this.getPos(i, Math.PI / 2, 0, 'x');
+                        const y = this.getPos(i, Math.PI / 2, 0, 'y');
+                        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                    }
+                    ctx.lineTo(this.getPos(9, Math.PI, 0, 'x'), this.getPos(9, Math.PI, 0, 'y'));
+                    for (let i = 9; i >= 0; i--) {
+                        ctx.lineTo(this.getPos(i, -Math.PI / 2, 0, 'x'), this.getPos(i, -Math.PI / 2, 0, 'y'));
+                    }
+                    ctx.lineTo(this.getPos(0, -Math.PI / 6, 0, 'x'), this.getPos(0, -Math.PI / 6, 0, 'y'));
+                    ctx.lineTo(this.getPos(0, 0, 2, 'x'), this.getPos(0, 0, 2, 'y'));
+                    ctx.lineTo(this.getPos(0, Math.PI / 6, 0, 'x'), this.getPos(0, Math.PI / 6, 0, 'y'));
+                    ctx.closePath();
+                };
 
                 // Pectoral fins
-                this.drawFin(ctx, 3, Math.PI / 3, 0, a[2] - Math.PI / 4, 40, 16);
-                this.drawFin(ctx, 3, -Math.PI / 3, 0, a[2] + Math.PI / 4, 40, 16);
+                ctx.fillStyle = this.finColor;
+                ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+                ctx.lineWidth = 1;
+                this.drawFin(ctx, 3, Math.PI / 3, 0, a[2] - Math.PI / 4, 44 * this.scale, 18 * this.scale);
+                this.drawFin(ctx, 3, -Math.PI / 3, 0, a[2] + Math.PI / 4, 44 * this.scale, 18 * this.scale);
 
                 // Ventral fins
-                this.drawFin(ctx, 7, Math.PI / 2, 0, a[6] - Math.PI / 4, 24, 8);
-                this.drawFin(ctx, 7, -Math.PI / 2, 0, a[6] + Math.PI / 4, 24, 8);
+                this.drawFin(ctx, 7, Math.PI / 2, 0, a[6] - Math.PI / 4, 28 * this.scale, 10 * this.scale);
+                this.drawFin(ctx, 7, -Math.PI / 2, 0, a[6] + Math.PI / 4, 28 * this.scale, 10 * this.scale);
 
-                // Caudal fins
+                // Caudal fin — always visible, fans when turning
+                ctx.fillStyle = this.finColor;
                 ctx.beginPath();
                 for (let i = 8; i < 12; i++) {
-                    const progress = (i - 8) / 4;
-                    const tailWidth = 0.75 * headToTail * progress * progress;
-                    const x = j[i].x + Math.cos(a[i] - Math.PI / 2) * tailWidth;
-                    const y = j[i].y + Math.sin(a[i] - Math.PI / 2) * tailWidth;
-                    if (i === 8) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
+                    const t = (i - 8) / 3;
+                    const tw = Math.max(0, (4 * t + headToTail * 12 * t) * this.scale);
+                    const x = j[i].x + Math.cos(a[i] - Math.PI / 2) * tw;
+                    const y = j[i].y + Math.sin(a[i] - Math.PI / 2) * tw;
+                    if (i === 8) ctx.moveTo(x, y); else ctx.lineTo(x, y);
                 }
-
                 for (let i = 11; i >= 8; i--) {
-                    const tailWidth = Math.max(-3.25, Math.min(3.25, headToTail * 3));
-                    const x = j[i].x + Math.cos(a[i] + Math.PI / 2) * tailWidth;
-                    const y = j[i].y + Math.sin(a[i] + Math.PI / 2) * tailWidth;
+                    const t = (i - 8) / 3;
+                    const tw = Math.max(0, (4 * t - headToTail * 12 * t) * this.scale);
+                    const x = j[i].x + Math.cos(a[i] + Math.PI / 2) * tw;
+                    const y = j[i].y + Math.sin(a[i] + Math.PI / 2) * tw;
                     ctx.lineTo(x, y);
                 }
                 ctx.closePath();
                 ctx.fill();
                 ctx.stroke();
 
-                // Body
-                ctx.fillStyle = this.bodyColor;
-                ctx.beginPath();
-                
-                for (let i = 0; i < 10; i++) {
-                    const x = this.getPos(i, Math.PI / 2, 0, 'x');
-                    const y = this.getPos(i, Math.PI / 2, 0, 'y');
-                    if (i === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
-                }
-
-                ctx.lineTo(this.getPos(9, Math.PI, 0, 'x'), this.getPos(9, Math.PI, 0, 'y'));
-
-                for (let i = 9; i >= 0; i--) {
-                    ctx.lineTo(
-                        this.getPos(i, -Math.PI / 2, 0, 'x'),
-                        this.getPos(i, -Math.PI / 2, 0, 'y')
-                    );
-                }
-
-                ctx.lineTo(this.getPos(0, -Math.PI / 6, 0, 'x'), this.getPos(0, -Math.PI / 6, 0, 'y'));
-                ctx.lineTo(this.getPos(0, 0, 2, 'x'), this.getPos(0, 0, 2, 'y'));
-                ctx.lineTo(this.getPos(0, Math.PI / 6, 0, 'x'), this.getPos(0, Math.PI / 6, 0, 'y'));
-                ctx.closePath();
+                // Base body fill
+                buildBodyPath();
+                ctx.fillStyle = this.baseColor;
                 ctx.fill();
+
+                // Color patches clipped to body shape
+                if (this.patches.length > 0) {
+                    ctx.save();
+                    buildBodyPath();
+                    ctx.clip();
+                    for (const patch of this.patches) {
+                        const si = Math.min(Math.floor(patch.spineIndex), j.length - 2);
+                        const sf = patch.spineIndex - si;
+                        const px = j[si].x + (j[si + 1].x - j[si].x) * sf;
+                        const py = j[si].y + (j[si + 1].y - j[si].y) * sf;
+                        const bw = this.bodyWidth[Math.min(si, this.bodyWidth.length - 1)];
+                        ctx.save();
+                        ctx.translate(px, py);
+                        ctx.rotate(a[si] + Math.PI / 2);
+                        ctx.fillStyle = patch.color;
+                        ctx.beginPath();
+                        ctx.ellipse(patch.lateralOffset * bw, 0, bw * patch.sizeX, bw * patch.sizeY, 0, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.restore();
+                    }
+                    ctx.restore();
+                }
+
+                // Metallic sheen for ogon types
+                if (this.metallic) {
+                    ctx.save();
+                    buildBodyPath();
+                    ctx.clip();
+                    const gx = j[2].x, gy = j[2].y;
+                    const grad = ctx.createRadialGradient(gx, gy, 2, gx, gy, 55 * this.scale);
+                    grad.addColorStop(0, 'rgba(255,255,255,0.42)');
+                    grad.addColorStop(0.5, 'rgba(255,255,255,0.1)');
+                    grad.addColorStop(1, 'rgba(0,0,0,0.08)');
+                    ctx.fillStyle = grad;
+                    ctx.fill();
+                    ctx.restore();
+                }
+
+                // Body outline
+                buildBodyPath();
+                ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+                ctx.lineWidth = 1;
                 ctx.stroke();
 
                 // Dorsal fin
                 ctx.fillStyle = this.finColor;
+                ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+                ctx.lineWidth = 1;
                 ctx.beginPath();
                 ctx.moveTo(j[4].x, j[4].y);
+                ctx.bezierCurveTo(j[5].x, j[5].y, j[6].x, j[6].y, j[7].x, j[7].y);
                 ctx.bezierCurveTo(
-                    j[5].x, j[5].y,
-                    j[6].x, j[6].y,
-                    j[7].x, j[7].y
-                );
-                ctx.bezierCurveTo(
-                    j[6].x + Math.cos(a[6] + Math.PI / 2) * headToMid2 * 8,
-                    j[6].y + Math.sin(a[6] + Math.PI / 2) * headToMid2 * 8,
-                    j[5].x + Math.cos(a[5] + Math.PI / 2) * headToMid1 * 8,
-                    j[5].y + Math.sin(a[5] + Math.PI / 2) * headToMid1 * 8,
+                    j[6].x + Math.cos(a[6] + Math.PI / 2) * headToMid2 * 8 * this.scale,
+                    j[6].y + Math.sin(a[6] + Math.PI / 2) * headToMid2 * 8 * this.scale,
+                    j[5].x + Math.cos(a[5] + Math.PI / 2) * headToMid1 * 8 * this.scale,
+                    j[5].y + Math.sin(a[5] + Math.PI / 2) * headToMid1 * 8 * this.scale,
                     j[4].x, j[4].y
                 );
                 ctx.closePath();
                 ctx.fill();
                 ctx.stroke();
 
-                // Eyes
-                ctx.fillStyle = '#fff';
-                ctx.beginPath();
-                ctx.arc(
-                    this.getPos(0, Math.PI / 2, -4.5, 'x'),
-                    this.getPos(0, Math.PI / 2, -4.5, 'y'),
-                    3, 0, Math.PI * 2
-                );
-                ctx.fill();
-                ctx.stroke();
+                // Eyes — dark koi-style
+                const eyeR = Math.max(1.5, 2.8 * this.scale);
+                ctx.fillStyle = '#1a1008';
+                ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+                ctx.lineWidth = 0.5;
+                for (const side of [-1, 1]) {
+                    ctx.beginPath();
+                    ctx.arc(
+                        this.getPos(0, side * Math.PI / 2, -4.5, 'x'),
+                        this.getPos(0, side * Math.PI / 2, -4.5, 'y'),
+                        eyeR, 0, Math.PI * 2
+                    );
+                    ctx.fill();
+                    ctx.stroke();
+                }
 
-                ctx.beginPath();
-                ctx.arc(
-                    this.getPos(0, -Math.PI / 2, -4.5, 'x'),
-                    this.getPos(0, -Math.PI / 2, -4.5, 'y'),
-                    3, 0, Math.PI * 2
-                );
-                ctx.fill();
-                ctx.stroke();
+                // Barbels (koi whiskers)
+                this.drawBarbels(ctx, j, a);
+            }
+
+            drawBarbels(ctx, j, a) {
+                const headAngle = a[0];
+                const snoutX = this.getPos(0, 0, 2, 'x');
+                const snoutY = this.getPos(0, 0, 2, 'y');
+                ctx.strokeStyle = 'rgba(110,85,65,0.7)';
+                ctx.lineWidth = Math.max(0.5, 0.9 * this.scale);
+                ctx.lineCap = 'round';
+                const barbelPairs = [
+                    { sideAngle: 0.4, length: 7 * this.scale, sideOffset: 5 * this.scale },
+                    { sideAngle: 0.65, length: 5 * this.scale, sideOffset: 3 * this.scale },
+                ];
+                for (const bp of barbelPairs) {
+                    for (const side of [-1, 1]) {
+                        const sx = snoutX + Math.cos(headAngle + side * Math.PI / 2) * bp.sideOffset * 0.5;
+                        const sy = snoutY + Math.sin(headAngle + side * Math.PI / 2) * bp.sideOffset * 0.5;
+                        const ex = sx + Math.cos(headAngle + side * bp.sideAngle) * bp.length
+                                      - Math.cos(headAngle) * bp.length * 0.15;
+                        const ey = sy + Math.sin(headAngle + side * bp.sideAngle) * bp.length
+                                      - Math.sin(headAngle) * bp.length * 0.15;
+                        ctx.beginPath();
+                        ctx.moveTo(sx, sy);
+                        ctx.quadraticCurveTo((sx + ex) / 2, (sy + ey) / 2, ex, ey);
+                        ctx.stroke();
+                    }
+                }
             }
 
             drawFin(ctx, i, angleOffset, lengthOffset, rotation, width, height) {
@@ -705,7 +836,7 @@ function smoothAngle(current, target, smoothing) {
         }
 
         function relativeAngleDiff(a1, a2) {
-            return ((a2 - a1 + Math.PI) % (Math.PI * 2)) - Math.PI;
+            return normalizeAngle(a2 - a1);
         }
 
         // Initialize scene
