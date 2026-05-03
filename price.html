@@ -200,6 +200,20 @@
             transform: translateY(-50%) scaleX(-1);
         }
 
+        .subcategory-header {
+            padding: 10px 15px 5px;
+            font-weight: bold;
+            font-size: 0.95em;
+            color: var(--primary);
+            border-bottom: 1px solid rgba(112, 72, 41, 0.4);
+            margin-top: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .subcategory-header:first-child {
+            margin-top: 0;
+        }
+
         @media (max-width: 768px) {
             .controls {
                 grid-template-columns: 1fr;
@@ -222,7 +236,11 @@
         <div class="search-section">
             <div class="controls">
                 <input type="text" id="search" placeholder="Search for weapons, armor, provisions...">
-                
+
+                <select id="categoryFilter">
+                    <option value="All">— All Categories —</option>
+                </select>
+
                 <select id="quality">
                     <option value="Poor">Poor</option>
                     <option value="Common" selected>Common</option>
@@ -3706,23 +3724,33 @@
             return QUALITY_LEVELS[qualityIndex];
         }
 
+        // Populate category dropdown from priceData keys
+        (function populateCategories() {
+            const select = document.getElementById('categoryFilter');
+            Object.keys(priceData).forEach(category => {
+                const opt = document.createElement('option');
+                opt.value = category;
+                opt.textContent = category;
+                select.appendChild(opt);
+            });
+        })();
+
         // Search through all categories and subcategories
-        function searchItems(searchTerm) {
+        function searchItems(searchTerm, categoryFilter) {
             const results = [];
-            searchTerm = searchTerm.toLowerCase();
+            const lowerSearch = searchTerm.toLowerCase();
 
             Object.entries(priceData).forEach(([category, subcategories]) => {
+                if (categoryFilter !== 'All' && category !== categoryFilter) return;
+
                 Object.entries(subcategories).forEach(([subcategory, items]) => {
                     Object.entries(items).forEach(([item, prices]) => {
-                        if (item.toLowerCase().includes(searchTerm) ||
-                            category.toLowerCase().includes(searchTerm) ||
-                            subcategory.toLowerCase().includes(searchTerm)) {
-                            results.push({
-                                item,
-                                prices,
-                                category,
-                                subcategory
-                            });
+                        const matchesSearch = !searchTerm ||
+                            item.toLowerCase().includes(lowerSearch) ||
+                            subcategory.toLowerCase().includes(lowerSearch);
+
+                        if (matchesSearch) {
+                            results.push({ item, prices, category, subcategory });
                         }
                     });
                 });
@@ -3731,52 +3759,84 @@
             return results;
         }
 
-        // Update results based on search
+        function renderItem(item, prices, category, subcategory, baseQuality, showCategory) {
+            const modifiedQuality = calculateModifiedQuality(baseQuality);
+            const basePrice = prices[baseQuality];
+            const modifiedPrice = prices[modifiedQuality];
+
+            if (!basePrice) return null;
+
+            const div = document.createElement('div');
+            div.className = 'result-item';
+            div.innerHTML = `
+                <div>
+                    ${item}
+                    ${showCategory ? `<div class="category-label">${category} &rsaquo; ${subcategory}</div>` : ''}
+                </div>
+                <div>Base Worth (${baseQuality}): ${basePrice}</div>
+                <div class="price">
+                    Market Price: ${modifiedPrice || 'Not Available'}
+                    <div class="modified-quality">Quality: ${modifiedQuality}</div>
+                </div>
+            `;
+            return div;
+        }
+
+        // Update results based on search and category filter
         function updateResults() {
-            const search = document.getElementById('search').value.toLowerCase();
+            const search = document.getElementById('search').value;
             const baseQuality = document.getElementById('quality').value;
+            const selectedCategory = document.getElementById('categoryFilter').value;
             const resultsDiv = document.getElementById('results');
-            
+
             resultsDiv.innerHTML = '';
 
-            if (search.length < 2) {
-                resultsDiv.innerHTML = '<div class="result-item"><div>Type at least 2 characters to reveal the prices...</div></div>';
+            const hasSearch = search.trim().length >= 2;
+            const hasCategory = selectedCategory !== 'All';
+
+            if (!hasSearch && !hasCategory) {
+                resultsDiv.innerHTML = '<div class="result-item"><div>Select a category or type at least 2 characters to reveal the prices of the realm\'s wares...</div></div>';
                 return;
             }
 
-            const results = searchItems(search);
-            
+            const results = searchItems(hasSearch ? search.trim() : '', selectedCategory);
+
             if (results.length === 0) {
-                resultsDiv.innerHTML = '<div class="result-item"><div>Alas, no such items exist in our records</div></div>';
+                resultsDiv.innerHTML = '<div class="result-item"><div>Alas, no such items exist in our records.</div></div>';
                 return;
             }
 
-            results.forEach(({item, prices, category, subcategory}) => {
-                const modifiedQuality = calculateModifiedQuality(baseQuality);
-                const basePrice = prices[baseQuality];
-                const modifiedPrice = prices[modifiedQuality];
+            // When browsing a single category without a search term, group by subcategory
+            if (hasCategory && !hasSearch) {
+                const grouped = {};
+                results.forEach(r => {
+                    if (!grouped[r.subcategory]) grouped[r.subcategory] = [];
+                    grouped[r.subcategory].push(r);
+                });
 
-                if (basePrice) {
-                    const div = document.createElement('div');
-                    div.className = 'result-item';
-                    div.innerHTML = `
-                        <div>
-                            ${item}
-                            <div class="category-label">${category} > ${subcategory}</div>
-                        </div>
-                        <div>Base Worth (${baseQuality}): ${basePrice}</div>
-                        <div class="price">
-                            Market Price: ${modifiedPrice || 'Not Available'}
-                            <div class="modified-quality">Quality: ${modifiedQuality}</div>
-                        </div>
-                    `;
-                    resultsDiv.appendChild(div);
-                }
-            });
+                Object.entries(grouped).forEach(([subcat, items]) => {
+                    const header = document.createElement('div');
+                    header.className = 'subcategory-header';
+                    header.textContent = subcat;
+                    resultsDiv.appendChild(header);
+
+                    items.forEach(({ item, prices, category, subcategory }) => {
+                        const el = renderItem(item, prices, category, subcategory, baseQuality, false);
+                        if (el) resultsDiv.appendChild(el);
+                    });
+                });
+            } else {
+                // Search results — always show the category breadcrumb
+                results.forEach(({ item, prices, category, subcategory }) => {
+                    const el = renderItem(item, prices, category, subcategory, baseQuality, true);
+                    if (el) resultsDiv.appendChild(el);
+                });
+            }
         }
 
         // Add event listeners
         document.getElementById('search').addEventListener('input', updateResults);
+        document.getElementById('categoryFilter').addEventListener('change', updateResults);
         document.getElementById('quality').addEventListener('change', updateResults);
         document.querySelectorAll('.modifier input').forEach(input => {
             input.addEventListener('change', updateResults);
