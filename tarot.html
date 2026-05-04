@@ -3,638 +3,350 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tarot Reading</title>
+    <title>Tarot Background</title>
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+        :root{--gold:#C9A84C;--gold-l:#E8C96D;--bg:#050508;--text:#E0D4B8;}
+        *{box-sizing:border-box;margin:0;padding:0;}
+        html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);}
 
-        :root {
-            --gold: #C9A84C;
-            --gold-light: #E8C96D;
-            --bg: #050508;
-            --text: #E0D4B8;
-        }
+        #stars{position:fixed;inset:0;z-index:0;pointer-events:none;}
+        #particles{position:fixed;inset:0;pointer-events:none;z-index:3;overflow:hidden;}
+        .particle{position:absolute;width:3px;height:3px;border-radius:50%;background:var(--gold);opacity:0;animation:float-up linear forwards;}
+        @keyframes float-up{0%{opacity:0;transform:translateY(0)scale(1)}15%{opacity:.9}100%{opacity:0;transform:translateY(-90px)scale(0)}}
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        .page{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;align-items:center;padding:12px 16px 10px;gap:6px;}
 
-        html, body {
-            height: 100%;
-            overflow: hidden;
-            background: var(--bg);
-            color: var(--text);
-        }
+        /* ── Top ── */
+        .top{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:5px;width:100%;}
+        .back-link{align-self:flex-start;color:var(--gold);text-decoration:none;font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:2px;opacity:.5;transition:opacity .3s;}
+        .back-link:hover{opacity:1;}
+        h1{font-family:'Cinzel Decorative',serif;font-size:clamp(.95rem,3vw,1.9rem);color:var(--gold);letter-spacing:4px;text-shadow:0 0 22px rgba(201,168,76,.38);}
+        .divider{width:160px;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);opacity:.28;}
 
-        #stars {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-        }
+        /* ── Content area (cards + side story) ── */
+        .content-area{flex:1;min-height:0;display:flex;gap:16px;width:100%;align-items:stretch;}
+        .card-row{flex:1;min-height:0;display:flex;gap:16px;align-items:flex-start;justify-content:center;}
 
-        #particles {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 2;
-            overflow: hidden;
-        }
+        .card-col{display:flex;flex-direction:column;align-items:center;gap:7px;width:var(--card-w,160px);}
 
-        .particle {
-            position: absolute;
-            width: 3px;
-            height: 3px;
-            border-radius: 50%;
-            background: var(--gold);
-            opacity: 0;
-            animation: float-up linear forwards;
-        }
+        /* label above card */
+        .col-label{height:22px;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:3px;color:var(--gold);text-transform:uppercase;opacity:0;transform:translateY(-4px);transition:opacity .5s,transform .5s;text-align:center;line-height:22px;}
+        .col-label.show{opacity:.75;transform:translateY(0);}
 
-        @keyframes float-up {
-            0%   { opacity: 0; transform: translateY(0) scale(1); }
-            15%  { opacity: 0.9; }
-            100% { opacity: 0; transform: translateY(-100px) scale(0); }
-        }
+        /* card flip */
+        .card-scene{width:var(--card-w,160px);height:var(--card-h,270px);cursor:pointer;perspective:900px;flex-shrink:0;}
+        .card-scene.picked{cursor:default;}
+        .card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .85s cubic-bezier(.4,0,.2,1);}
+        .card.flipped{transform:rotateY(180deg);}
+        .card-scene:not(.picked):hover .card:not(.flipped){transform:translateY(-8px);}
+        .card-face{position:absolute;inset:0;border-radius:10px;backface-visibility:hidden;overflow:hidden;border:1.5px solid rgba(201,168,76,.25);box-shadow:0 6px 24px rgba(0,0,0,.8);}
+        .card-back{background:linear-gradient(148deg,#0e0b1e,#1c0f30 55%,#0e0b1e);display:flex;align-items:center;justify-content:center;}
+        .card-back-inner{width:87%;height:87%;border:1px solid rgba(201,168,76,.2);border-radius:7px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+        .card-back-inner::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 7px,rgba(201,168,76,.032) 7px,rgba(201,168,76,.032) 8px),repeating-linear-gradient(-45deg,transparent,transparent 7px,rgba(138,43,226,.032) 7px,rgba(138,43,226,.032) 8px);}
+        .back-sym{font-size:2rem;opacity:.4;position:relative;z-index:1;color:var(--gold);filter:drop-shadow(0 0 5px var(--gold));}
+        .card-front{transform:rotateY(180deg);background:#08061a;}
+        .card-front img{width:100%;height:100%;object-fit:cover;display:block;}
 
-        /* ── Page shell ── */
-        .page {
-            position: relative;
-            z-index: 1;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 16px 16px 14px;
-            gap: 0;
-        }
+        /* aspect text below card */
+        .aspect-text{width:100%;opacity:0;transform:translateY(6px);transition:opacity .55s ease .2s,transform .55s ease .2s;text-align:center;}
+        .aspect-text.show{opacity:1;transform:translateY(0);}
+        .aspect-card-name{font-family:'Cinzel',serif;font-size:clamp(.62rem,1.4vw,.78rem);color:var(--gold);letter-spacing:1px;margin-bottom:3px;}
+        .aspect-label{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:3px;color:var(--gold);opacity:.45;text-transform:uppercase;margin-bottom:2px;}
+        .aspect-val{font-family:'Crimson Text',serif;font-size:clamp(.75rem,1.6vw,.9rem);color:var(--text);opacity:.88;line-height:1.4;}
 
-        /* ── Header ── */
-        .header {
-            flex-shrink: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            gap: 6px;
-            padding-bottom: 10px;
-        }
-
-        .back-link {
-            align-self: flex-start;
-            color: var(--gold);
-            text-decoration: none;
-            font-family: 'Cinzel', serif;
-            font-size: 0.75rem;
-            letter-spacing: 2px;
-            opacity: 0.55;
-            transition: opacity 0.3s;
-        }
-        .back-link:hover { opacity: 1; }
-
-        h1 {
-            font-family: 'Cinzel Decorative', serif;
-            font-size: clamp(1.1rem, 3.5vw, 2.2rem);
-            color: var(--gold);
-            letter-spacing: 4px;
-            text-shadow: 0 0 24px rgba(201,168,76,0.4), 0 0 50px rgba(201,168,76,0.12);
-        }
-
-        .divider {
-            width: 180px;
-            height: 1px;
-            background: linear-gradient(to right, transparent, var(--gold), transparent);
-            opacity: 0.3;
-        }
-
-        /* pick progress dots */
-        .pick-dots {
-            display: flex;
-            gap: 10px;
-            margin-top: 2px;
-        }
-
-        .pick-dots span {
-            font-size: 0.65rem;
-            color: var(--gold);
-            opacity: 0.2;
-            transition: opacity 0.4s ease, text-shadow 0.4s ease;
-            letter-spacing: 0;
-        }
-
-        .pick-dots span.lit {
-            opacity: 1;
-            text-shadow: 0 0 8px var(--gold), 0 0 16px var(--gold);
-        }
-
-        /* ── Spread ── */
-        .spread-wrap {
-            flex: 1;
-            min-height: 0;
-            width: 100%;
-            position: relative;
-        }
-
-        #spread {
-            position: absolute;
-            inset: 0;
-        }
-
-        /* card-slot: positioned by JS */
-        .card-slot {
-            position: absolute;
-            cursor: pointer;
-            transition:
-                transform 0.45s cubic-bezier(0.4, 0, 0.2, 1),
-                opacity   0.45s ease,
-                filter    0.45s ease;
-        }
-
-        .card-slot.hoverable:hover {
-            z-index: 20 !important;
-        }
-
-        .card-slot.dimmed {
-            opacity: 0.1;
-            filter: blur(1px);
-            pointer-events: none;
-        }
-
-        /* ── Card flip ── */
-        .card {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .card.flipped { transform: rotateY(180deg); }
-
-        .card-face {
-            position: absolute;
-            inset: 0;
-            border-radius: 9px;
-            backface-visibility: hidden;
-            overflow: hidden;
-            border: 1.5px solid rgba(201,168,76,0.25);
-            box-shadow: 0 5px 22px rgba(0,0,0,0.75), 0 0 10px rgba(201,168,76,0.06);
-        }
-
-        .card-back {
-            background: linear-gradient(148deg, #0e0b1e 0%, #1c0f30 55%, #0e0b1e 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .card-back-inner {
-            width: 87%;
-            height: 87%;
-            border: 1px solid rgba(201,168,76,0.2);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card-back-inner::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background:
-                repeating-linear-gradient(45deg, transparent, transparent 7px, rgba(201,168,76,0.03) 7px, rgba(201,168,76,0.03) 8px),
-                repeating-linear-gradient(-45deg, transparent, transparent 7px, rgba(138,43,226,0.03) 7px, rgba(138,43,226,0.03) 8px);
-        }
-
-        .card-back-symbol {
-            font-size: 1.8rem;
-            opacity: 0.45;
-            position: relative;
-            z-index: 1;
-            filter: drop-shadow(0 0 5px var(--gold));
-            color: var(--gold);
-        }
-
-        .card-front {
-            transform: rotateY(180deg);
-            background: #08061a;
-        }
-
-        .card-front img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
+        /* ── Side story panel ── */
+        .story-panel{width:220px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:0 10px 0 20px;border-left:1px solid rgba(201,168,76,.12);overflow-y:auto;opacity:0;pointer-events:none;transform:translateX(14px);transition:opacity .7s ease,transform .7s ease;}
+        .story-panel.show{opacity:1;pointer-events:auto;transform:translateX(0);}
+        .bg-name{font-family:'Cinzel Decorative',serif;font-size:clamp(.8rem,1.8vw,1.1rem);color:var(--gold);letter-spacing:3px;text-shadow:0 0 18px rgba(201,168,76,.35);text-align:center;}
+        .bg-story{font-family:'Crimson Text',serif;font-style:italic;font-size:clamp(.75rem,1.4vw,.88rem);color:var(--text);opacity:.82;line-height:1.6;text-align:center;}
 
         /* ── Footer ── */
-        .footer {
-            flex-shrink: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            padding-top: 10px;
-            height: 68px;
-        }
-
-        .redeal-btn {
-            font-family: 'Cinzel Decorative', serif;
-            font-size: 0.82rem;
-            letter-spacing: 2px;
-            color: var(--bg);
-            background: linear-gradient(135deg, var(--gold-light), var(--gold));
-            border: none;
-            padding: 11px 36px;
-            border-radius: 40px;
-            cursor: pointer;
-            transition: opacity 0.4s ease, transform 0.35s ease, box-shadow 0.35s ease;
-            box-shadow: 0 0 16px rgba(201,168,76,0.25), 0 3px 10px rgba(0,0,0,0.5);
-            opacity: 0;
-            transform: translateY(8px);
-            pointer-events: none;
-        }
-
-        .redeal-btn.visible {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
-
-        .redeal-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 32px rgba(201,168,76,0.48), 0 6px 18px rgba(0,0,0,0.5);
-        }
-
-        .ornament {
-            font-size: 1rem;
-            opacity: 0.18;
-            color: var(--gold);
-        }
+        .footer{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:2px;}
+        .draw-btn{font-family:'Cinzel Decorative',serif;font-size:.75rem;letter-spacing:2px;color:var(--bg);background:linear-gradient(135deg,var(--gold-l),var(--gold));border:none;padding:9px 30px;border-radius:40px;cursor:pointer;transition:all .3s;box-shadow:0 0 12px rgba(201,168,76,.22),0 3px 8px rgba(0,0,0,.5);opacity:0;transform:translateX(6px);pointer-events:none;}
+        .draw-btn.show{opacity:1;transform:translateX(0);pointer-events:auto;}
+        .draw-btn:hover{box-shadow:0 0 26px rgba(201,168,76,.42),0 5px 14px rgba(0,0,0,.5);}
+        .ornament{font-size:.85rem;opacity:.16;color:var(--gold);}
     </style>
 </head>
 <body>
-    <canvas id="stars"></canvas>
-    <div id="particles"></div>
+<canvas id="stars"></canvas>
+<div id="particles"></div>
 
-    <div class="page">
-        <div class="header">
-            <a href="selectGame.html" class="back-link">← Return</a>
-            <h1>The Cards Speak</h1>
-            <div class="divider"></div>
-            <div class="pick-dots" id="pick-dots">
-                <span>✦</span><span>✦</span><span>✦</span>
-            </div>
+<div class="page">
+    <div class="top">
+        <a href="selectGame.html" class="back-link">← Return</a>
+        <h1>Draw Your Fate</h1>
+        <div class="divider"></div>
+    </div>
+
+    <div class="content-area">
+        <div class="card-row" id="card-row">
+            <!-- built by JS -->
         </div>
-
-        <div class="spread-wrap">
-            <div id="spread"></div>
-        </div>
-
-        <div class="footer">
-            <button class="redeal-btn" id="redeal-btn" onclick="deal()">Draw Again</button>
-            <div class="ornament">✦ ✧ ✦</div>
+        <div class="story-panel" id="story-panel">
+            <div class="bg-name" id="bg-name"></div>
+            <div class="bg-story" id="bg-story"></div>
+            <button class="draw-btn" id="draw-btn" onclick="deal()">Draw Again</button>
         </div>
     </div>
 
+    <div class="footer">
+        <div class="ornament">✦ ✧ ✦</div>
+    </div>
+</div>
+
 <script>
-// ── Starfield ─────────────────────────────────────────────────────────
-const starsCanvas = document.getElementById('stars');
-const sCtx = starsCanvas.getContext('2d');
-let stars = [];
+// ── Starfield ──────────────────────────────────────────────────────────
+const sc=document.getElementById('stars'),sCtx=sc.getContext('2d');let stars=[];
+function rsz(){sc.width=innerWidth;sc.height=innerHeight;stars=[];const n=Math.floor(sc.width*sc.height/4500);for(let i=0;i<n;i++)stars.push({x:Math.random()*sc.width,y:Math.random()*sc.height,r:Math.random()*1.1+.3,a:Math.random()*.7+.1,sp:Math.random()*.007+.002,ph:Math.random()*Math.PI*2});}
+function anim(t){sCtx.clearRect(0,0,sc.width,sc.height);for(const s of stars){const a=s.a*(.55+.45*Math.sin(t*s.sp+s.ph));sCtx.beginPath();sCtx.arc(s.x,s.y,s.r,0,Math.PI*2);sCtx.fillStyle=`rgba(232,201,109,${a})`;sCtx.fill();}requestAnimationFrame(anim);}
+window.addEventListener('resize',()=>{rsz();deal();});rsz();requestAnimationFrame(anim);
 
-function resizeStars() {
-    starsCanvas.width = window.innerWidth;
-    starsCanvas.height = window.innerHeight;
-    stars = [];
-    const n = Math.floor((starsCanvas.width * starsCanvas.height) / 4500);
-    for (let i = 0; i < n; i++) stars.push({
-        x: Math.random() * starsCanvas.width,
-        y: Math.random() * starsCanvas.height,
-        r: Math.random() * 1.1 + 0.3,
-        a: Math.random() * 0.7 + 0.1,
-        sp: Math.random() * 0.007 + 0.002,
-        ph: Math.random() * Math.PI * 2
-    });
-}
+function spawnP(x,y){const c=document.getElementById('particles');for(let i=0;i<12;i++){const p=document.createElement('div');p.className='particle';p.style.left=(x+(Math.random()-.5)*55)+'px';p.style.top=(y+(Math.random()-.5)*32)+'px';p.style.animationDuration=(Math.random()*1.2+.8)+'s';p.style.animationDelay=(Math.random()*.2)+'s';c.appendChild(p);p.addEventListener('animationend',()=>p.remove());}}
 
-function animateStars(t) {
-    sCtx.clearRect(0, 0, starsCanvas.width, starsCanvas.height);
-    for (const s of stars) {
-        const a = s.a * (0.55 + 0.45 * Math.sin(t * s.sp + s.ph));
-        sCtx.beginPath();
-        sCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        sCtx.fillStyle = `rgba(232,201,109,${a})`;
-        sCtx.fill();
-    }
-    requestAnimationFrame(animateStars);
-}
-
-window.addEventListener('resize', () => { resizeStars(); buildSpread(); });
-resizeStars();
-requestAnimationFrame(animateStars);
-
-// ── Particles ─────────────────────────────────────────────────────────
-function spawnParticles(x, y) {
-    const cont = document.getElementById('particles');
-    for (let i = 0; i < 12; i++) {
-        const p = document.createElement('div');
-        p.className = 'particle';
-        p.style.left = (x + (Math.random() - 0.5) * 60) + 'px';
-        p.style.top  = (y + (Math.random() - 0.5) * 36) + 'px';
-        p.style.animationDuration = (Math.random() * 1.2 + 0.8) + 's';
-        p.style.animationDelay    = (Math.random() * 0.2) + 's';
-        cont.appendChild(p);
-        p.addEventListener('animationend', () => p.remove());
-    }
-}
+// ── Features ───────────────────────────────────────────────────────────
+const FEATURES={
+    wanderer:{name:"The Long Road",lang:"any one language",desc:"You can always find food and shelter for yourself and your party in any settlement. Locals recognize the look of someone who has walked far and tends to share what little they have."},
+    scholar:{name:"Keeper of Lore",lang:"one ancient language (Elvish, Dwarvish, or Draconic)",desc:"Given a day in any city, you can find research materials, translate unusual scripts, or locate a subject expert through your network of scholars and scribes."},
+    healer:{name:"Healer's Touch",lang:"Celestial",desc:"When you spend 10 minutes tending to a creature it regains 1 extra hit point from any healing until your next long rest. You never need healer's tools to stabilize the dying."},
+    shadow:{name:"Shadow Network",lang:"Thieves' Cant",desc:"You know how to find the criminal underworld of any city within hours — safe houses, black-market contacts, and information all available if you know the right signs."},
+    performer:{name:"By Popular Demand",lang:"any one language",desc:"Whenever you perform publicly you can always find a venue in exchange for entertainment. People remember your face fondly and crowds are more willing to share information and favors."},
+    soldier:{name:"Iron Name",lang:"any one language",desc:"Your background earns deference from soldiers and guards. You can requisition basic supplies from military organizations, and rank-and-file fighters are inclined to follow your lead."},
+    devout:{name:"Eyes of the Divine",lang:"Celestial",desc:"Religious institutions provide you shelter, food, and counsel. Your prayers are noticed by higher powers — though not always answered in the way you expect."},
+    merchant:{name:"Market Sense",lang:"any one language",desc:"You always know the going rate for goods and can smell a fleecing at distance. Traders treat you as a peer, offering honest prices, and rare items find their way to you through trade networks."},
+    survivor:{name:"Born from Ruin",lang:"any one language",desc:"You recognize desperation in others before they speak it, and always know when someone is hiding genuine danger behind a calm face. Harsh environments feel familiar rather than threatening."},
+    fortune:{name:"Fortune's Fool",lang:"any one language",desc:"Once per long rest, declare a moment of blind luck and reroll any one d20 before the result is known. You also always know where the nearest game of chance is — and the house always seems uneasy to see you."},
+    exile:{name:"Second Life",lang:"any one language",desc:"You maintain a convincing false identity and can slip into it at need. Someone from your true past knows you are alive — whether ally or threat is something you manage carefully."},
+    lover:{name:"Heartstring",lang:"Elvish",desc:"People who spend meaningful time with you form genuine attachments with unusual speed. NPCs who consider you a friend will take risks they would not otherwise. This has cost you as much as it has given you."},
+};
 
 // ── Card data ─────────────────────────────────────────────────────────
-const CARDS = [
-    { name: "The Fool",           file: "tarot/cards/major/fool.png" },
-    { name: "The Magician",       file: "tarot/cards/major/magician.png" },
-    { name: "The High Priestess", file: "tarot/cards/major/high priestess.png" },
-    { name: "The Empress",        file: "tarot/cards/major/empress.png" },
-    { name: "The Emperor",        file: "tarot/cards/major/emperor.png" },
-    { name: "The Hierophant",     file: "tarot/cards/major/hierophant.png" },
-    { name: "The Lovers",         file: "tarot/cards/major/lovers.png" },
-    { name: "The Chariot",        file: "tarot/cards/major/chariot.png" },
-    { name: "Strength",           file: "tarot/cards/major/strength.png" },
-    { name: "The Hermit",         file: "tarot/cards/major/hermit.png" },
-    { name: "Wheel of Fortune",   file: "tarot/cards/major/wheel of fortune.png" },
-    { name: "Justice",            file: "tarot/cards/major/justice.png" },
-    { name: "The Hanged Man",     file: "tarot/cards/major/hanged man.png" },
-    { name: "Death",              file: "tarot/cards/major/death.png" },
-    { name: "Temperance",         file: "tarot/cards/major/temperance.png" },
-    { name: "The Devil",          file: "tarot/cards/major/devil.png" },
-    { name: "The Tower",          file: "tarot/cards/major/tower.png" },
-    { name: "The Star",           file: "tarot/cards/major/star.png" },
-    { name: "The Moon",           file: "tarot/cards/major/moon.png" },
-    { name: "The Sun",            file: "tarot/cards/major/sun.png" },
-    { name: "Judgement",          file: "tarot/cards/major/judgement.png" },
-    { name: "The World",          file: "tarot/cards/major/world.png" },
-    { name: "Ace of Cups",        file: "tarot/cards/cups/ace_of _cups.png" },
-    { name: "Two of Cups",        file: "tarot/cards/cups/two_of _cups.png" },
-    { name: "Three of Cups",      file: "tarot/cards/cups/three_of _cups.png" },
-    { name: "Four of Cups",       file: "tarot/cards/cups/four_of _cups.png" },
-    { name: "Five of Cups",       file: "tarot/cards/cups/five_of _cups.png" },
-    { name: "Six of Cups",        file: "tarot/cards/cups/six_of _cups.png" },
-    { name: "Seven of Cups",      file: "tarot/cards/cups/seven_of _cups.png" },
-    { name: "Eight of Cups",      file: "tarot/cards/cups/eight_of _cups.png" },
-    { name: "Nine of Cups",       file: "tarot/cards/cups/nine_of _cups.png" },
-    { name: "Ten of Cups",        file: "tarot/cards/cups/ten_of _cups.png" },
-    { name: "Page of Cups",       file: "tarot/cards/cups/page_of _cups.png" },
-    { name: "Knight of Cups",     file: "tarot/cards/cups/knight_of _cups.png" },
-    { name: "Queen of Cups",      file: "tarot/cards/cups/queen_of _cups.png" },
-    { name: "King of Cups",       file: "tarot/cards/cups/king_of _cups.png" },
-    { name: "Ace of Wands",       file: "tarot/cards/wands/ace_of_wands.png" },
-    { name: "Two of Wands",       file: "tarot/cards/wands/two_of_wands.png" },
-    { name: "Three of Wands",     file: "tarot/cards/wands/three_of_wands.png" },
-    { name: "Four of Wands",      file: "tarot/cards/wands/four_of_wands.png" },
-    { name: "Five of Wands",      file: "tarot/cards/wands/five_of_wands.png" },
-    { name: "Six of Wands",       file: "tarot/cards/wands/six_of_wands.png" },
-    { name: "Seven of Wands",     file: "tarot/cards/wands/seven_of_wands.png" },
-    { name: "Eight of Wands",     file: "tarot/cards/wands/eight_of_wands.png" },
-    { name: "Nine of Wands",      file: "tarot/cards/wands/nine_of_wands.png" },
-    { name: "Ten of Wands",       file: "tarot/cards/wands/ten_of_wands.png" },
-    { name: "Page of Wands",      file: "tarot/cards/wands/page_of_wands.png" },
-    { name: "Knight of Wands",    file: "tarot/cards/wands/knight_of_wands.png" },
-    { name: "Queen of Wands",     file: "tarot/cards/wands/queen_of_wands.png" },
-    { name: "King of Wands",      file: "tarot/cards/wands/king_of_wands.png" },
-    { name: "Ace of Swords",      file: "tarot/cards/swords/ace_of _swords.png" },
-    { name: "Two of Swords",      file: "tarot/cards/swords/two_of _swords.png" },
-    { name: "Three of Swords",    file: "tarot/cards/swords/three_of _swords.png" },
-    { name: "Four of Swords",     file: "tarot/cards/swords/four_of _swords.png" },
-    { name: "Five of Swords",     file: "tarot/cards/swords/five_of _swords.png" },
-    { name: "Six of Swords",      file: "tarot/cards/swords/six_of _swords.png" },
-    { name: "Seven of Swords",    file: "tarot/cards/swords/seven_of _swords.png" },
-    { name: "Eight of Swords",    file: "tarot/cards/swords/eight_of _swords.png" },
-    { name: "Nine of Swords",     file: "tarot/cards/swords/nine_of _swords.png" },
-    { name: "Ten of Swords",      file: "tarot/cards/swords/ten_of _swords.png" },
-    { name: "Page of Swords",     file: "tarot/cards/swords/page_of _swords.png" },
-    { name: "Knight of Swords",   file: "tarot/cards/swords/knight_of _swords.png" },
-    { name: "Queen of Swords",    file: "tarot/cards/swords/queen_of _swords.png" },
-    { name: "King of Swords",     file: "tarot/cards/swords/king_of _swords.png" },
-    { name: "Ace of Pentacles",   file: "tarot/cards/pentacles/ace_of _pentacles.png" },
-    { name: "Two of Pentacles",   file: "tarot/cards/pentacles/two_of _pentacles.png" },
-    { name: "Three of Pentacles", file: "tarot/cards/pentacles/three_of _pentacles.png" },
-    { name: "Four of Pentacles",  file: "tarot/cards/pentacles/four_of _pentacles.png" },
-    { name: "Five of Pentacles",  file: "tarot/cards/pentacles/five_of _pentacles.png" },
-    { name: "Six of Pentacles",   file: "tarot/cards/pentacles/six_of _pentacles.png" },
-    { name: "Seven of Pentacles", file: "tarot/cards/pentacles/seven_of _pentacles.png" },
-    { name: "Eight of Pentacles", file: "tarot/cards/pentacles/eight_of _pentacles.png" },
-    { name: "Nine of Pentacles",  file: "tarot/cards/pentacles/nine_of _pentacles.png" },
-    { name: "Ten of Pentacles",   file: "tarot/cards/pentacles/ten_of _pentacles.png" },
-    { name: "Page of Pentacles",  file: "tarot/cards/pentacles/page_of _pentacles.png" },
-    { name: "Knight of Pentacles",file: "tarot/cards/pentacles/knight_of _pentacles.png" },
-    { name: "Queen of Pentacles", file: "tarot/cards/pentacles/queen_of _pentacles.png" },
-    { name: "King of Pentacles",  file: "tarot/cards/pentacles/king_of _pentacles.png" },
+const CARDS=[
+// MAJOR ARCANA
+{name:"The Fool",file:"tarot/cards/major/fool.png",skills:["Acrobatics","Survival"],tool:"Dice Set",equip:["worn traveler's pack","bedroll","10 torches"],feat:"wanderer",adj:"Wandering",noun:"Fool",origin:"You left everything behind on a whim, stepping off the edge of your old life into glorious uncertainty",event:"blind chance brought you face to face with something you were never supposed to see",calling:"the road still calls you forward with promises it may never keep"},
+{name:"The Magician",file:"tarot/cards/major/magician.png",skills:["Arcana","Sleight of Hand"],tool:"Forgery Kit",equip:["arcane focus","forged papers","5 candles"],feat:"scholar",adj:"Cunning",noun:"Conjurer",origin:"You taught yourself what no tutor would willingly share, bending rules until they bent back",event:"you performed a feat of impossible skill that made believers of skeptics and enemies of rivals",calling:"mastery over the unseen forces of the world is the only ambition that still keeps you awake"},
+{name:"The High Priestess",file:"tarot/cards/major/high priestess.png",skills:["Religion","Insight"],tool:"Calligrapher's Supplies",equip:["prayer beads","holy symbol","2 sticks of incense"],feat:"devout",adj:"Veiled",noun:"Seer",origin:"You were raised at the threshold of sacred things, learning to listen to what others could not hear",event:"a divine silence fell over you, and in that silence something vast whispered its secrets",calling:"you carry a truth you cannot yet speak, waiting for the moment it is ready to be known"},
+{name:"The Empress",file:"tarot/cards/major/empress.png",skills:["Nature","Persuasion"],tool:"Herbalism Kit",equip:["herbalism kit","healing potion","fine clothes"],feat:"healer",adj:"Abundant",noun:"Caretaker",origin:"You were born into comfort, or perhaps earned it, learning that the world grows best when tended with open hands",event:"someone placed their life in your care and you discovered what it means to truly matter to another",calling:"you seek to make every place you touch a little more whole than you found it"},
+{name:"The Emperor",file:"tarot/cards/major/emperor.png",skills:["Athletics","Intimidation"],tool:"Smith's Tools",equip:["battle trophy","officer's seal","5 gp"],feat:"soldier",adj:"Iron",noun:"Commander",origin:"You built your reputation on discipline and consequence, commanding respect from necessity or fear",event:"your authority was tested in fire and you either held the line or learned what it costs to break",calling:"order must be preserved at any price and you are the one willing to pay it"},
+{name:"The Hierophant",file:"tarot/cards/major/hierophant.png",skills:["Religion","History"],tool:"Calligrapher's Supplies",equip:["holy text","prayer beads","ceremonial robes"],feat:"devout",adj:"Sacred",noun:"Keeper",origin:"You were a keeper of tradition, trained in rites and duties older than any living memory",event:"your faith was tested by a heresy you could not ignore or condemn without first understanding",calling:"you seek to bridge the ancient ways with the living world, one soul at a time"},
+{name:"The Lovers",file:"tarot/cards/major/lovers.png",skills:["Persuasion","Insight"],tool:"Disguise Kit",equip:["sealed love letter","fine clothes","perfume vial"],feat:"lover",adj:"Devoted",noun:"Wanderer",origin:"You have always moved through the world with your heart before your head and paid the price",event:"a single impossible choice between two paths left you forever changed and perhaps forever grateful",calling:"you still believe in the power of one true thing, whatever form it takes"},
+{name:"The Chariot",file:"tarot/cards/major/chariot.png",skills:["Athletics","Animal Handling"],tool:"Vehicles (Land)",equip:["riding boots","military saddle","50 ft of rope"],feat:"soldier",adj:"Relentless",noun:"Rider",origin:"You were always moving, always pressing forward, taking orders or giving them on the long road of conflict",event:"you won something through sheer will when all odds said stop",calling:"victory is not a destination but a discipline and you will not be the one to stop first"},
+{name:"Strength",file:"tarot/cards/major/strength.png",skills:["Athletics","Animal Handling"],tool:"Smith's Tools",equip:["manacles","hunting trap","beast trophy"],feat:"survivor",adj:"Unyielding",noun:"Tamer",origin:"You learned early that strength without patience breaks everything it touches and gentleness can move mountains",event:"something wild and dangerous was placed in your hands and you chose compassion over force",calling:"you carry the weight of your choices with quiet pride knowing you did not have to be kind"},
+{name:"The Hermit",file:"tarot/cards/major/hermit.png",skills:["Medicine","Religion"],tool:"Herbalism Kit",equip:["herbalism kit","hand-drawn map","winter blanket"],feat:"scholar",adj:"Quiet",noun:"Seeker",origin:"You withdrew from the noise of the world and found in its absence something worth returning for",event:"a revelation came to you in the silence — an answer you had been asking the wrong questions to reach",calling:"wisdom is not something to hoard but to carry carefully back into the light for others"},
+{name:"Wheel of Fortune",file:"tarot/cards/major/wheel of fortune.png",skills:["Insight","Persuasion"],tool:"Playing Card Set",equip:["lucky charm","playing cards","15 gp"],feat:"fortune",adj:"Lucky",noun:"Gambler",origin:"The wheel of fortune spun you high before it spun you low and you learned to love the spinning",event:"everything changed in an instant — one roll of the dice — and you adapted",calling:"fate is not fixed and you intend to prove it with every improbable decision you survive"},
+{name:"Justice",file:"tarot/cards/major/justice.png",skills:["Investigation","Insight"],tool:"Navigator's Tools",equip:["writ of authority","manacles","10 gp"],feat:"soldier",adj:"Measured",noun:"Arbiter",origin:"You served a system of law, or challenged one, and either way learned that justice demands sacrifice",event:"a case was brought before you that had no clean answer, only a choice between two forms of wrong",calling:"the scales must balance and you are willing to be the weight that tips them toward what is right"},
+{name:"The Hanged Man",file:"tarot/cards/major/hanged man.png",skills:["Insight","Persuasion"],tool:"Forgery Kit",equip:["broken shackle","forged identity papers","dark traveling cloak"],feat:"exile",adj:"Suspended",noun:"Exile",origin:"You hung between two worlds — neither free nor fully bound — and saw everything differently from that angle",event:"you were made to wait, to sacrifice, to pause everything when you most wanted to act",calling:"the delay was the lesson and you carry its strange wisdom wherever the road takes you"},
+{name:"Death",file:"tarot/cards/major/death.png",skills:["Medicine","Survival"],tool:"Poisoner's Kit",equip:["bone token (memento)","burial shroud","5 cp"],feat:"survivor",adj:"Transformed",noun:"Survivor",origin:"Something that was you ended completely and without ceremony, leaving a new thing standing in its place",event:"you watched an ending, or lived through one, and understood that endings are the only true beginnings",calling:"you release what is finished without grief, moving always toward what is still alive and possible"},
+{name:"Temperance",file:"tarot/cards/major/temperance.png",skills:["Medicine","Persuasion"],tool:"Alchemist's Supplies",equip:["2 healing potions","measuring scales","common clothes"],feat:"healer",adj:"Patient",noun:"Healer",origin:"You learned the art of balance, mixing the bitter with the sweet until something useful emerged",event:"you brought two impossible things together and held them steady long enough to see what they could become",calling:"moderation is not weakness but precision and you apply it like a surgeon's blade"},
+{name:"The Devil",file:"tarot/cards/major/devil.png",skills:["Deception","Intimidation"],tool:"Thieves' Tools",equip:["thieves' tools","false idol (pocket-sized)","25 gp"],feat:"shadow",adj:"Unbound",noun:"Deceiver",origin:"You were bound to something long enough to understand what bondage really is",event:"you stared into the face of your own worst impulse and chose whether to follow it or turn away",calling:"the chains are of your own making now and you decide each morning whether to put them on"},
+{name:"The Tower",file:"tarot/cards/major/tower.png",skills:["Athletics","Survival"],tool:"Mason's Tools",equip:["cracked stone with symbol","50 ft of rope","flint and steel"],feat:"survivor",adj:"Broken",noun:"Wraith",origin:"Everything you built, or belonged to, came down in fire and ruin and screaming",event:"the tower fell and in the rubble you found something you never expected: yourself, still standing",calling:"you build nothing that cannot also be walked away from because you have learned what collapse costs"},
+{name:"The Star",file:"tarot/cards/major/star.png",skills:["Nature","Performance"],tool:"Musical Instrument",equip:["lute","star chart (hand-drawn)","10 gp"],feat:"performer",adj:"Luminous",noun:"Dreamer",origin:"You have always been drawn to beauty, found it in strange places, named it, and tried to share it",event:"hope arrived when you had given up looking, gentle and impossible and completely real",calling:"you carry a quiet light you cannot explain, only offer to those who have forgotten darkness ends"},
+{name:"The Moon",file:"tarot/cards/major/moon.png",skills:["Stealth","Deception"],tool:"Disguise Kit",equip:["dark traveling cloak","forged documents","moonstone"],feat:"shadow",adj:"Shadowed",noun:"Ghost",origin:"You moved through a world of half-truths and shifting faces, never certain which one was yours",event:"the fog lifted for a moment and showed you something you could not unsee however much you tried",calling:"you are drawn to illusions not to be deceived but to find what is hidden inside them"},
+{name:"The Sun",file:"tarot/cards/major/sun.png",skills:["Performance","Persuasion"],tool:"Musical Instrument",equip:["signet ring","fine clothes","25 gp"],feat:"performer",adj:"Radiant",noun:"Champion",origin:"You were beloved, or briefly famous, or simply bathed in a season of golden unrepeatable luck",event:"you stood in the full light of public triumph and felt both the warmth and the danger of being seen",calling:"joy is not naive — it is defiant — and you have chosen to wield it like a weapon"},
+{name:"Judgement",file:"tarot/cards/major/judgement.png",skills:["History","Religion"],tool:"Calligrapher's Supplies",equip:["confession journal","holy symbol","last letter (unsent)"],feat:"devout",adj:"Redeemed",noun:"Witness",origin:"You were called to account — by gods, by courts, or your own conscience — and found yourself honestly wanting",event:"the reckoning came and you chose to face it rather than flee which changed something fundamental in you",calling:"you seek to be worthy of your second chance and to help others find theirs"},
+{name:"The World",file:"tarot/cards/major/world.png",skills:["History","Athletics"],tool:"Navigator's Tools",equip:["detailed world map","50 ft of rope","foreign coins"],feat:"wanderer",adj:"Worldly",noun:"Traveler",origin:"You have been to the ends of more things than most people imagine exist and still found more to explore",event:"a journey completed left you richer in scars and stories than any treasure and you would not trade either",calling:"the world is unfinished and you are not done with it yet"},
+// CUPS
+{name:"Ace of Cups",file:"tarot/cards/cups/ace_of _cups.png",skills:["Insight","Persuasion"],tool:"Herbalism Kit",equip:["glass vial (gift)","fresh healing herbs","personal journal"],feat:"lover",adj:"Open",noun:"Vessel",origin:"Your heart was always almost embarrassingly open and people came to you with things they could not carry alone",event:"a sudden surge of feeling overwhelmed all your careful plans and remade them",calling:"you believe the greatest gift you can offer is your full attention and an honest heart"},
+{name:"Two of Cups",file:"tarot/cards/cups/two_of _cups.png",skills:["Persuasion","Insight"],tool:"Brewer's Supplies",equip:["paired tokens (one kept)","fine wine","love letter"],feat:"lover",adj:"Bound",noun:"Partner",origin:"You understood early that the deepest strength is the kind you lend to another and receive in return",event:"you formed a bond that altered the course of both your lives",calling:"you carry that connection like a compass, always knowing which direction is toward the ones you love"},
+{name:"Three of Cups",file:"tarot/cards/cups/three_of _cups.png",skills:["Performance","Persuasion"],tool:"Brewer's Supplies",equip:["cask of fine wine","festive outfit","playing cards"],feat:"performer",adj:"Festive",noun:"Reveler",origin:"You were the one who brought people together and turned a cold room warm with laughter and shared cups",event:"a celebration you helped create became the thing everyone in that town still talks about",calling:"wherever you go you make a table worth sitting at"},
+{name:"Four of Cups",file:"tarot/cards/cups/four_of _cups.png",skills:["Insight","Investigation"],tool:"Alchemist's Supplies",equip:["meditation mat","dreamcatcher","half-used candle"],feat:"scholar",adj:"Contemplative",noun:"Dreamer",origin:"You were known for staring past what was in front of you, always searching for something you could not name",event:"opportunity knocked while you were looking inward and you almost missed it — but not quite",calling:"you are still learning to be present in the moment your life is actually happening"},
+{name:"Five of Cups",file:"tarot/cards/cups/five_of _cups.png",skills:["Insight","Survival"],tool:"Herbalism Kit",equip:["mourning token","worn letter","black mourning cloth"],feat:"survivor",adj:"Grieving",noun:"Mourner",origin:"You lost something that could not be replaced and spent a season standing at the edge of that absence",event:"in the depth of your loss you nearly missed the cups still standing behind you",calling:"you carry your grief honestly and it has made you kinder than any joy ever did"},
+{name:"Six of Cups",file:"tarot/cards/cups/six_of _cups.png",skills:["History","Persuasion"],tool:"Calligrapher's Supplies",equip:["childhood toy","faded portrait","letter from a mentor"],feat:"lover",adj:"Nostalgic",noun:"Child",origin:"You were shaped by a golden time — a home, a friend, a season — that made you who you are",event:"you returned to something from your past that you had believed was gone forever",calling:"you move through the world with a tenderness born from having known what it is to be safe"},
+{name:"Seven of Cups",file:"tarot/cards/cups/seven_of _cups.png",skills:["Deception","Insight"],tool:"Disguise Kit",equip:["illusion trinket","scattered notes","7 gp"],feat:"shadow",adj:"Visionary",noun:"Dreamer",origin:"You were a dreamer of impossible dreams and reality always had a different idea",event:"you faced all your fantasies at once and had to choose the one true thing among the phantoms",calling:"you have learned to tell the difference between what is real and what you merely wish for"},
+{name:"Eight of Cups",file:"tarot/cards/cups/eight_of _cups.png",skills:["Survival","Insight"],tool:"Navigator's Tools",equip:["walking staff","traveling cloak","road map"],feat:"wanderer",adj:"Departing",noun:"Pilgrim",origin:"You walked away from something that was not wrong, only finished, and found yourself on an unfamiliar road",event:"the courage it took to leave was the most honest thing you had ever done",calling:"you follow the pull of something deeper than comfort even when you cannot name what it is"},
+{name:"Nine of Cups",file:"tarot/cards/cups/nine_of _cups.png",skills:["Persuasion","Performance"],tool:"Brewer's Supplies",equip:["fine vintage wine","lucky token","30 gp"],feat:"fortune",adj:"Satisfied",noun:"Sage",origin:"You found what you were looking for once and lived inside that satisfaction long enough to know it was real",event:"your wish came true quietly and without any of the fanfare you expected",calling:"you know contentment is not complacency and you protect it as fiercely as anything you have ever fought for"},
+{name:"Ten of Cups",file:"tarot/cards/cups/ten_of _cups.png",skills:["Persuasion","Insight"],tool:"Calligrapher's Supplies",equip:["family crest","warmhearted letter","15 gp"],feat:"lover",adj:"Cherished",noun:"Kin",origin:"You grew up knowing you were loved, or fought hard to build what love looked like from the inside",event:"the circle was complete — everyone you cared for, gathered, safe, whole — if only for one moment",calling:"that image of wholeness is what you protect and what you are willing to cross the world to keep"},
+{name:"Page of Cups",file:"tarot/cards/cups/page_of _cups.png",skills:["Insight","Arcana"],tool:"Calligrapher's Supplies",equip:["blank spellbook","quill and ink","smooth river stone"],feat:"scholar",adj:"Curious",noun:"Messenger",origin:"You were always the one who noticed what others overlooked — the strange gift, the unexpected message",event:"a vision arrived that you could not explain and it changed the questions you were asking",calling:"you remain open to the inexplicable because you have learned it often has the best gifts"},
+{name:"Knight of Cups",file:"tarot/cards/cups/knight_of _cups.png",skills:["Persuasion","Athletics"],tool:"Musical Instrument",equip:["lute","romantic poems (handwritten)","horse token"],feat:"lover",adj:"Romantic",noun:"Knight",origin:"You rode toward beauty and heartbreak in equal measure, driven by feeling and absolutely certain of it",event:"you made a grand gesture — a quest, a declaration — in the name of something you believed in",calling:"idealism for you is not naivety but a deliberate choice you make every morning"},
+{name:"Queen of Cups",file:"tarot/cards/cups/queen_of _cups.png",skills:["Insight","Medicine"],tool:"Herbalism Kit",equip:["healing herbs","dreamstone","embroidered shawl"],feat:"healer",adj:"Compassionate",noun:"Guardian",origin:"You were the one people brought their impossible burdens to, knowing you would not flinch or look away",event:"someone needed more than you thought you had to give and you found it anyway",calling:"you hold space for the grief and wonder of others without letting it pull you under"},
+{name:"King of Cups",file:"tarot/cards/cups/king_of _cups.png",skills:["Insight","Persuasion"],tool:"Brewer's Supplies",equip:["silver chalice","signet ring","20 gp"],feat:"lover",adj:"Steadfast",noun:"Anchor",origin:"You mastered the ocean inside yourself and became the still water others could see themselves reflected in",event:"a crisis of emotion called for precisely the calm authority you had spent years building",calling:"you lead not with dominance but with depth and people follow because you have shown them what steady looks like"},
+// WANDS
+{name:"Ace of Wands",file:"tarot/cards/wands/ace_of_wands.png",skills:["Athletics","Survival"],tool:"Tinker's Tools",equip:["2 torches","flint and steel","carved wand"],feat:"wanderer",adj:"Fiery",noun:"Spark",origin:"Something ignited in you — a passion, a purpose, a fury — and nothing that came after was ever quite the same",event:"you seized an opportunity no one else was willing to reach for and it burned brilliantly in your hands",calling:"you carry the fire that started it all and you are always looking for somewhere new to let it breathe"},
+{name:"Two of Wands",file:"tarot/cards/wands/two_of_wands.png",skills:["Perception","History"],tool:"Navigator's Tools",equip:["spyglass","rolled travel map","10 gp"],feat:"wanderer",adj:"Ambitious",noun:"Visionary",origin:"You stood at the edge of the known world and felt not fear but the specific hunger of someone who wants more",event:"you held the world in your hands briefly and had to decide whether to risk it",calling:"your eyes are always on the horizon because that is where the next true thing lives"},
+{name:"Three of Wands",file:"tarot/cards/wands/three_of_wands.png",skills:["Perception","Survival"],tool:"Navigator's Tools",equip:["compact compass","merchant ledger","15 gp"],feat:"merchant",adj:"Expansive",noun:"Scout",origin:"Your ships went out before you were ready and you learned to trust what you had built even when you could not see it",event:"a venture you launched came back changed and the change was better than you planned for",calling:"you look out from every high place still waiting for the sight of your next horizon coming in"},
+{name:"Four of Wands",file:"tarot/cards/wands/four_of_wands.png",skills:["Performance","Persuasion"],tool:"Musical Instrument",equip:["decorative banner","festive outfit","10 gp"],feat:"performer",adj:"Celebrated",noun:"Host",origin:"You built a community around shared joy and threw the kind of party people still argue about",event:"a homecoming reminded you what it means to belong somewhere completely",calling:"you believe every victory deserves celebration and every stranger deserves a seat at the table"},
+{name:"Five of Wands",file:"tarot/cards/wands/five_of_wands.png",skills:["Athletics","Intimidation"],tool:"Smith's Tools",equip:["bent weapon (trophy)","dust-caked boots","5 gp"],feat:"soldier",adj:"Scrappy",noun:"Fighter",origin:"You grew up in the middle of a scrum, competing for everything, and learned that conflict can be productive chaos",event:"a brawl or contest pushed you further than you expected to go and you discovered you liked it",calling:"you thrive in the friction finding focus where others find noise"},
+{name:"Six of Wands",file:"tarot/cards/wands/six_of_wands.png",skills:["Athletics","Persuasion"],tool:"Vehicles (Land)",equip:["victor's wreath (dried)","riding boots","20 gp"],feat:"soldier",adj:"Triumphant",noun:"Hero",origin:"You had your moment — the crowd, the cheering, the undeniable proof that you were exactly who you thought you were",event:"victory came publicly and changed how others saw you for better and for worse",calling:"you know the moment cannot last which is why you chase the next one with such absolute commitment"},
+{name:"Seven of Wands",file:"tarot/cards/wands/seven_of_wands.png",skills:["Athletics","Intimidation"],tool:"Smith's Tools",equip:["dented shield strap","worn armor strap","5 gp"],feat:"soldier",adj:"Embattled",noun:"Defender",origin:"You held something worth holding against people who wanted it gone and you did not yield",event:"they came at you from all sides at once and you found the high ground was exactly as good as you hoped",calling:"defense is not the same as fear and you will hold this ground until the last enemy stands down"},
+{name:"Eight of Wands",file:"tarot/cards/wands/eight_of_wands.png",skills:["Acrobatics","Perception"],tool:"Navigator's Tools",equip:["sealed urgent scroll","fast-travel boots","10 gp"],feat:"wanderer",adj:"Swift",noun:"Arrow",origin:"Your life moved fast — fast decisions, fast roads, fast consequences — and you thrived in the blur",event:"everything converged at once and you moved through it like a bolt of lightning through still air",calling:"momentum is your natural element and standing still feels like something you have never learned to do"},
+{name:"Nine of Wands",file:"tarot/cards/wands/nine_of_wands.png",skills:["Athletics","Survival"],tool:"Mason's Tools",equip:["bandaged keepsake","spare rope","5 gp"],feat:"survivor",adj:"Scarred",noun:"Holdout",origin:"You have been here before — battered, nearly broken, leaning on your last reserves — and you are still here",event:"one more blow came when you thought you were finished and you took it and kept standing",calling:"the finish line is close enough that you can feel it and nothing is going to make you stop now"},
+{name:"Ten of Wands",file:"tarot/cards/wands/ten_of_wands.png",skills:["Athletics","Persuasion"],tool:"Vehicles (Land)",equip:["heavy travel pack","oil lamp","3 gp"],feat:"soldier",adj:"Burdened",noun:"Bearer",origin:"You took on more than your share of the weight and carried it anyway because no one else would",event:"the load grew heavier than any one person should carry and you are still not sure why you did not set it down",calling:"you are learning slowly the difference between duty and exhaustion and that it is permissible to ask for help"},
+{name:"Page of Wands",file:"tarot/cards/wands/page_of_wands.png",skills:["Acrobatics","Nature"],tool:"Tinker's Tools",equip:["exploration journal","small compass","bright feather"],feat:"wanderer",adj:"Eager",noun:"Explorer",origin:"You were always running toward something, curious beyond reason, the first to climb the thing no one else would",event:"an adventure landed in your lap so perfectly you suspect the universe put it there just for you",calling:"the next discovery is always just past the next hill and you cannot imagine not being the one to find it"},
+{name:"Knight of Wands",file:"tarot/cards/wands/knight_of_wands.png",skills:["Athletics","Survival"],tool:"Vehicles (Land)",equip:["torch","hard-ridden travel boots","incomplete map"],feat:"wanderer",adj:"Daring",noun:"Rider",origin:"You charged toward everything and let the consequences sort themselves out which they usually did eventually",event:"you leaped before you looked and landed somewhere extraordinary through no plan of your own",calling:"regret is for people who stopped moving and you have no intention of becoming one of them"},
+{name:"Queen of Wands",file:"tarot/cards/wands/queen_of_wands.png",skills:["Nature","Persuasion"],tool:"Herbalism Kit",equip:["sunflower token","bright traveling scarf","20 gp"],feat:"performer",adj:"Vivid",noun:"Flame",origin:"Rooms lit up when you entered them not because you demanded it but because you genuinely loved every person in them",event:"you became the center of a movement because you were the only one bold enough to stand there",calling:"you lead by invitation and people follow because following you feels like becoming more alive"},
+{name:"King of Wands",file:"tarot/cards/wands/king_of_wands.png",skills:["Persuasion","Intimidation"],tool:"Vehicles (Land)",equip:["seal of office","riding gloves","25 gp"],feat:"soldier",adj:"Sovereign",noun:"Warlord",origin:"You built something real out of vision and stubbornness and the unshakeable belief that you were right",event:"your word became law in some corner of the world for a time and you felt the gravity of that",calling:"you are still building, still commanding, still turning the impossible into the merely difficult"},
+// SWORDS
+{name:"Ace of Swords",file:"tarot/cards/swords/ace_of _swords.png",skills:["Investigation","History"],tool:"Forgery Kit",equip:["quality quill and ink","blank scroll","sharp letter-opener"],feat:"scholar",adj:"Sharp",noun:"Blade",origin:"The truth was always the thing you cut toward even when it drew blood — especially then",event:"a revelation arrived with the force of a blade through fog and nothing looked the same afterward",calling:"clarity is not cruelty you tell yourself and you use the sharp thing carefully"},
+{name:"Two of Swords",file:"tarot/cards/swords/two_of _swords.png",skills:["Investigation","Insight"],tool:"Navigator's Tools",equip:["worn blindfold (kept)","two dulled knives","unsent letter"],feat:"exile",adj:"Balanced",noun:"Arbiter",origin:"You learned to make decisions with imperfect information, blindfolded, and found the stillness in it",event:"you faced two equally terrible choices and had to make one anyway without knowing which was right",calling:"you carry the weight of that decision honestly, turning it over still, ready to act again if needed"},
+{name:"Three of Swords",file:"tarot/cards/swords/three_of _swords.png",skills:["History","Medicine"],tool:"Calligrapher's Supplies",equip:["torn letter (kept)","small carved keepsake","5 sp"],feat:"survivor",adj:"Pierced",noun:"Mourner",origin:"You were broken by something that should not have had the power to break you and you remember the exact moment",event:"the truth came out in the worst possible way before you were ready",calling:"you have chosen to carry the sorrow rather than deny it because it means something about what you loved"},
+{name:"Four of Swords",file:"tarot/cards/swords/four_of _swords.png",skills:["Medicine","History"],tool:"Alchemist's Supplies",equip:["herbal salve","prayer book (worn)","room key (kept)"],feat:"healer",adj:"Resting",noun:"Penitent",origin:"You withdrew from the war inside or outside you and found that silence is its own kind of weapon",event:"rest was forced upon you by injury or defeat and it taught you things motion never could",calling:"you know when to wait which makes you more dangerous than those who only know how to charge"},
+{name:"Five of Swords",file:"tarot/cards/swords/five_of _swords.png",skills:["Deception","Intimidation"],tool:"Thieves' Tools",equip:["broken sword hilt (trophy)","5 gp","thief's dark gloves"],feat:"shadow",adj:"Victorious",noun:"Schemer",origin:"You won but the victory cost something you are still counting the price of",event:"you triumphed over someone who did not deserve to lose or lost to someone who did not deserve to win",calling:"you are still deciding whether the end justifies the means or whether that is just what you tell yourself"},
+{name:"Six of Swords",file:"tarot/cards/swords/six_of _swords.png",skills:["Survival","Stealth"],tool:"Navigator's Tools",equip:["dark traveling cloak","river stone (smooth)","travel rations"],feat:"wanderer",adj:"Crossing",noun:"Exile",origin:"You left with the grief still on your face and did not look back",event:"passage was offered when you had nowhere to go and you took it without questions",calling:"calmer waters are ahead you have been told and you are learning to believe it"},
+{name:"Seven of Swords",file:"tarot/cards/swords/seven_of _swords.png",skills:["Deception","Stealth"],tool:"Thieves' Tools",equip:["pouch of borrowed goods","fake uniform element","15 gp"],feat:"shadow",adj:"Cunning",noun:"Fox",origin:"You took what you needed and left before anyone noticed the gap where it used to be",event:"a plan succeeded entirely because no one thought to check for someone like you in that exact place",calling:"you work alone by preference and habit trusting only your own hands and your own exits"},
+{name:"Eight of Swords",file:"tarot/cards/swords/eight_of _swords.png",skills:["Insight","Stealth"],tool:"Disguise Kit",equip:["length of rope (kept)","dark covering cloth","anonymous dark robe"],feat:"exile",adj:"Bound",noun:"Prisoner",origin:"You were trapped by something — cage, expectation, circumstance — that you had partly constructed yourself",event:"the blindfold came off and you saw you could have walked away at any time which was the harder truth",calling:"you test every door now methodically because you know some of them will open if you just push"},
+{name:"Nine of Swords",file:"tarot/cards/swords/nine_of _swords.png",skills:["Insight","Medicine"],tool:"Herbalism Kit",equip:["nightmare journal","sleeping herb pouch","candle stub"],feat:"survivor",adj:"Haunted",noun:"Watcher",origin:"The nights were long and your mind would not cooperate turning everything real into something threatening",event:"you sat with your worst fear, gave it a name, looked it in the face, and found it was survivable",calling:"the nightmares have not stopped but you have stopped letting them vote on what you do next"},
+{name:"Ten of Swords",file:"tarot/cards/swords/ten_of _swords.png",skills:["Survival","Medicine"],tool:"Herbalism Kit",equip:["ten copper pieces","bandages (worn)","last will (your own)"],feat:"survivor",adj:"Fallen",noun:"Risen",origin:"It could not get worse than this and it did not because this was the absolute bottom",event:"you were finished completely and then for reasons you still cannot explain you got back up",calling:"rock bottom turned out to have a solid floor and from there the only direction is up"},
+{name:"Page of Swords",file:"tarot/cards/swords/page_of _swords.png",skills:["Investigation","Perception"],tool:"Forgery Kit",equip:["coded journal","quality quill","copper magnifying lens"],feat:"scholar",adj:"Watchful",noun:"Spy",origin:"You were always listening at keyholes, reading between lines, noticing what was not said",event:"you discovered something you were not supposed to know and had to decide quickly what to do with it",calling:"knowledge is your preferred weapon and you keep it carefully sharpened"},
+{name:"Knight of Swords",file:"tarot/cards/swords/knight_of _swords.png",skills:["Athletics","Investigation"],tool:"Smith's Tools",equip:["chipped sword","battle strategy notes","5 gp"],feat:"soldier",adj:"Charging",noun:"Crusader",origin:"You rode hard into every battle every argument every problem absolutely certain your direction was right",event:"you moved faster than thought and arrived exactly in time — or exactly too late — and learned to tell the difference",calling:"conviction is your fuel and motion is your nature and you are not slowing down for anything"},
+{name:"Queen of Swords",file:"tarot/cards/swords/queen_of _swords.png",skills:["Investigation","Insight"],tool:"Calligrapher's Supplies",equip:["quality quill","brutally honest letter (sealed)","silver dagger"],feat:"scholar",adj:"Clear-eyed",noun:"Judge",origin:"You learned at cost that sentiment without truth is just a comfortable lie and you stopped accepting those",event:"you said the true thing in the room where no one else would say it and the room divided",calling:"honesty is an act of respect and you offer it to everyone regardless of whether they want it"},
+{name:"King of Swords",file:"tarot/cards/swords/king_of _swords.png",skills:["Investigation","History"],tool:"Forgery Kit",equip:["royal writ","quality writing pen","20 gp"],feat:"soldier",adj:"Commanding",noun:"Magistrate",origin:"Your word carried weight because your mind was sharp your judgment fair and your will absolute",event:"a conflict was placed in your hands that would define what kind of authority you chose to be",calling:"truth and law are not always the same thing and when they diverge you know which one you serve"},
+// PENTACLES
+{name:"Ace of Pentacles",file:"tarot/cards/pentacles/ace_of _pentacles.png",skills:["Persuasion","Survival"],tool:"Jeweler's Tools",equip:["merchant's scale","coin purse (15 gp)","trade ledger"],feat:"merchant",adj:"Prosperous",noun:"Merchant",origin:"An opportunity arrived and you recognized it for what it was before anyone else did",event:"the seed was planted: one deal, one gift of resources that changed what was possible",calling:"you tend your investments carefully knowing abundance does not happen — it is grown"},
+{name:"Two of Pentacles",file:"tarot/cards/pentacles/two_of _pentacles.png",skills:["Sleight of Hand","Acrobatics"],tool:"Dice Set",equip:["two trick coins","performer's outfit","10 gp"],feat:"fortune",adj:"Juggling",noun:"Acrobat",origin:"You kept twice as many things in the air as anyone else thought was possible and mostly you kept them all up",event:"the balance finally wobbled and you learned which things you were willing to drop",calling:"adaptability is your superpower and instability your natural habitat"},
+{name:"Three of Pentacles",file:"tarot/cards/pentacles/three_of _pentacles.png",skills:["History","Persuasion"],tool:"Woodcarver's Tools",equip:["half-finished masterwork","workshop apron","15 gp"],feat:"merchant",adj:"Skilled",noun:"Craftsman",origin:"You learned the value of doing the work properly with the right people because masterwork is a collaboration",event:"a project brought you together with others whose skills completed what yours could not",calling:"you believe in earned excellence and the patient accumulation of skill"},
+{name:"Four of Pentacles",file:"tarot/cards/pentacles/four_of _pentacles.png",skills:["Insight","Persuasion"],tool:"Jeweler's Tools",equip:["lockbox (key on chain)","30 gp","inventory list"],feat:"merchant",adj:"Guarded",noun:"Hoarder",origin:"Security mattered to you more than anything which meant you were always counting what you had left",event:"someone tried to take from you or you held too tightly to something that needed to move",calling:"you are slowly learning that some things grow only when you open your hands"},
+{name:"Five of Pentacles",file:"tarot/cards/pentacles/five_of _pentacles.png",skills:["Survival","Medicine"],tool:"Cobbler's Tools",equip:["worn-through boots","begging bowl","3 cp"],feat:"survivor",adj:"Destitute",noun:"Beggar",origin:"You had nothing or near enough that the difference was philosophical and the cold was extremely literal",event:"in your lowest moment help arrived — or did not — and either way you remember exactly what it felt like",calling:"you have survived with nothing which means nothing can frighten you quite the way it used to"},
+{name:"Six of Pentacles",file:"tarot/cards/pentacles/six_of _pentacles.png",skills:["Persuasion","Insight"],tool:"Jeweler's Tools",equip:["debt record (yours)","weight stone","20 gp"],feat:"merchant",adj:"Generous",noun:"Patron",origin:"You moved through the world distributing what you had with almost alarming willingness and somehow it kept coming back",event:"you gave something you could not afford to lose and the gift changed both of you",calling:"wealth in motion does more good than wealth in vaults and you intend to keep it moving"},
+{name:"Seven of Pentacles",file:"tarot/cards/pentacles/seven_of _pentacles.png",skills:["Nature","Survival"],tool:"Cook's Utensils",equip:["seed pouch","worn gardening gloves","5 gp"],feat:"survivor",adj:"Patient",noun:"Farmer",origin:"You tended something long and slow and quiet learning the discipline of delayed harvest",event:"you paused and assessed what your work had actually produced and the answer surprised you",calling:"you are in it for the long growth not the quick return and you know the difference"},
+{name:"Eight of Pentacles",file:"tarot/cards/pentacles/eight_of _pentacles.png",skills:["History","Sleight of Hand"],tool:"Artisan's Tools",equip:["half-finished masterwork","chalk","10 gp"],feat:"merchant",adj:"Diligent",noun:"Apprentice",origin:"You found your craft and gave yourself to it completely learning that mastery is not a destination but a daily practice",event:"repetition became revelation: you did the thing for the thousandth time and understood it for the first",calling:"the work is the reward and you return to it every day with the same deliberate attention"},
+{name:"Nine of Pentacles",file:"tarot/cards/pentacles/nine_of _pentacles.png",skills:["Nature","Persuasion"],tool:"Herbalism Kit",equip:["fine leather gloves","hunting bird token","30 gp"],feat:"merchant",adj:"Refined",noun:"Aristocrat",origin:"You built a life of earned elegance — not inherited not stolen but grown with patience and exacting standards",event:"the garden of your life was full and beautiful and entirely your own work and you allowed yourself to feel that",calling:"self-sufficiency is not loneliness and you have made peace with your own extraordinary company"},
+{name:"Ten of Pentacles",file:"tarot/cards/pentacles/ten_of _pentacles.png",skills:["History","Persuasion"],tool:"Jeweler's Tools",equip:["family heirloom","signet ring","25 gp"],feat:"merchant",adj:"Storied",noun:"Heir",origin:"You come from something — a name, a legacy, a wealth — built before you and expected to outlast you",event:"the full meaning of your lineage landed on you at once its pride and its obligation in equal heavy measure",calling:"what you have been given is not a gift but a responsibility and you intend to leave it better than you found it"},
+{name:"Page of Pentacles",file:"tarot/cards/pentacles/page_of _pentacles.png",skills:["History","Nature"],tool:"Calligrapher's Supplies",equip:["dense study notes","small magnifying glass","10 gp"],feat:"scholar",adj:"Studious",noun:"Student",origin:"You were always the one with your nose in something practical turning an object over in your hands to understand it fully",event:"a discovery arrived that made all your careful study suddenly make sense in a way that was almost painful",calling:"you are a lifelong learner of the material world and you intend to understand all of it eventually"},
+{name:"Knight of Pentacles",file:"tarot/cards/pentacles/knight_of _pentacles.png",skills:["Nature","Animal Handling"],tool:"Vehicles (Land)",equip:["mount IOU","grooming kit","10 gp"],feat:"wanderer",adj:"Methodical",noun:"Steward",origin:"You moved slowly and deliberately earning trust through reliability in a world that rewards the loud and fast",event:"you stayed when everyone else left and the thing that needed protecting was still standing when you finally looked up",calling:"steady wins the race you are actually running and you have learned to love the pace"},
+{name:"Queen of Pentacles",file:"tarot/cards/pentacles/queen_of _pentacles.png",skills:["Nature","Medicine"],tool:"Herbalism Kit",equip:["fine traveling cloak","nurturing token","25 gp"],feat:"healer",adj:"Nurturing",noun:"Matron",origin:"You made a home everywhere you went because home is not a place but a quality of attention you bring",event:"someone was placed in your care who did not know how to be cared for and you figured it out together",calling:"warmth and wealth together are how you make the world safer and you give both freely"},
+{name:"King of Pentacles",file:"tarot/cards/pentacles/king_of _pentacles.png",skills:["Persuasion","History"],tool:"Jeweler's Tools",equip:["estate ledger","heavy signet ring","50 gp"],feat:"merchant",adj:"Prosperous",noun:"Lord",origin:"You accumulated wealth and loyalty through patience and reliable judgment over a very long time",event:"a test of your generosity defined the kind of ruler or patron you would become",calling:"stability is something you build protect and pass on and you have made it your life's work"},
 ];
 
-// ── Config ────────────────────────────────────────────────────────────
-const SPREAD_COUNT = 7;
-const MAX_PICKS = 3;
+// ── Layout ────────────────────────────────────────────────────────────
+const LABELS = ['I · Origin', 'II · Trial', 'III · Calling'];
 
-// Normalized arc shape: dy as fraction of card height, rotation in degrees
-const FAN_ROT  = [-18, -12, -6,  0,  6, 12, 18];
-const FAN_DY_F = [0.22, 0.08, 0.02, 0, 0.02, 0.08, 0.22]; // centre is lowest dy = highest visually
+function computeDims() {
+    const W = window.innerWidth, H = window.innerHeight;
+    // V: page padding(22) + top(50) + label(22+7) + aspect(62+7) + footer(22+4) + gaps(8)
+    const resV = 22 + 50 + 29 + 69 + 26 + 8;
+    // H: page h-padding(32) + 2 card gaps(32) + content gap(16) + story panel(220) + panel h-padding(30)
+    const resH = 32 + 32 + 16 + 220 + 30;
+    const cardH = Math.min(Math.max(130, H - resV), (W - resH) / 3 * (220 / 130), 520);
+    const cardW = Math.round(cardH * 130 / 220);
+    document.documentElement.style.setProperty('--card-h', cardH + 'px');
+    document.documentElement.style.setProperty('--card-w', cardW + 'px');
+}
 
 // ── State ─────────────────────────────────────────────────────────────
-let slots   = [];
-let picked  = 0;
-let dealing = false;
+let pickCount = 0, pickedCards = [], colData = [];
 
-// ── Shuffle ───────────────────────────────────────────────────────────
-function shuffle(arr) {
-    const a = [...arr];
-    for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-}
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
 
-// ── Layout computation ────────────────────────────────────────────────
-function computeLayout() {
-    const wrap  = document.querySelector('.spread-wrap');
-    const W     = wrap.clientWidth;
-    const H     = wrap.clientHeight;
+function spawnP(x,y){const c=document.getElementById('particles');for(let i=0;i<12;i++){const p=document.createElement('div');p.className='particle';p.style.left=(x+(Math.random()-.5)*55)+'px';p.style.top=(y+(Math.random()-.5)*32)+'px';p.style.animationDuration=(Math.random()*1.2+.8)+'s';p.style.animationDelay=(Math.random()*.2)+'s';c.appendChild(p);p.addEventListener('animationend',()=>p.remove());}}
 
-    // Card height: fill ~80% of spread height; cap at 220px
-    const cardH = Math.min(220, Math.floor(H * 0.80));
-    const cardW = Math.round(cardH * (130 / 220));
+// ── Build ─────────────────────────────────────────────────────────────
+function deal() {
+    pickCount = 0; pickedCards = []; colData = [];
+    document.getElementById('story-panel').classList.remove('show');
+    document.getElementById('draw-btn').classList.remove('show');
 
-    // X spacing so all 7 cards span ~88% of available width
-    const totalSpan = W * 0.88;
-    const step = Math.min(100, Math.round((totalSpan - cardW) / (SPREAD_COUNT - 1)));
+    const row = document.getElementById('card-row');
+    row.innerHTML = '';
+    computeDims();
 
-    // Centre-of-spread offsets
-    const halfSpan = ((SPREAD_COUNT - 1) * step) / 2;
-    // Vertical centre of spread area
-    const cx = W / 2;
-    const cy = H / 2;
-
-    const positions = FAN_ROT.map((rot, i) => ({
-        // Card centre X relative to spread centre
-        cx: cx + (i * step - halfSpan),
-        // Card top Y: place card centre slightly above mid, offset by arc
-        cy: cy + FAN_DY_F[i] * cardH * 0.5,
-        rot
-    }));
-
-    return { cardW, cardH, positions };
-}
-
-// ── Hover lift transform ──────────────────────────────────────────────
-function slotTransform({ cx, cy, rot }, cardW, cardH, liftPx = 0) {
-    const left = cx - cardW / 2;
-    const top  = cy - cardH / 2 - liftPx;
-    return { left, top };
-}
-
-// ── Build spread ──────────────────────────────────────────────────────
-function buildSpread() {
-    const spread = document.getElementById('spread');
-    spread.innerHTML = '';
-    slots = [];
-    picked = 0;
-    updateDots();
-    document.getElementById('redeal-btn').classList.remove('visible');
-
-    const { cardW, cardH, positions } = computeLayout();
-    const deck = shuffle(CARDS).slice(0, SPREAD_COUNT);
+    const deck = shuffle(CARDS).slice(0, 3);
 
     deck.forEach((card, i) => {
-        const pos = positions[i];
-        const { left, top } = slotTransform(pos, cardW, cardH);
+        const col = document.createElement('div');
+        col.className = 'card-col';
 
-        const slot = document.createElement('div');
-        slot.className = 'card-slot hoverable';
-        slot.style.cssText = `
-            left: ${left}px;
-            top:  ${top}px;
-            width: ${cardW}px;
-            height: ${cardH}px;
-            perspective: 900px;
-            transform: rotate(${pos.rot}deg);
-            z-index: ${4 + (3 - Math.abs(i - 3))};
-        `;
+        const lbl = document.createElement('div');
+        lbl.className = 'col-label';
+        lbl.id = `lbl-${i}`;
 
-        // Hover: lift card upward (in card's local Y before rotation)
-        const LIFT = Math.round(cardH * 0.09);
-        slot.addEventListener('mouseenter', () => {
-            if (!slot.classList.contains('hoverable')) return;
-            slot.style.top = (top - LIFT) + 'px';
-            slot.style.boxShadow = `0 0 28px rgba(201,168,76,0.45)`;
-            slot.style.zIndex = 30;
-        });
-        slot.addEventListener('mouseleave', () => {
-            if (!slot.classList.contains('hoverable')) return;
-            slot.style.top = top + 'px';
-            slot.style.boxShadow = '';
-            slot.style.zIndex = 4 + (3 - Math.abs(i - 3));
-        });
+        const scene = document.createElement('div');
+        scene.className = 'card-scene';
+        scene.id = `scene-${i}`;
 
-        // Card flip element
         const cardEl = document.createElement('div');
         cardEl.className = 'card';
 
         const back = document.createElement('div');
         back.className = 'card-face card-back';
-        back.innerHTML = `<div class="card-back-inner"><span class="card-back-symbol">✦</span></div>`;
+        back.innerHTML = '<div class="card-back-inner"><span class="back-sym">✦</span></div>';
 
         const front = document.createElement('div');
         front.className = 'card-face card-front';
         const img = document.createElement('img');
-        img.src  = card.file;
-        img.alt  = card.name;
+        img.src = card.file; img.alt = card.name;
         front.appendChild(img);
 
-        cardEl.appendChild(back);
-        cardEl.appendChild(front);
-        slot.appendChild(cardEl);
-        spread.appendChild(slot);
+        cardEl.appendChild(back); cardEl.appendChild(front);
+        scene.appendChild(cardEl);
 
-        slot.addEventListener('click', () => pickCard(i, slot, cardEl, top));
-        slots.push({ el: slot, cardEl, top, pos });
+        const txt = document.createElement('div');
+        txt.className = 'aspect-text';
+        txt.id = `txt-${i}`;
+
+        col.appendChild(lbl); col.appendChild(scene); col.appendChild(txt);
+        row.appendChild(col);
+
+        colData.push({ card, lbl, scene, cardEl, txt, picked: false, slotIndex: i });
+
+        scene.addEventListener('click', () => pickSlot(i));
     });
 }
 
-// ── Pick card ─────────────────────────────────────────────────────────
-function pickCard(i, slot, cardEl, baseTop) {
-    if (!slot.classList.contains('hoverable') || dealing) return;
+// ── Pick ──────────────────────────────────────────────────────────────
+function pickSlot(i) {
+    const d = colData[i];
+    if (d.picked) return;
+    d.picked = true;
+    d.scene.classList.add('picked');
 
-    picked++;
-    slot.classList.remove('hoverable');
-    slot.style.top = baseTop + 'px'; // snap back from any hover
+    const order = pickCount; // 0, 1, or 2
+    pickCount++;
+    pickedCards[order] = d.card;
 
-    updateDots();
+    // Show label
+    d.lbl.textContent = LABELS[order];
+    d.lbl.classList.add('show');
 
+    // Flip card
     setTimeout(() => {
-        cardEl.classList.add('flipped');
+        d.cardEl.classList.add('flipped');
+        const r = d.scene.getBoundingClientRect();
+        spawnP(r.left + r.width / 2, r.top + r.height / 2);
 
-        const rect = slot.getBoundingClientRect();
-        spawnParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
-    }, 40);
-
-    if (picked === MAX_PICKS) {
-        // Dim all unpicked cards
-        slots.forEach(s => {
-            if (s.el.classList.contains('hoverable')) {
-                s.el.classList.remove('hoverable');
-                s.el.classList.add('dimmed');
-            }
-        });
-
+        // Show aspect text after flip lands
         setTimeout(() => {
-            document.getElementById('redeal-btn').classList.add('visible');
-        }, 700);
+            d.txt.innerHTML = buildAspect(d.card, order);
+            d.txt.classList.add('show');
+
+            if (pickCount === 3) setTimeout(showResult, 500);
+        }, 600);
+    }, 40);
+}
+
+function buildAspect(card, order) {
+    if (order === 0) {
+        return `<div class="aspect-card-name">${card.name}</div>
+                <div class="aspect-label">Skill Proficiencies</div>
+                <div class="aspect-val">${card.skills.join(' · ')}</div>`;
+    } else if (order === 1) {
+        return `<div class="aspect-card-name">${card.name}</div>
+                <div class="aspect-label">Tool · Equipment</div>
+                <div class="aspect-val">${card.tool} · ${card.equip.join(', ')}</div>`;
+    } else {
+        const feat = FEATURES[card.feat];
+        return `<div class="aspect-card-name">${card.name}</div>
+                <div class="aspect-label">Feature</div>
+                <div class="aspect-val">${feat.name}</div>`;
     }
 }
 
-// ── Dots indicator ────────────────────────────────────────────────────
-function updateDots() {
-    const dots = document.querySelectorAll('#pick-dots span');
-    dots.forEach((d, i) => {
-        d.classList.toggle('lit', i < picked);
-    });
-}
+// ── Result ────────────────────────────────────────────────────────────
+function showResult() {
+    const [c1, c2, c3] = pickedCards;
+    const bgName = `${c1.adj} ${c3.noun}`;
+    const story = `${c1.origin}. ${c2.event}, a moment you have never quite been able to leave behind. ${c3.calling}.`;
 
-// ── Deal / re-deal ────────────────────────────────────────────────────
-function deal() {
-    if (dealing) return;
-    dealing = true;
-
-    document.getElementById('redeal-btn').classList.remove('visible');
-
-    // Fade out current cards
-    slots.forEach(s => {
-        s.el.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-        s.el.style.opacity = '0';
-        s.el.style.transform = `rotate(${s.pos.rot}deg) translateY(20px)`;
-    });
-
-    setTimeout(() => {
-        buildSpread();
-        // Animate cards in with stagger
-        slots.forEach((s, i) => {
-            s.el.style.opacity = '0';
-            s.el.style.transform = `rotate(${s.pos.rot}deg) translateY(30px)`;
-            setTimeout(() => {
-                s.el.style.transition = 'opacity 0.45s ease, transform 0.45s cubic-bezier(0.2,0,0.2,1)';
-                s.el.style.opacity = '1';
-                s.el.style.transform = `rotate(${s.pos.rot}deg)`;
-                if (i === slots.length - 1) {
-                    setTimeout(() => { dealing = false; }, 450);
-                }
-            }, i * 55 + 50);
-        });
-    }, 330);
+    document.getElementById('bg-name').textContent = bgName;
+    document.getElementById('bg-story').textContent = story;
+    document.getElementById('story-panel').classList.add('show');
+    document.getElementById('draw-btn').classList.add('show');
 }
 
 // ── Init ──────────────────────────────────────────────────────────────
-buildSpread();
+window.addEventListener('resize', () => { computeDims(); });
+deal();
 </script>
 </body>
 </html>
