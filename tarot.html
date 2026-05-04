@@ -59,8 +59,13 @@
         /* ── Side story panel ── */
         .story-panel{width:220px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:0 10px 0 20px;border-left:1px solid rgba(201,168,76,.12);overflow-y:auto;opacity:0;pointer-events:none;transform:translateX(14px);transition:opacity .7s ease,transform .7s ease;}
         .story-panel.show{opacity:1;pointer-events:auto;transform:translateX(0);}
+        .story-panel.all-major{border-left-color:rgba(201,168,76,.45);box-shadow:-4px 0 24px rgba(201,168,76,.07);}
+        .arcana-eyebrow{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:4px;color:var(--gold);opacity:.6;text-transform:uppercase;text-align:center;}
         .bg-name{font-family:'Cinzel Decorative',serif;font-size:clamp(.8rem,1.8vw,1.1rem);color:var(--gold);letter-spacing:3px;text-shadow:0 0 18px rgba(201,168,76,.35);text-align:center;}
+        .story-panel.all-major .bg-name{font-size:clamp(.65rem,1.3vw,.85rem);letter-spacing:1.5px;text-shadow:0 0 28px rgba(201,168,76,.55);}
         .bg-story{font-family:'Crimson Text',serif;font-style:italic;font-size:clamp(.75rem,1.4vw,.88rem);color:var(--text);opacity:.82;line-height:1.6;text-align:center;}
+        .bonus-line{display:none;font-family:'Crimson Text',serif;font-style:italic;font-size:clamp(.68rem,1.2vw,.78rem);color:var(--gold-l);opacity:.68;text-align:center;line-height:1.55;border-top:1px solid rgba(201,168,76,.18);padding-top:10px;}
+        .bonus-line.show{display:block;}
 
         /* ── Footer ── */
         .footer{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding-top:2px;}
@@ -88,6 +93,7 @@
         <div class="story-panel" id="story-panel">
             <div class="bg-name" id="bg-name"></div>
             <div class="bg-story" id="bg-story"></div>
+            <div class="bonus-line" id="bonus-line"></div>
             <button class="draw-btn" id="draw-btn" onclick="deal()">Draw Again</button>
         </div>
     </div>
@@ -234,8 +240,11 @@ function spawnP(x,y){const c=document.getElementById('particles');for(let i=0;i<
 // ── Build ─────────────────────────────────────────────────────────────
 function deal() {
     pickCount = 0; pickedCards = []; colData = [];
-    document.getElementById('story-panel').classList.remove('show');
+    const sp = document.getElementById('story-panel');
+    sp.classList.remove('show', 'all-major');
     document.getElementById('draw-btn').classList.remove('show');
+    const bl = document.getElementById('bonus-line');
+    bl.textContent = ''; bl.classList.remove('show');
 
     const row = document.getElementById('card-row');
     row.innerHTML = '';
@@ -332,15 +341,91 @@ function buildAspect(card, order) {
     }
 }
 
+// ── Bonus conditions ─────────────────────────────────────────────────
+const RANK_MAP = {Ace:1,Two:2,Three:3,Four:4,Five:5,Six:6,Seven:7,Eight:8,Nine:9,Ten:10,Page:11,Knight:12,Queen:13,King:14};
+const PRIMES = new Set([2,3,5,7,11,13]);
+const SUIT_NOTES = {
+    cups:      'The Cup runs through every chapter — feeling, connection, and the depths of the heart shape all that you are.',
+    wands:     'The Wand burns through every chapter — passion, will, and the refusal to be still drive all that you do.',
+    swords:    'The Sword cuts through every chapter — truth, conflict, and hard-won clarity mark every turn of your path.',
+    pentacles: 'The Pentacle grounds every chapter — patience, craft, and things built to last are the measure of your life.',
+};
+
+function getSuit(card) {
+    if (card.file.includes('/cups/')) return 'cups';
+    if (card.file.includes('/wands/')) return 'wands';
+    if (card.file.includes('/swords/')) return 'swords';
+    if (card.file.includes('/pentacles/')) return 'pentacles';
+    return null;
+}
+function getRank(card) { return RANK_MAP[card.name.split(' ')[0]] ?? null; }
+
+const TRIPLE_NOTES = {
+    1:  'Three Aces — raw potential at every crossroads. What you carry into the world has uncommon force at its root.',
+    2:  'Three Twos — every chapter holds a choice, a balance, a pairing. Duality is not confusion but the language your fate speaks.',
+    3:  'Three Threes — creation and community echo through every stage. You build, and others come to join what you have made.',
+    4:  'Three Fours — structure and stillness repeat throughout. You understand that foundations are not limits but roots.',
+    5:  'Three Fives — conflict arrives at every turn, not as punishment but as the friction that shapes what you are becoming.',
+    6:  'Three Sixes — harmony sought and found across every chapter. You are someone the world slowly arranges itself around.',
+    7:  'Three Sevens — reflection and vision mark every stage. You see further than most, which is both the gift and the cost.',
+    8:  'Three Eights — motion and momentum drive your story without pause. You are always in the act of becoming.',
+    9:  'Three Nines — you have stood at the edge of completion more than once. Resilience is not something you practice; it is something you are.',
+    10: 'Three Tens — full cycles, endings that carry new beginnings inside them. You complete what others leave half-finished.',
+    11: 'Three Pages — the universe is sending a message at every chapter that cannot be missed. Your story is one long arrival into yourself, and you are still becoming what you will be. Something watches your progress with unusual interest.',
+    12: 'Three Knights — you have never been content to wait. Pursuit, momentum, and the willingness to ride hard into the unknown define you at every stage. The world rearranges itself around your motion, and that is exactly how you prefer it.',
+    13: 'Three Queens — authority shaped by wisdom rather than force runs through every chapter. Yours is a power that has never needed to raise its voice to be felt in every corner of every room you have ever entered.',
+    14: 'Three Kings — full mastery appears at every stage of your path. You build not just for yourself but for something that outlasts you, and whatever you have made, you have made it to endure long after you are gone.',
+};
+
+function buildBonusLines(cards) {
+    const lines = [];
+    const suits = cards.map(getSuit);
+    if (!suits.includes(null) && suits[0] === suits[1] && suits[1] === suits[2])
+        lines.push(SUIT_NOTES[suits[0]]);
+
+    const ranks = cards.map(getRank);
+    if (ranks.every(r => r !== null)) {
+        if (ranks[0] === ranks[1] && ranks[1] === ranks[2])
+            lines.push(TRIPLE_NOTES[ranks[0]]);
+
+        const s = [...ranks].sort((a, b) => a - b);
+        if (s[1] === s[0] + 1 && s[2] === s[1] + 1)
+            lines.push('These three fall in unbroken sequence — your origin, trial, and calling form a single continuous thread.');
+        if (ranks.every(r => PRIMES.has(r)))
+            lines.push('Three primes, indivisible. Your path answers to no common factor.');
+    }
+    return lines;
+}
+
 // ── Result ────────────────────────────────────────────────────────────
 function showResult() {
     const [c1, c2, c3] = pickedCards;
-    const bgName = `${c1.adj} ${c3.noun}`;
-    const story = `${c1.origin}. ${c2.event}, a moment you have never quite been able to leave behind. ${c3.calling}.`;
+    const panel = document.getElementById('story-panel');
+    const allMajor = pickedCards.every(c => c.file.includes('major/'));
 
-    document.getElementById('bg-name').textContent = bgName;
-    document.getElementById('bg-story').textContent = story;
-    document.getElementById('story-panel').classList.add('show');
+    if (allMajor) {
+        panel.classList.add('all-major');
+        document.getElementById('bg-name').innerHTML =
+            `<div class="arcana-eyebrow">✦ &nbsp;The Grand Arcana&nbsp; ✦</div>${c1.name} · ${c2.name} · ${c3.name}`;
+        document.getElementById('bg-story').textContent =
+            `Three forces of cosmic weight have spoken. ${c1.origin}. ${c2.event} — no mortal coincidence, but a convergence written long before your birth. ${c3.calling}. The Arcana itself has taken notice of you.`;
+    } else {
+        document.getElementById('bg-name').textContent = `${c1.adj} ${c3.noun}`;
+        document.getElementById('bg-story').textContent =
+            `${c1.origin}. ${c2.event}, a moment you have never quite been able to leave behind. ${c3.calling}.`;
+    }
+
+    const bonusEl = document.getElementById('bonus-line');
+    const lines = buildBonusLines(pickedCards);
+    if (lines.length) {
+        bonusEl.innerHTML = lines.join('<br><br>');
+        bonusEl.classList.add('show');
+    } else {
+        bonusEl.textContent = '';
+        bonusEl.classList.remove('show');
+    }
+
+    panel.classList.add('show');
     document.getElementById('draw-btn').classList.add('show');
 }
 
