@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarot Reading</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&display=swap');
+
+        :root {
+            --gold: #C9A84C;
+            --gold-light: #E8C96D;
+            --bg: #050508;
+            --text: #E0D4B8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        #stars {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        #particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background: var(--gold);
+            opacity: 0;
+            animation: float-up linear forwards;
+        }
+
+        @keyframes float-up {
+            0%   { opacity: 0; transform: translateY(0) scale(1); }
+            15%  { opacity: 0.9; }
+            100% { opacity: 0; transform: translateY(-100px) scale(0); }
+        }
+
+        /* ── Page shell ── */
+        .page {
+            position: relative;
+            z-index: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px 16px 14px;
+            gap: 0;
+        }
+
+        /* ── Header ── */
+        .header {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            gap: 6px;
+            padding-bottom: 10px;
+        }
+
+        .back-link {
+            align-self: flex-start;
+            color: var(--gold);
+            text-decoration: none;
+            font-family: 'Cinzel', serif;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            opacity: 0.55;
+            transition: opacity 0.3s;
+        }
+        .back-link:hover { opacity: 1; }
+
+        h1 {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: clamp(1.1rem, 3.5vw, 2.2rem);
+            color: var(--gold);
+            letter-spacing: 4px;
+            text-shadow: 0 0 24px rgba(201,168,76,0.4), 0 0 50px rgba(201,168,76,0.12);
+        }
+
+        .divider {
+            width: 180px;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--gold), transparent);
+            opacity: 0.3;
+        }
+
+        /* pick progress dots */
+        .pick-dots {
+            display: flex;
+            gap: 10px;
+            margin-top: 2px;
+        }
+
+        .pick-dots span {
+            font-size: 0.65rem;
+            color: var(--gold);
+            opacity: 0.2;
+            transition: opacity 0.4s ease, text-shadow 0.4s ease;
+            letter-spacing: 0;
+        }
+
+        .pick-dots span.lit {
+            opacity: 1;
+            text-shadow: 0 0 8px var(--gold), 0 0 16px var(--gold);
+        }
+
+        /* ── Spread ── */
+        .spread-wrap {
+            flex: 1;
+            min-height: 0;
+            width: 100%;
+            position: relative;
+        }
+
+        #spread {
+            position: absolute;
+            inset: 0;
+        }
+
+        /* card-slot: positioned by JS */
+        .card-slot {
+            position: absolute;
+            cursor: pointer;
+            transition:
+                transform 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity   0.45s ease,
+                filter    0.45s ease;
+        }
+
+        .card-slot.hoverable:hover {
+            z-index: 20 !important;
+        }
+
+        .card-slot.dimmed {
+            opacity: 0.1;
+            filter: blur(1px);
+            pointer-events: none;
+        }
+
+        /* ── Card flip ── */
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card.flipped { transform: rotateY(180deg); }
+
+        .card-face {
+            position: absolute;
+            inset: 0;
+            border-radius: 9px;
+            backface-visibility: hidden;
+            overflow: hidden;
+            border: 1.5px solid rgba(201,168,76,0.25);
+            box-shadow: 0 5px 22px rgba(0,0,0,0.75), 0 0 10px rgba(201,168,76,0.06);
+        }
+
+        .card-back {
+            background: linear-gradient(148deg, #0e0b1e 0%, #1c0f30 55%, #0e0b1e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-back-inner {
+            width: 87%;
+            height: 87%;
+            border: 1px solid rgba(201,168,76,0.2);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-back-inner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                repeating-linear-gradient(45deg, transparent, transparent 7px, rgba(201,168,76,0.03) 7px, rgba(201,168,76,0.03) 8px),
+                repeating-linear-gradient(-45deg, transparent, transparent 7px, rgba(138,43,226,0.03) 7px, rgba(138,43,226,0.03) 8px);
+        }
+
+        .card-back-symbol {
+            font-size: 1.8rem;
+            opacity: 0.45;
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 0 5px var(--gold));
+            color: var(--gold);
+        }
+
+        .card-front {
+            transform: rotateY(180deg);
+            background: #08061a;
+        }
+
+        .card-front img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding-top: 10px;
+            height: 68px;
+        }
+
+        .redeal-btn {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 0.82rem;
+            letter-spacing: 2px;
+            color: var(--bg);
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            border: none;
+            padding: 11px 36px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: opacity 0.4s ease, transform 0.35s ease, box-shadow 0.35s ease;
+            box-shadow: 0 0 16px rgba(201,168,76,0.25), 0 3px 10px rgba(0,0,0,0.5);
+            opacity: 0;
+            transform: translateY(8px);
+            pointer-events: none;
+        }
+
+        .redeal-btn.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .redeal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 32px rgba(201,168,76,0.48), 0 6px 18px rgba(0,0,0,0.5);
+        }
+
+        .ornament {
+            font-size: 1rem;
+            opacity: 0.18;
+            color: var(--gold);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="stars"></canvas>
+    <div id="particles"></div>
+
+    <div class="page">
+        <div class="header">
+            <a href="selectGame.html" class="back-link">← Return</a>
+            <h1>The Cards Speak</h1>
+            <div class="divider"></div>
+            <div class="pick-dots" id="pick-dots">
+                <span>✦</span><span>✦</span><span>✦</span>
+            </div>
+        </div>
+
+        <div class="spread-wrap">
+            <div id="spread"></div>
+        </div>
+
+        <div class="footer">
+            <button class="redeal-btn" id="redeal-btn" onclick="deal()">Draw Again</button>
+            <div class="ornament">✦ ✧ ✦</div>
+        </div>
+    </div>
+
+<script>
+// ── Starfield ─────────────────────────────────────────────────────────
+const starsCanvas = document.getElementById('stars');
+const sCtx = starsCanvas.getContext('2d');
+let stars = [];
+
+function resizeStars() {
+    starsCanvas.width = window.innerWidth;
+    starsCanvas.height = window.innerHeight;
+    stars = [];
+    const n = Math.floor((starsCanvas.width * starsCanvas.height) / 4500);
+    for (let i = 0; i < n; i++) stars.push({
+        x: Math.random() * starsCanvas.width,
+        y: Math.random() * starsCanvas.height,
+        r: Math.random() * 1.1 + 0.3,
+        a: Math.random() * 0.7 + 0.1,
+        sp: Math.random() * 0.007 + 0.002,
+        ph: Math.random() * Math.PI * 2
+    });
+}
+
+function animateStars(t) {
+    sCtx.clearRect(0, 0, starsCanvas.width, starsCanvas.height);
+    for (const s of stars) {
+        const a = s.a * (0.55 + 0.45 * Math.sin(t * s.sp + s.ph));
+        sCtx.beginPath();
+        sCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        sCtx.fillStyle = `rgba(232,201,109,${a})`;
+        sCtx.fill();
+    }
+    requestAnimationFrame(animateStars);
+}
+
+window.addEventListener('resize', () => { resizeStars(); buildSpread(); });
+resizeStars();
+requestAnimationFrame(animateStars);
+
+// ── Particles ─────────────────────────────────────────────────────────
+function spawnParticles(x, y) {
+    const cont = document.getElementById('particles');
+    for (let i = 0; i < 12; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = (x + (Math.random() - 0.5) * 60) + 'px';
+        p.style.top  = (y + (Math.random() - 0.5) * 36) + 'px';
+        p.style.animationDuration = (Math.random() * 1.2 + 0.8) + 's';
+        p.style.animationDelay    = (Math.random() * 0.2) + 's';
+        cont.appendChild(p);
+        p.addEventListener('animationend', () => p.remove());
+    }
+}
+
+// ── Card data ─────────────────────────────────────────────────────────
+const CARDS = [
+    { name: "The Fool",           file: "tarot/cards/major/fool.png" },
+    { name: "The Magician",       file: "tarot/cards/major/magician.png" },
+    { name: "The High Priestess", file: "tarot/cards/major/high priestess.png" },
+    { name: "The Empress",        file: "tarot/cards/major/empress.png" },
+    { name: "The Emperor",        file: "tarot/cards/major/emperor.png" },
+    { name: "The Hierophant",     file: "tarot/cards/major/hierophant.png" },
+    { name: "The Lovers",         file: "tarot/cards/major/lovers.png" },
+    { name: "The Chariot",        file: "tarot/cards/major/chariot.png" },
+    { name: "Strength",           file: "tarot/cards/major/strength.png" },
+    { name: "The Hermit",         file: "tarot/cards/major/hermit.png" },
+    { name: "Wheel of Fortune",   file: "tarot/cards/major/wheel of fortune.png" },
+    { name: "Justice",            file: "tarot/cards/major/justice.png" },
+    { name: "The Hanged Man",     file: "tarot/cards/major/hanged man.png" },
+    { name: "Death",              file: "tarot/cards/major/death.png" },
+    { name: "Temperance",         file: "tarot/cards/major/temperance.png" },
+    { name: "The Devil",          file: "tarot/cards/major/devil.png" },
+    { name: "The Tower",          file: "tarot/cards/major/tower.png" },
+    { name: "The Star",           file: "tarot/cards/major/star.png" },
+    { name: "The Moon",           file: "tarot/cards/major/moon.png" },
+    { name: "The Sun",            file: "tarot/cards/major/sun.png" },
+    { name: "Judgement",          file: "tarot/cards/major/judgement.png" },
+    { name: "The World",          file: "tarot/cards/major/world.png" },
+    { name: "Ace of Cups",        file: "tarot/cards/cups/ace_of _cups.png" },
+    { name: "Two of Cups",        file: "tarot/cards/cups/two_of _cups.png" },
+    { name: "Three of Cups",      file: "tarot/cards/cups/three_of _cups.png" },
+    { name: "Four of Cups",       file: "tarot/cards/cups/four_of _cups.png" },
+    { name: "Five of Cups",       file: "tarot/cards/cups/five_of _cups.png" },
+    { name: "Six of Cups",        file: "tarot/cards/cups/six_of _cups.png" },
+    { name: "Seven of Cups",      file: "tarot/cards/cups/seven_of _cups.png" },
+    { name: "Eight of Cups",      file: "tarot/cards/cups/eight_of _cups.png" },
+    { name: "Nine of Cups",       file: "tarot/cards/cups/nine_of _cups.png" },
+    { name: "Ten of Cups",        file: "tarot/cards/cups/ten_of _cups.png" },
+    { name: "Page of Cups",       file: "tarot/cards/cups/page_of _cups.png" },
+    { name: "Knight of Cups",     file: "tarot/cards/cups/knight_of _cups.png" },
+    { name: "Queen of Cups",      file: "tarot/cards/cups/queen_of _cups.png" },
+    { name: "King of Cups",       file: "tarot/cards/cups/king_of _cups.png" },
+    { name: "Ace of Wands",       file: "tarot/cards/wands/ace_of_wands.png" },
+    { name: "Two of Wands",       file: "tarot/cards/wands/two_of_wands.png" },
+    { name: "Three of Wands",     file: "tarot/cards/wands/three_of_wands.png" },
+    { name: "Four of Wands",      file: "tarot/cards/wands/four_of_wands.png" },
+    { name: "Five of Wands",      file: "tarot/cards/wands/five_of_wands.png" },
+    { name: "Six of Wands",       file: "tarot/cards/wands/six_of_wands.png" },
+    { name: "Seven of Wands",     file: "tarot/cards/wands/seven_of_wands.png" },
+    { name: "Eight of Wands",     file: "tarot/cards/wands/eight_of_wands.png" },
+    { name: "Nine of Wands",      file: "tarot/cards/wands/nine_of_wands.png" },
+    { name: "Ten of Wands",       file: "tarot/cards/wands/ten_of_wands.png" },
+    { name: "Page of Wands",      file: "tarot/cards/wands/page_of_wands.png" },
+    { name: "Knight of Wands",    file: "tarot/cards/wands/knight_of_wands.png" },
+    { name: "Queen of Wands",     file: "tarot/cards/wands/queen_of_wands.png" },
+    { name: "King of Wands",      file: "tarot/cards/wands/king_of_wands.png" },
+    { name: "Ace of Swords",      file: "tarot/cards/swords/ace_of _swords.png" },
+    { name: "Two of Swords",      file: "tarot/cards/swords/two_of _swords.png" },
+    { name: "Three of Swords",    file: "tarot/cards/swords/three_of _swords.png" },
+    { name: "Four of Swords",     file: "tarot/cards/swords/four_of _swords.png" },
+    { name: "Five of Swords",     file: "tarot/cards/swords/five_of _swords.png" },
+    { name: "Six of Swords",      file: "tarot/cards/swords/six_of _swords.png" },
+    { name: "Seven of Swords",    file: "tarot/cards/swords/seven_of _swords.png" },
+    { name: "Eight of Swords",    file: "tarot/cards/swords/eight_of _swords.png" },
+    { name: "Nine of Swords",     file: "tarot/cards/swords/nine_of _swords.png" },
+    { name: "Ten of Swords",      file: "tarot/cards/swords/ten_of _swords.png" },
+    { name: "Page of Swords",     file: "tarot/cards/swords/page_of _swords.png" },
+    { name: "Knight of Swords",   file: "tarot/cards/swords/knight_of _swords.png" },
+    { name: "Queen of Swords",    file: "tarot/cards/swords/queen_of _swords.png" },
+    { name: "King of Swords",     file: "tarot/cards/swords/king_of _swords.png" },
+    { name: "Ace of Pentacles",   file: "tarot/cards/pentacles/ace_of _pentacles.png" },
+    { name: "Two of Pentacles",   file: "tarot/cards/pentacles/two_of _pentacles.png" },
+    { name: "Three of Pentacles", file: "tarot/cards/pentacles/three_of _pentacles.png" },
+    { name: "Four of Pentacles",  file: "tarot/cards/pentacles/four_of _pentacles.png" },
+    { name: "Five of Pentacles",  file: "tarot/cards/pentacles/five_of _pentacles.png" },
+    { name: "Six of Pentacles",   file: "tarot/cards/pentacles/six_of _pentacles.png" },
+    { name: "Seven of Pentacles", file: "tarot/cards/pentacles/seven_of _pentacles.png" },
+    { name: "Eight of Pentacles", file: "tarot/cards/pentacles/eight_of _pentacles.png" },
+    { name: "Nine of Pentacles",  file: "tarot/cards/pentacles/nine_of _pentacles.png" },
+    { name: "Ten of Pentacles",   file: "tarot/cards/pentacles/ten_of _pentacles.png" },
+    { name: "Page of Pentacles",  file: "tarot/cards/pentacles/page_of _pentacles.png" },
+    { name: "Knight of Pentacles",file: "tarot/cards/pentacles/knight_of _pentacles.png" },
+    { name: "Queen of Pentacles", file: "tarot/cards/pentacles/queen_of _pentacles.png" },
+    { name: "King of Pentacles",  file: "tarot/cards/pentacles/king_of _pentacles.png" },
+];
+
+// ── Config ────────────────────────────────────────────────────────────
+const SPREAD_COUNT = 7;
+const MAX_PICKS = 3;
+
+// Normalized arc shape: dy as fraction of card height, rotation in degrees
+const FAN_ROT  = [-18, -12, -6,  0,  6, 12, 18];
+const FAN_DY_F = [0.22, 0.08, 0.02, 0, 0.02, 0.08, 0.22]; // centre is lowest dy = highest visually
+
+// ── State ─────────────────────────────────────────────────────────────
+let slots   = [];
+let picked  = 0;
+let dealing = false;
+
+// ── Shuffle ───────────────────────────────────────────────────────────
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+// ── Layout computation ────────────────────────────────────────────────
+function computeLayout() {
+    const wrap  = document.querySelector('.spread-wrap');
+    const W     = wrap.clientWidth;
+    const H     = wrap.clientHeight;
+
+    // Card height: fill ~80% of spread height; cap at 220px
+    const cardH = Math.min(220, Math.floor(H * 0.80));
+    const cardW = Math.round(cardH * (130 / 220));
+
+    // X spacing so all 7 cards span ~88% of available width
+    const totalSpan = W * 0.88;
+    const step = Math.min(100, Math.round((totalSpan - cardW) / (SPREAD_COUNT - 1)));
+
+    // Centre-of-spread offsets
+    const halfSpan = ((SPREAD_COUNT - 1) * step) / 2;
+    // Vertical centre of spread area
+    const cx = W / 2;
+    const cy = H / 2;
+
+    const positions = FAN_ROT.map((rot, i) => ({
+        // Card centre X relative to spread centre
+        cx: cx + (i * step - halfSpan),
+        // Card top Y: place card centre slightly above mid, offset by arc
+        cy: cy + FAN_DY_F[i] * cardH * 0.5,
+        rot
+    }));
+
+    return { cardW, cardH, positions };
+}
+
+// ── Hover lift transform ──────────────────────────────────────────────
+function slotTransform({ cx, cy, rot }, cardW, cardH, liftPx = 0) {
+    const left = cx - cardW / 2;
+    const top  = cy - cardH / 2 - liftPx;
+    return { left, top };
+}
+
+// ── Build spread ──────────────────────────────────────────────────────
+function buildSpread() {
+    const spread = document.getElementById('spread');
+    spread.innerHTML = '';
+    slots = [];
+    picked = 0;
+    updateDots();
+    document.getElementById('redeal-btn').classList.remove('visible');
+
+    const { cardW, cardH, positions } = computeLayout();
+    const deck = shuffle(CARDS).slice(0, SPREAD_COUNT);
+
+    deck.forEach((card, i) => {
+        const pos = positions[i];
+        const { left, top } = slotTransform(pos, cardW, cardH);
+
+        const slot = document.createElement('div');
+        slot.className = 'card-slot hoverable';
+        slot.style.cssText = `
+            left: ${left}px;
+            top:  ${top}px;
+            width: ${cardW}px;
+            height: ${cardH}px;
+            perspective: 900px;
+            transform: rotate(${pos.rot}deg);
+            z-index: ${4 + (3 - Math.abs(i - 3))};
+        `;
+
+        // Hover: lift card upward (in card's local Y before rotation)
+        const LIFT = Math.round(cardH * 0.09);
+        slot.addEventListener('mouseenter', () => {
+            if (!slot.classList.contains('hoverable')) return;
+            slot.style.top = (top - LIFT) + 'px';
+            slot.style.boxShadow = `0 0 28px rgba(201,168,76,0.45)`;
+            slot.style.zIndex = 30;
+        });
+        slot.addEventListener('mouseleave', () => {
+            if (!slot.classList.contains('hoverable')) return;
+            slot.style.top = top + 'px';
+            slot.style.boxShadow = '';
+            slot.style.zIndex = 4 + (3 - Math.abs(i - 3));
+        });
+
+        // Card flip element
+        const cardEl = document.createElement('div');
+        cardEl.className = 'card';
+
+        const back = document.createElement('div');
+        back.className = 'card-face card-back';
+        back.innerHTML = `<div class="card-back-inner"><span class="card-back-symbol">✦</span></div>`;
+
+        const front = document.createElement('div');
+        front.className = 'card-face card-front';
+        const img = document.createElement('img');
+        img.src  = card.file;
+        img.alt  = card.name;
+        front.appendChild(img);
+
+        cardEl.appendChild(back);
+        cardEl.appendChild(front);
+        slot.appendChild(cardEl);
+        spread.appendChild(slot);
+
+        slot.addEventListener('click', () => pickCard(i, slot, cardEl, top));
+        slots.push({ el: slot, cardEl, top, pos });
+    });
+}
+
+// ── Pick card ─────────────────────────────────────────────────────────
+function pickCard(i, slot, cardEl, baseTop) {
+    if (!slot.classList.contains('hoverable') || dealing) return;
+
+    picked++;
+    slot.classList.remove('hoverable');
+    slot.style.top = baseTop + 'px'; // snap back from any hover
+
+    updateDots();
+
+    setTimeout(() => {
+        cardEl.classList.add('flipped');
+
+        const rect = slot.getBoundingClientRect();
+        spawnParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    }, 40);
+
+    if (picked === MAX_PICKS) {
+        // Dim all unpicked cards
+        slots.forEach(s => {
+            if (s.el.classList.contains('hoverable')) {
+                s.el.classList.remove('hoverable');
+                s.el.classList.add('dimmed');
+            }
+        });
+
+        setTimeout(() => {
+            document.getElementById('redeal-btn').classList.add('visible');
+        }, 700);
+    }
+}
+
+// ── Dots indicator ────────────────────────────────────────────────────
+function updateDots() {
+    const dots = document.querySelectorAll('#pick-dots span');
+    dots.forEach((d, i) => {
+        d.classList.toggle('lit', i < picked);
+    });
+}
+
+// ── Deal / re-deal ────────────────────────────────────────────────────
+function deal() {
+    if (dealing) return;
+    dealing = true;
+
+    document.getElementById('redeal-btn').classList.remove('visible');
+
+    // Fade out current cards
+    slots.forEach(s => {
+        s.el.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        s.el.style.opacity = '0';
+        s.el.style.transform = `rotate(${s.pos.rot}deg) translateY(20px)`;
+    });
+
+    setTimeout(() => {
+        buildSpread();
+        // Animate cards in with stagger
+        slots.forEach((s, i) => {
+            s.el.style.opacity = '0';
+            s.el.style.transform = `rotate(${s.pos.rot}deg) translateY(30px)`;
+            setTimeout(() => {
+                s.el.style.transition = 'opacity 0.45s ease, transform 0.45s cubic-bezier(0.2,0,0.2,1)';
+                s.el.style.opacity = '1';
+                s.el.style.transform = `rotate(${s.pos.rot}deg)`;
+                if (i === slots.length - 1) {
+                    setTimeout(() => { dealing = false; }, 450);
+                }
+            }, i * 55 + 50);
+        });
+    }, 330);
+}
+
+// ── Init ──────────────────────────────────────────────────────────────
+buildSpread();
+</script>
+</body>
+</html>
